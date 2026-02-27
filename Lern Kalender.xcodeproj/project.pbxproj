@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		72E0E1FB2F51DE3200ABD87A /* SubjectsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E0E1FA2F51DE3200ABD87A /* SubjectsTab.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		72E0E1DE2F51CFD800ABD87A /* Lern Kalender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Lern Kalender.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		72E0E1FA2F51DE3200ABD87A /* SubjectsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectsTab.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -34,6 +39,7 @@
 			children = (
 				72E0E1E02F51CFD800ABD87A /* Lern Kalender */,
 				72E0E1DF2F51CFD800ABD87A /* Products */,
+				72E0E1FA2F51DE3200ABD87A /* SubjectsTab.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72E0E1FB2F51DE3200ABD87A /* SubjectsTab.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
