@@ -337,142 +337,464 @@ struct ParentPairingView: View {
 struct ParentDashboardView: View {
     var store: DataStore
     private let cloudKit = CloudKitService.shared
+    @State private var selectedChild: FamilyLink?
+    @State private var showingAddChild = false
+    @State private var showingAddExam = false
+    @State private var showingWeeklyReport = false
+    @State private var motivationText = ""
+    @State private var isSendingMotivation = false
+
+    private var isWeekendReportAvailable: Bool {
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        return weekday == 1 || weekday == 6 || weekday == 7
+    }
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    // Sync-Status
-                    if cloudKit.isSyncing {
-                        ProgressView("Daten werden geladen...")
-                    }
-
-                    if let error = cloudKit.syncError {
-                        Label(error, systemImage: "exclamationmark.triangle.fill")
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                            .padding(.horizontal)
-                    }
-
-                    if let lastUpdate = cloudKit.remoteLastUpdated {
-                        let formatter = RelativeDateTimeFormatter()
-                        Text("Zuletzt aktualisiert: \(formatter.localizedString(for: lastUpdate, relativeTo: Date()))")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    // Übersichtskarten
-                    HStack(spacing: 12) {
-                        StatCard(title: "Aktuelle Serie", value: "\(cloudKit.remoteCurrentStreak) Tage", icon: "flame.fill", color: .orange)
-                        StatCard(title: "Diese Woche", value: formatHoursMinutes(cloudKit.remoteWeeklyMinutes), icon: "clock.fill", color: .blue)
+            VStack(spacing: 0) {
+                // Child tabs
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(store.familyLinks) { link in
+                            Button {
+                                selectedChild = link
+                                refreshData()
+                            } label: {
+                                Text(link.childName.isEmpty ? link.pairingCode : link.childName)
+                                    .font(.subheadline.bold())
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(selectedChild?.id == link.id ? Color.blue : Color(.tertiarySystemFill), in: Capsule())
+                                    .foregroundStyle(selectedChild?.id == link.id ? .white : .primary)
+                            }
+                        }
+                        Button {
+                            showingAddChild = true
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(.blue)
+                        }
                     }
                     .padding(.horizontal)
-
-                    // Noten
-                    if !cloudKit.remoteGrades.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Noten")
-                                .font(.headline)
-                                .padding(.horizontal)
-
-                            let gradesBySubject = Dictionary(grouping: cloudKit.remoteGrades, by: \.subject)
-                            ForEach(gradesBySubject.keys.sorted(), id: \.self) { subject in
-                                let grades = gradesBySubject[subject] ?? []
-                                let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
-
-                                HStack {
-                                    Text(subject)
-                                        .font(.subheadline.bold())
-                                    Spacer()
-                                    Text("Ø \(gradeString(avg))")
-                                        .font(.subheadline.bold())
-                                        .foregroundStyle(gradeColor(avg))
-                                    Text("(\(grades.count) Noten)")
-                                        .font(.caption)
-                                        .foregroundStyle(.tertiary)
-                                }
-                                .padding(.horizontal)
-                                .padding(.vertical, 6)
-                            }
-                        }
-                        .padding()
-                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
-                        .padding(.horizontal)
-                    }
-
-                    // Lernzeit pro Fach
-                    if !cloudKit.remoteSessions.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Lernzeiten")
-                                .font(.headline)
-
-                            let sessionsBySubject = Dictionary(grouping: cloudKit.remoteSessions, by: \.subject)
-                            ForEach(sessionsBySubject.keys.sorted(), id: \.self) { subject in
-                                let sessions = sessionsBySubject[subject] ?? []
-                                let total = sessions.reduce(0) { $0 + $1.minutes }
-                                HStack {
-                                    Text(subject)
-                                        .font(.subheadline)
-                                    Spacer()
-                                    Text(formatHoursMinutes(total))
-                                        .font(.subheadline.monospacedDigit())
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                        .padding()
-                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
-                        .padding(.horizontal)
-                    }
-
-                    if cloudKit.remoteGrades.isEmpty && cloudKit.remoteSessions.isEmpty && !cloudKit.isSyncing {
-                        VStack(spacing: 8) {
-                            Image(systemName: "arrow.down.circle")
-                                .font(.system(size: 30))
-                                .foregroundStyle(.secondary)
-                            Text("Noch keine Daten")
-                                .foregroundStyle(.secondary)
-                            Text("Die Daten werden angezeigt, sobald dein Kind Lernzeiten oder Noten einträgt.")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(.vertical, 40)
-                        .padding(.horizontal)
-                    }
-
-                    Spacer(minLength: 20)
+                    .padding(.vertical, 8)
                 }
-                .padding(.top, 8)
+
+                if let child = selectedChild, let data = cloudKit.remoteData[child.pairingCode] {
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            if cloudKit.isSyncing {
+                                ProgressView("Daten werden geladen...")
+                            }
+                            if let error = cloudKit.syncError {
+                                Label(error, systemImage: "exclamationmark.triangle.fill")
+                                    .font(.caption).foregroundStyle(.red).padding(.horizontal)
+                            }
+
+                            // Goal progress
+                            if let goal = store.studyGoals[child.pairingCode] {
+                                parentGoalSection(data: data, goal: goal)
+                            }
+
+                            // Quick stats
+                            HStack(spacing: 12) {
+                                StatCard(title: "Serie", value: "\(data.currentStreak) Tage", icon: "flame.fill", color: .orange)
+                                StatCard(title: "Diese Woche", value: formatHoursMinutes(data.weeklyMinutes), icon: "clock.fill", color: .blue)
+                            }
+                            .padding(.horizontal)
+
+                            todaySessionsSection(data: data)
+                            weekOverviewSection(data: data)
+                            gradesSection(data: data)
+                            examsSection(data: data, pairingCode: child.pairingCode)
+                            goalSettingSection(pairingCode: child.pairingCode)
+                            motivationSection(pairingCode: child.pairingCode)
+
+                            Spacer(minLength: 20)
+                        }
+                        .padding(.top, 8)
+                    }
+                    .refreshable { refreshData() }
+                } else if selectedChild != nil {
+                    VStack(spacing: 12) {
+                        if cloudKit.isSyncing {
+                            ProgressView("Daten werden geladen...")
+                        } else {
+                            Image(systemName: "arrow.down.circle")
+                                .font(.system(size: 30)).foregroundStyle(.secondary)
+                            Text("Noch keine Daten").foregroundStyle(.secondary)
+                            Button("Aktualisieren") { refreshData() }.buttonStyle(.bordered)
+                        }
+                    }
+                    .padding(.vertical, 60)
+                } else {
+                    VStack(spacing: 12) {
+                        Image(systemName: "person.2.fill")
+                            .font(.system(size: 40)).foregroundStyle(.secondary)
+                        Text("Wähle ein Kind aus oder füge eines hinzu.").foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 60)
+                }
             }
             .navigationTitle("Eltern-Dashboard")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        refreshData()
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
+                if isWeekendReportAvailable {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button { showingWeeklyReport = true } label: {
+                            Image(systemName: "doc.text.fill")
+                        }
                     }
-                    .disabled(cloudKit.isSyncing)
                 }
             }
+            .sheet(isPresented: $showingAddChild) {
+                ParentPairingView(store: store)
+            }
+            .sheet(isPresented: $showingAddExam) {
+                if let child = selectedChild {
+                    AddExamFromParentView(store: store, pairingCode: child.pairingCode)
+                }
+            }
+            .sheet(isPresented: $showingWeeklyReport) {
+                WeeklyReportView(store: store)
+            }
             .onAppear {
+                if selectedChild == nil { selectedChild = store.familyLinks.first }
                 refreshData()
             }
         }
     }
 
-    private func refreshData() {
-        guard let link = store.familyLink else { return }
-        Task {
-            await cloudKit.fetchStudentData(pairingCode: link.pairingCode)
-            // Auch Lernziele laden
-            if let goal = await cloudKit.fetchStudyGoal(pairingCode: link.pairingCode) {
-                await MainActor.run {
-                    store.studyGoal = goal
+    // MARK: - Sections
+
+    @ViewBuilder
+    private func parentGoalSection(data: CloudKitService.ChildRemoteData, goal: StudyGoal) -> some View {
+        let todayMinutes = data.sessions.filter { Calendar.current.isDateInToday($0.date) }.reduce(0) { $0 + $1.minutes }
+        let dailyProgress = goal.dailyMinutesGoal > 0 ? Double(todayMinutes) / Double(goal.dailyMinutesGoal) : 0
+        let weeklyProgress = goal.weeklyMinutesGoal > 0 ? Double(data.weeklyMinutes) / Double(goal.weeklyMinutesGoal) : 0
+
+        VStack(spacing: 8) {
+            if goal.dailyMinutesGoal > 0 {
+                dashboardGoalBar(label: "Heute", current: todayMinutes, goal: goal.dailyMinutesGoal, progress: dailyProgress)
+            }
+            if goal.weeklyMinutesGoal > 0 {
+                dashboardGoalBar(label: "Diese Woche", current: data.weeklyMinutes, goal: goal.weeklyMinutesGoal, progress: weeklyProgress)
+            }
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .padding(.horizontal)
+    }
+
+    private func dashboardGoalBar(label: String, current: Int, goal: Int, progress: Double) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(label).font(.caption.bold())
+                Spacer()
+                Text("\(formatHoursMinutes(current)) / \(formatHoursMinutes(goal))")
+                    .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                if progress >= 1.0 {
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green).font(.caption)
+                }
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 4).fill(Color(.tertiarySystemFill))
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(progress >= 1.0 ? Color.green : Color.blue)
+                        .frame(width: min(CGFloat(progress), 1.0) * geo.size.width)
+                }
+            }
+            .frame(height: 8)
+        }
+    }
+
+    @ViewBuilder
+    private func todaySessionsSection(data: CloudKitService.ChildRemoteData) -> some View {
+        let todaySessions = data.sessions
+            .filter { Calendar.current.isDateInToday($0.date) }
+            .sorted { $0.date > $1.date }
+
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Heute gelernt").font(.headline)
+            if todaySessions.isEmpty {
+                Text("Noch keine Lernzeit heute").font(.subheadline).foregroundStyle(.secondary)
+            } else {
+                ForEach(todaySessions) { session in
+                    HStack {
+                        Text(session.subject).font(.subheadline)
+                        Spacer()
+                        Text(formatHoursMinutes(session.minutes))
+                            .font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+                        Text(session.date, style: .time).font(.caption).foregroundStyle(.tertiary)
+                    }
                 }
             }
         }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    private func weekOverviewSection(data: CloudKitService.ChildRemoteData) -> some View {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        if let weekStart = cal.dateInterval(of: .weekOfYear, for: today)?.start {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Wochenübersicht").font(.headline)
+                HStack(spacing: 6) {
+                    ForEach(0..<7, id: \.self) { offset in
+                        let day = cal.date(byAdding: .day, value: offset, to: weekStart)!
+                        let mins = data.sessions
+                            .filter { cal.isDate($0.date, inSameDayAs: day) }
+                            .reduce(0) { $0 + $1.minutes }
+                        let isToday = cal.isDateInToday(day)
+
+                        VStack(spacing: 4) {
+                            Text(WeekdayHelper.abbreviation(for: cal.component(.weekday, from: day)))
+                                .font(.caption2.bold())
+                                .foregroundStyle(isToday ? .blue : .secondary)
+                            Text("\(mins)m")
+                                .font(.system(.caption2, design: .rounded))
+                                .monospacedDigit()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(
+                            mins > 0 ? Color.blue.opacity(min(Double(mins) / 60.0, 1.0) * 0.3 + 0.1) : Color(.tertiarySystemFill),
+                            in: RoundedRectangle(cornerRadius: 8)
+                        )
+                    }
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+            .padding(.horizontal)
+        }
+    }
+
+    @ViewBuilder
+    private func gradesSection(data: CloudKitService.ChildRemoteData) -> some View {
+        if !data.grades.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Noten").font(.headline)
+                ForEach(data.grades.sorted(by: { $0.date > $1.date }).prefix(10)) { grade in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(grade.subject).font(.subheadline.bold())
+                            Text(grade.date, format: .dateTime.day().month())
+                                .font(.caption).foregroundStyle(.tertiary)
+                        }
+                        Spacer()
+                        Image(systemName: grade.type.icon).font(.caption)
+                        Text(gradeString(grade.grade))
+                            .font(.title3.bold()).foregroundStyle(gradeColor(grade.grade))
+                    }
+                    .padding(.vertical, 2)
+                }
+                let gradesBySubject = Dictionary(grouping: data.grades, by: \.subject)
+                if gradesBySubject.count > 1 {
+                    Divider()
+                    Text("Durchschnitte").font(.caption.bold()).foregroundStyle(.secondary)
+                    ForEach(gradesBySubject.keys.sorted(), id: \.self) { subject in
+                        let grades = gradesBySubject[subject] ?? []
+                        let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
+                        HStack {
+                            Text(subject).font(.caption)
+                            Spacer()
+                            Text("Ø \(gradeString(avg))").font(.caption.bold()).foregroundStyle(gradeColor(avg))
+                        }
+                    }
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+            .padding(.horizontal)
+        }
+    }
+
+    @ViewBuilder
+    private func examsSection(data: CloudKitService.ChildRemoteData, pairingCode: String) -> some View {
+        let upcomingExams = data.entries
+            .filter { $0.type == .klassenarbeit && $0.date > Date() }
+            .sorted { $0.date < $1.date }
+
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Klassenarbeiten").font(.headline)
+                Spacer()
+                Button { showingAddExam = true } label: {
+                    Image(systemName: "plus.circle.fill").font(.title3)
+                }
+            }
+            if upcomingExams.isEmpty {
+                Text("Keine anstehenden Klassenarbeiten").font(.subheadline).foregroundStyle(.secondary)
+            } else {
+                ForEach(upcomingExams.prefix(5)) { entry in
+                    HStack {
+                        Image(systemName: "doc.text.fill").foregroundStyle(.red)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(entry.title).font(.subheadline.bold())
+                            Text(entry.date, format: .dateTime.day().month().hour().minute())
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    private func goalSettingSection(pairingCode: String) -> some View {
+        let goal = Binding(
+            get: { store.studyGoals[pairingCode] ?? StudyGoal() },
+            set: { store.studyGoals[pairingCode] = $0 }
+        )
+
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Lernziele").font(.headline)
+            Stepper("Täglich: \(goal.wrappedValue.dailyMinutesGoal) min", value: goal.dailyMinutesGoal, in: 0...240, step: 15)
+                .font(.subheadline)
+            Stepper("Wöchentlich: \(goal.wrappedValue.weeklyMinutesGoal) min", value: goal.weeklyMinutesGoal, in: 0...1200, step: 30)
+                .font(.subheadline)
+            Button("Ziel speichern") {
+                Task {
+                    try? await CloudKitService.shared.saveStudyGoal(goal.wrappedValue, pairingCode: pairingCode)
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    private func motivationSection(pairingCode: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Nachricht senden").font(.headline)
+            HStack {
+                TextField("Toll gemacht!", text: $motivationText)
+                    .textFieldStyle(.roundedBorder)
+                Button {
+                    sendMotivation(pairingCode: pairingCode)
+                } label: {
+                    if isSendingMotivation { ProgressView() }
+                    else { Image(systemName: "paperplane.fill") }
+                }
+                .disabled(motivationText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSendingMotivation)
+            }
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .padding(.horizontal)
+    }
+
+    // MARK: - Actions
+
+    private func refreshData() {
+        guard let child = selectedChild else { return }
+        Task {
+            await cloudKit.fetchStudentData(pairingCode: child.pairingCode)
+            if let goal = await cloudKit.fetchStudyGoal(pairingCode: child.pairingCode) {
+                store.studyGoals[child.pairingCode] = goal
+            }
+        }
+    }
+
+    private func sendMotivation(pairingCode: String) {
+        isSendingMotivation = true
+        let msg = MotivationMessage(text: motivationText, pairingCode: pairingCode)
+        Task {
+            try? await cloudKit.saveMotivationMessage(msg)
+            await MainActor.run {
+                motivationText = ""
+                isSendingMotivation = false
+            }
+        }
+    }
+}
+
+// MARK: - Add Exam from Parent
+
+struct AddExamFromParentView: View {
+    @Environment(\.dismiss) private var dismiss
+    var store: DataStore
+    let pairingCode: String
+
+    @State private var title = ""
+    @State private var subject = ""
+    @State private var date = Date()
+    @State private var isSaving = false
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Klassenarbeit") {
+                    TextField("Titel (z.B. Mathe-Test Kapitel 5)", text: $title)
+                    TextField("Fach", text: $subject)
+                    DatePicker("Datum", selection: $date)
+                        .environment(\.locale, Locale(identifier: "de_DE"))
+                }
+            }
+            .navigationTitle("Klassenarbeit eintragen")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Abbrechen") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Speichern") { save() }
+                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSaving)
+                }
+            }
+        }
+    }
+
+    private func save() {
+        isSaving = true
+        let entry = SharedCalendarEntry(
+            title: title.trimmingCharacters(in: .whitespacesAndNewlines),
+            subject: subject.trimmingCharacters(in: .whitespacesAndNewlines),
+            date: date,
+            pairingCode: pairingCode
+        )
+        Task {
+            try? await CloudKitService.shared.saveSharedCalendarEntry(entry)
+            await MainActor.run {
+                isSaving = false
+                dismiss()
+            }
+        }
+    }
+}
+
+private struct StatCard: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundStyle(color)
+            Text(value)
+                .font(.title3.bold())
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
     }
 }
 
