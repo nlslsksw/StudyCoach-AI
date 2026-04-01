@@ -75,11 +75,60 @@ struct Grade: Identifiable, Codable {
     var note: String = ""
 }
 
+// MARK: - App Mode
+
+enum AppMode: String, Codable {
+    case student = "Schüler"
+    case parent = "Eltern"
+}
+
+struct FamilyLink: Identifiable, Codable {
+    var id = UUID()
+    var pairingCode: String
+    var childName: String = ""
+    var isActive: Bool = true
+    var linkedDate: Date = Date()
+}
+
+struct StudyGoal: Identifiable, Codable {
+    var id = UUID()
+    var dailyMinutesGoal: Int = 0
+    var weeklyMinutesGoal: Int = 0
+}
+
+struct MotivationMessage: Identifiable, Codable {
+    var id = UUID()
+    var text: String
+    var date: Date = Date()
+    var pairingCode: String
+    var isRead: Bool = false
+}
+
+struct SharedCalendarEntry: Identifiable, Codable {
+    var id = UUID()
+    var title: String
+    var subject: String
+    var date: Date
+    var pairingCode: String
+    var createdByParent: Bool = true
+}
+
+// MARK: - School Year
+
+struct SchoolYear: Identifiable, Codable {
+    var id = UUID()
+    var name: String
+    var startDate: Date
+    var endDate: Date
+    var isArchived: Bool = false
+}
+
 struct Subject: Identifiable, Codable {
     var id = UUID()
     var name: String
     var icon: String = "book.fill"
     var colorName: String = "blue"
+    var schoolYearId: UUID? = nil
 
     var color: Color {
         switch colorName {
