@@ -1,3 +1,4 @@
+import ActivityKit
 import SwiftUI
 
 // MARK: - Study Log Tab
@@ -44,6 +45,11 @@ struct StudyLogTab: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // Lernziel-Fortschritt
+                GoalProgressView(store: store)
+                    .padding(.horizontal)
+                    .padding(.top, 4)
+
                 // Modus-Auswahl
                 Picker("Ansicht", selection: $viewMode) {
                     ForEach(ViewMode.allCases, id: \.self) { mode in
@@ -284,6 +290,7 @@ struct StudyTimerView: View {
     @State private var timer: Timer?
     @State private var startTime: Date?
     @State private var showingSaveConfirm = false
+    @State private var activity: Activity<StudyTimerAttributes>?
 
     private var elapsedMinutes: Int {
         elapsedSeconds / 60
@@ -417,6 +424,7 @@ struct StudyTimerView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Schließen") {
                         pauseTimer()
+                        endLiveActivity()
                         dismiss()
                     }
                 }
@@ -430,9 +438,11 @@ struct StudyTimerView: View {
                         minutes: minutes
                     )
                     store.addSession(session)
+                    endLiveActivity()
                     dismiss()
                 }
                 Button("Verwerfen", role: .destructive) {
+                    endLiveActivity()
                     dismiss()
                 }
                 Button("Abbrechen", role: .cancel) { }
@@ -450,12 +460,64 @@ struct StudyTimerView: View {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             elapsedSeconds += 1
         }
+
+        let contentState = StudyTimerAttributes.ContentState(
+            isPaused: false,
+            elapsedAtPause: elapsedSeconds,
+            effectiveStartDate: Date().addingTimeInterval(-Double(elapsedSeconds))
+        )
+
+        if let activity {
+            Task {
+                await activity.update(ActivityContent(state: contentState, staleDate: nil))
+            }
+        } else {
+            let authInfo = ActivityAuthorizationInfo()
+            print("Live Activities erlaubt: \(authInfo.areActivitiesEnabled)")
+            print("Frequent Push erlaubt: \(authInfo.frequentPushesEnabled)")
+
+            let attributes = StudyTimerAttributes(subject: subject)
+            do {
+                activity = try Activity<StudyTimerAttributes>.request(
+                    attributes: attributes,
+                    content: ActivityContent(state: contentState, staleDate: nil)
+                )
+                print("Live Activity gestartet: \(activity?.id ?? "nil")")
+            } catch {
+                print("Live Activity Fehler: \(error.localizedDescription)")
+                print("Live Activity Fehler Details: \(error)")
+            }
+        }
     }
 
     private func pauseTimer() {
         isRunning = false
         timer?.invalidate()
         timer = nil
+
+        if let activity {
+            let contentState = StudyTimerAttributes.ContentState(
+                isPaused: true,
+                elapsedAtPause: elapsedSeconds,
+                effectiveStartDate: Date()
+            )
+            Task {
+                await activity.update(ActivityContent(state: contentState, staleDate: nil))
+            }
+        }
+    }
+
+    private func endLiveActivity() {
+        guard let activity else { return }
+        let finalState = StudyTimerAttributes.ContentState(
+            isPaused: true,
+            elapsedAtPause: elapsedSeconds,
+            effectiveStartDate: Date()
+        )
+        Task {
+            await activity.end(ActivityContent(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
+        }
+        self.activity = nil
     }
 }
 

@@ -5,11 +5,20 @@ import SwiftUI
 struct SubjectsTab: View {
     var store: DataStore
     @State private var showingAddSubject = false
+    @State private var showingManageSchoolYears = false
+
+    private var activeSchoolYears: [SchoolYear] {
+        store.schoolYears.filter { !$0.isArchived }.sorted { $0.startDate > $1.startDate }
+    }
+    private var archivedSchoolYears: [SchoolYear] {
+        store.schoolYears.filter { $0.isArchived }.sorted { $0.startDate > $1.startDate }
+    }
+    private var unassigned: [Subject] { store.unassignedSubjects() }
 
     var body: some View {
         NavigationStack {
             Group {
-                if store.subjects.isEmpty {
+                if store.subjects.isEmpty && store.schoolYears.isEmpty {
                     VStack(spacing: 12) {
                         Image(systemName: "book.closed.fill")
                             .font(.system(size: 40))
@@ -20,9 +29,7 @@ struct SubjectsTab: View {
                             .font(.caption)
                             .foregroundStyle(.tertiary)
                             .multilineTextAlignment(.center)
-                        Button {
-                            showingAddSubject = true
-                        } label: {
+                        Button { showingAddSubject = true } label: {
                             Label("Fach hinzufügen", systemImage: "plus.circle.fill")
                         }
                         .buttonStyle(.borderedProminent)
@@ -32,20 +39,61 @@ struct SubjectsTab: View {
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 10) {
-                            ForEach(store.subjects) { subject in
-                                NavigationLink(destination: SubjectDetailView(store: store, subject: subject)) {
-                                    SubjectCard(store: store, subject: subject)
-                                }
-                                .buttonStyle(.plain)
-                                .contextMenu {
-                                    Button(role: .destructive) {
-                                        withAnimation {
-                                            store.deleteSubject(subject)
+                            ForEach(activeSchoolYears) { schoolYear in
+                                SchoolYearSection(store: store, schoolYear: schoolYear, initiallyExpanded: true)
+                            }
+
+                            if !unassigned.isEmpty {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    if !store.schoolYears.isEmpty {
+                                        Text("Nicht zugeordnet")
+                                            .font(.subheadline.bold())
+                                            .foregroundStyle(.secondary)
+                                            .padding(.horizontal, 4)
+                                            .padding(.top, 8)
+                                    }
+                                    ForEach(unassigned) { subject in
+                                        HStack(spacing: 0) {
+                                            NavigationLink(destination: SubjectDetailView(store: store, subject: subject)) {
+                                                SubjectCard(store: store, subject: subject)
+                                            }
+                                            .buttonStyle(.plain)
+
+                                            if !activeSchoolYears.isEmpty {
+                                                Menu {
+                                                    ForEach(activeSchoolYears) { sy in
+                                                        Button(sy.name) {
+                                                            withAnimation {
+                                                                var updated = subject
+                                                                updated.schoolYearId = sy.id
+                                                                store.updateSubject(updated)
+                                                            }
+                                                        }
+                                                    }
+                                                } label: {
+                                                    Image(systemName: "folder.badge.plus")
+                                                        .font(.title3)
+                                                        .foregroundStyle(.blue)
+                                                        .padding(.leading, 8)
+                                                }
+                                            }
                                         }
-                                    } label: {
-                                        Label("Löschen", systemImage: "trash")
+                                        .contextMenu { subjectContextMenu(subject) }
                                     }
                                 }
+                            }
+
+                            if !archivedSchoolYears.isEmpty {
+                                DisclosureGroup {
+                                    ForEach(archivedSchoolYears) { schoolYear in
+                                        SchoolYearSection(store: store, schoolYear: schoolYear, initiallyExpanded: false)
+                                    }
+                                } label: {
+                                    Label("Archiviert", systemImage: "archivebox.fill")
+                                        .font(.subheadline.bold())
+                                        .foregroundStyle(.secondary)
+                                }
+                                .padding(.top, 8)
                             }
                         }
                         .padding(.horizontal)
@@ -57,17 +105,88 @@ struct SubjectsTab: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showingAddSubject = true
+                    Menu {
+                        Button { showingAddSubject = true } label: {
+                            Label("Fach hinzufügen", systemImage: "plus.circle.fill")
+                        }
+                        Button { showingManageSchoolYears = true } label: {
+                            Label("Schuljahre verwalten", systemImage: "folder.badge.gearshape")
+                        }
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
-            .sheet(isPresented: $showingAddSubject) {
-                AddSubjectView(store: store)
+            .sheet(isPresented: $showingAddSubject) { AddSubjectView(store: store) }
+            .sheet(isPresented: $showingManageSchoolYears) { ManageSchoolYearsView(store: store) }
+        }
+    }
+
+    @ViewBuilder
+    private func subjectContextMenu(_ subject: Subject) -> some View {
+        if !store.schoolYears.isEmpty {
+            Menu {
+                ForEach(store.schoolYears.filter { !$0.isArchived }) { sy in
+                    Button(sy.name) {
+                        var updated = subject
+                        updated.schoolYearId = sy.id
+                        store.updateSubject(updated)
+                    }
+                }
+                if subject.schoolYearId != nil {
+                    Button("Zuordnung entfernen") {
+                        var updated = subject
+                        updated.schoolYearId = nil
+                        store.updateSubject(updated)
+                    }
+                }
+            } label: { Label("Schuljahr zuordnen", systemImage: "folder") }
+        }
+        Button(role: .destructive) {
+            withAnimation { store.deleteSubject(subject) }
+        } label: { Label("Löschen", systemImage: "trash") }
+    }
+}
+
+// MARK: - School Year Section
+
+struct SchoolYearSection: View {
+    var store: DataStore
+    let schoolYear: SchoolYear
+    let initiallyExpanded: Bool
+    @State private var isExpanded: Bool = true
+
+    var body: some View {
+        DisclosureGroup(isExpanded: $isExpanded) {
+            let subjects = store.subjectsFor(schoolYear: schoolYear)
+            if subjects.isEmpty {
+                Text("Keine Fächer in diesem Schuljahr")
+                    .font(.caption).foregroundStyle(.tertiary).padding(.vertical, 4)
+            } else {
+                ForEach(subjects) { subject in
+                    NavigationLink(destination: SubjectDetailView(store: store, subject: subject)) {
+                        SubjectCard(store: store, subject: subject)
+                    }
+                    .buttonStyle(.plain)
+                    .contextMenu {
+                        Button(role: .destructive) { withAnimation { store.deleteSubject(subject) } } label: {
+                            Label("Löschen", systemImage: "trash")
+                        }
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "folder.fill").foregroundStyle(.blue)
+                Text(schoolYear.name).font(.headline)
+                if schoolYear.isArchived {
+                    Text("Archiviert").font(.caption2)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(.secondary.opacity(0.2), in: Capsule())
+                }
             }
         }
+        .onAppear { isExpanded = initiallyExpanded }
     }
 }
 
@@ -151,6 +270,12 @@ struct AddSubjectView: View {
     @State private var name = ""
     @State private var selectedIcon = "book.fill"
     @State private var selectedColor = "blue"
+    @State private var selectedSchoolYearId: UUID?
+
+    init(store: DataStore) {
+        self.store = store
+        _selectedSchoolYearId = State(initialValue: store.activeSchoolYear()?.id)
+    }
 
     private var colorValue: Color {
         Subject(name: "", icon: "", colorName: selectedColor).color
@@ -161,6 +286,17 @@ struct AddSubjectView: View {
             Form {
                 Section("Name") {
                     TextField("z.B. Mathematik, Deutsch...", text: $name)
+                }
+
+                if !store.schoolYears.filter({ !$0.isArchived }).isEmpty {
+                    Section("Schuljahr") {
+                        Picker("Schuljahr", selection: $selectedSchoolYearId) {
+                            Text("Nicht zugeordnet").tag(nil as UUID?)
+                            ForEach(store.schoolYears.filter { !$0.isArchived }) { sy in
+                                Text(sy.name).tag(sy.id as UUID?)
+                            }
+                        }
+                    }
                 }
 
                 Section("Symbol") {
@@ -234,7 +370,7 @@ struct AddSubjectView: View {
                     Button("Speichern") {
                         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
                         guard !trimmed.isEmpty else { return }
-                        let subject = Subject(name: trimmed, icon: selectedIcon, colorName: selectedColor)
+                        let subject = Subject(name: trimmed, icon: selectedIcon, colorName: selectedColor, schoolYearId: selectedSchoolYearId)
                         store.addSubject(subject)
                         dismiss()
                     }

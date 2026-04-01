@@ -10,6 +10,7 @@ struct StatisticsTab: View {
     enum StatPeriod: String, CaseIterable {
         case woche = "Woche"
         case monat = "Monat"
+        case jahr = "Jahr"
     }
 
     private var periodSessions: [StudySession] {
@@ -21,6 +22,8 @@ struct StatisticsTab: View {
             start = cal.date(byAdding: .day, value: -6, to: cal.startOfDay(for: now)) ?? now
         case .monat:
             start = cal.date(byAdding: .day, value: -29, to: cal.startOfDay(for: now)) ?? now
+        case .jahr:
+            start = cal.date(byAdding: .day, value: -364, to: cal.startOfDay(for: now)) ?? now
         }
         let end = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: now)) ?? now
         return store.sessionsInRange(from: start, to: end)
@@ -45,47 +48,71 @@ struct StatisticsTab: View {
             .sorted { $0.minutes > $1.minutes }
     }
 
-    private var dailyData: [(label: String, minutes: Int)] {
+    private var chartData: [(label: String, minutes: Int)] {
         let cal = Calendar.current
         let now = Date()
-        let dayCount = selectedPeriod == .woche ? 7 : 30
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "de_DE")
-        formatter.dateFormat = selectedPeriod == .woche ? "EE" : "d."
 
-        var result: [(label: String, minutes: Int)] = []
-        for i in stride(from: dayCount - 1, through: 0, by: -1) {
-            let day = cal.date(byAdding: .day, value: -i, to: cal.startOfDay(for: now)) ?? now
-            let dayEnd = cal.date(byAdding: .day, value: 1, to: day) ?? now
-            let daySessions = store.sessionsInRange(from: day, to: dayEnd)
-            let total = store.totalMinutes(in: daySessions)
-            result.append((label: formatter.string(from: day), minutes: total))
+        switch selectedPeriod {
+        case .woche:
+            // 7 Balken, pro Tag
+            formatter.dateFormat = "EE"
+            var result: [(label: String, minutes: Int)] = []
+            for i in stride(from: 6, through: 0, by: -1) {
+                let day = cal.date(byAdding: .day, value: -i, to: cal.startOfDay(for: now)) ?? now
+                let dayEnd = cal.date(byAdding: .day, value: 1, to: day) ?? now
+                let total = store.totalMinutes(in: store.sessionsInRange(from: day, to: dayEnd))
+                result.append((label: formatter.string(from: day), minutes: total))
+            }
+            return result
+
+        case .monat:
+            // 4-5 Balken, pro Woche
+            var result: [(label: String, minutes: Int)] = []
+            let start = cal.date(byAdding: .day, value: -29, to: cal.startOfDay(for: now)) ?? now
+            var weekStart = start
+            while weekStart < cal.startOfDay(for: now) {
+                let weekEnd = min(cal.date(byAdding: .day, value: 7, to: weekStart) ?? weekStart, cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: now)) ?? now)
+                let total = store.totalMinutes(in: store.sessionsInRange(from: weekStart, to: weekEnd))
+                let startDay = cal.component(.day, from: weekStart)
+                let endDay = cal.component(.day, from: cal.date(byAdding: .day, value: -1, to: weekEnd) ?? weekEnd)
+                let label = "\(startDay)-\(endDay)"
+                result.append((label: label, minutes: total))
+                weekStart = weekEnd
+            }
+            return result
+
+        case .jahr:
+            // 12 Balken, pro Monat
+            formatter.dateFormat = "MMM"
+            var result: [(label: String, minutes: Int)] = []
+            for i in stride(from: 11, through: 0, by: -1) {
+                guard let monthStart = cal.date(byAdding: .month, value: -i, to: cal.startOfDay(for: now)),
+                      let interval = cal.dateInterval(of: .month, for: monthStart) else { continue }
+                let total = store.totalMinutes(in: store.sessionsInRange(from: interval.start, to: interval.end))
+                result.append((label: formatter.string(from: monthStart), minutes: total))
+            }
+            return result
         }
-        return result
     }
 
-    private var maxDailyMinutes: Int {
-        max(dailyData.map(\.minutes).max() ?? 1, 1)
+    private var maxChartMinutes: Int {
+        max(chartData.map(\.minutes).max() ?? 1, 1)
     }
+
+    @State private var showLernzeit = true
+    @State private var showNoten = false
+    @State private var showVergleiche = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
-                    // Streak
+                VStack(spacing: 16) {
+                    // Streak (immer sichtbar)
                     HStack(spacing: 16) {
-                        StreakCard(
-                            title: "Aktuelle Serie",
-                            value: store.currentStreak(),
-                            icon: "flame.fill",
-                            color: .orange
-                        )
-                        StreakCard(
-                            title: "Längste Serie",
-                            value: store.longestStreak(),
-                            icon: "trophy.fill",
-                            color: .yellow
-                        )
+                        StreakCard(title: "Aktuelle Serie", value: store.currentStreak(), icon: "flame.fill", color: .orange)
+                        StreakCard(title: "Längste Serie", value: store.longestStreak(), icon: "trophy.fill", color: .yellow)
                     }
                     .padding(.horizontal)
 
@@ -97,6 +124,7 @@ struct StatisticsTab: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
 
+                    // Übersichtskarten (immer sichtbar)
                     HStack(spacing: 12) {
                         StatCard(title: "Gesamt", value: formatHoursMinutes(totalMinutes), icon: "clock.fill", color: .blue)
                         StatCard(title: "Tage gelernt", value: "\(totalDays)", icon: "calendar", color: .green)
@@ -104,216 +132,165 @@ struct StatisticsTab: View {
                     }
                     .padding(.horizontal)
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Tägliche Lernzeit")
-                            .font(.headline)
-                            .padding(.horizontal)
+                    // MARK: 1) Lernzeit
+                    StatSection(title: "Lernzeit", icon: "clock.fill", color: .blue, isExpanded: $showLernzeit) {
+                        VStack(spacing: 16) {
+                            // Tägliches Balkendiagramm
+                            BarChartView(data: chartData, maxValue: maxChartMinutes, showAllLabels: chartData.count <= 12)
+                                .frame(height: 180)
 
-                        BarChartView(data: dailyData, maxValue: maxDailyMinutes, showAllLabels: selectedPeriod == .woche)
-                            .frame(height: 180)
-                            .padding(.horizontal)
-                    }
+                            // Wochenvergleich
+                            WeekComparisonView(store: store)
 
-                    if !subjectBreakdown.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Nach Fach")
-                                .font(.headline)
-                                .padding(.horizontal)
-
-                            ForEach(subjectBreakdown, id: \.subject) { item in
-                                HStack(spacing: 12) {
-                                    Circle()
-                                        .fill(colorForSubject(item.subject))
-                                        .frame(width: 12, height: 12)
-                                    Text(item.subject)
-                                        .fontWeight(.medium)
-                                    Spacer()
-                                    Text(formatHoursMinutes(item.minutes))
-                                        .font(.subheadline.monospacedDigit())
+                            // Fächer-Aufschlüsselung
+                            if !subjectBreakdown.isEmpty {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text("Nach Fach")
+                                        .font(.subheadline.bold())
                                         .foregroundStyle(.secondary)
-                                }
-                                .padding(.horizontal)
-
-                                GeometryReader { geometry in
-                                    let width = geometry.size.width
-                                    let ratio = totalMinutes > 0 ? CGFloat(item.minutes) / CGFloat(totalMinutes) : 0
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .fill(colorForSubject(item.subject).opacity(0.3))
-                                        .frame(width: width, height: 8)
-                                        .overlay(alignment: .leading) {
-                                            RoundedRectangle(cornerRadius: 4)
-                                                .fill(colorForSubject(item.subject))
-                                                .frame(width: width * ratio, height: 8)
+                                    ForEach(subjectBreakdown, id: \.subject) { item in
+                                        HStack(spacing: 12) {
+                                            Circle().fill(colorForSubject(item.subject)).frame(width: 12, height: 12)
+                                            Text(item.subject).fontWeight(.medium)
+                                            Spacer()
+                                            Text(formatHoursMinutes(item.minutes))
+                                                .font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                                         }
+                                        GeometryReader { geometry in
+                                            let width = geometry.size.width
+                                            let ratio = totalMinutes > 0 ? CGFloat(item.minutes) / CGFloat(totalMinutes) : 0
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .fill(colorForSubject(item.subject).opacity(0.3))
+                                                .frame(width: width, height: 8)
+                                                .overlay(alignment: .leading) {
+                                                    RoundedRectangle(cornerRadius: 4)
+                                                        .fill(colorForSubject(item.subject))
+                                                        .frame(width: width * ratio, height: 8)
+                                                }
+                                        }
+                                        .frame(height: 8)
+                                    }
                                 }
-                                .frame(height: 8)
-                                .padding(.horizontal)
                             }
+
+                            // Fächervergleich
+                            SubjectComparisonView(store: store)
                         }
                     }
 
-                    // Notenbereich
+                    // MARK: 2) Noten
                     let gradeSubjects = store.allGradeSubjects()
 
-                    VStack(alignment: .leading, spacing: 16) {
-                        HStack {
-                            Text("Noten")
-                                .font(.headline)
-                            Spacer()
-                            Button {
-                                showingAddGrade = true
-                            } label: {
-                                Label("Note hinzufügen", systemImage: "plus.circle.fill")
-                                    .font(.subheadline)
-                            }
-                        }
-                        .padding(.horizontal)
-
-                        if !gradeSubjects.isEmpty {
-                            // Gesamtdurchschnitt
-                            let allGrades = gradeSubjects.flatMap { store.gradesForSubject($0) }
-                            if !allGrades.isEmpty {
-                                let totalAvg = allGrades.map(\.grade).reduce(0, +) / Double(allGrades.count)
-                                let schriftlich = allGrades.filter { $0.type == .schriftlich }
-                                let muendlich = allGrades.filter { $0.type == .muendlich }
-                                HStack(spacing: 16) {
-                                    VStack(spacing: 4) {
-                                        Text(String(format: "%.1f", totalAvg))
-                                            .font(.system(size: 36, weight: .bold, design: .rounded))
-                                            .foregroundStyle(gradeColor(totalAvg))
-                                        Text("Gesamtschnitt")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    .frame(width: 100)
-
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        if !schriftlich.isEmpty {
-                                            let sAvg = schriftlich.map(\.grade).reduce(0, +) / Double(schriftlich.count)
-                                            Label("Schriftlich: Ø \(String(format: "%.1f", sAvg)) (\(schriftlich.count)x)", systemImage: "doc.text.fill")
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                        if !muendlich.isEmpty {
-                                            let mAvg = muendlich.map(\.grade).reduce(0, +) / Double(muendlich.count)
-                                            Label("Mündlich: Ø \(String(format: "%.1f", mAvg)) (\(muendlich.count)x)", systemImage: "bubble.left.fill")
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                        let best = allGrades.map(\.grade).min() ?? 0
-                                        let worst = allGrades.map(\.grade).max() ?? 0
-                                        HStack(spacing: 12) {
-                                            Label("Beste: \(gradeString(best))", systemImage: "arrow.up.circle.fill")
-                                                .font(.caption)
-                                                .foregroundStyle(.green)
-                                            Label("\(gradeString(worst))", systemImage: "arrow.down.circle.fill")
-                                                .font(.caption)
-                                                .foregroundStyle(.red)
-                                        }
-                                    }
-
-                                    Spacer()
-                                }
-                                .padding()
-                                .background(gradeColor(totalAvg).opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
-                                .padding(.horizontal)
+                    StatSection(title: "Noten", icon: "graduationcap.fill", color: .red, isExpanded: $showNoten) {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Button { showingAddGrade = true } label: {
+                                Label("Note hinzufügen", systemImage: "plus.circle.fill").font(.subheadline)
                             }
 
-                            // Pro Fach
-                            ForEach(gradeSubjects, id: \.self) { subject in
-                                let grades = store.gradesForSubject(subject)
-                                if !grades.isEmpty {
-                                    let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        // Fach-Header mit Durchschnitt
-                                        HStack {
-                                            Text(subject)
-                                                .font(.subheadline.bold())
-                                            Spacer()
-                                            Text("Ø \(String(format: "%.1f", avg))")
-                                                .font(.subheadline.bold().monospacedDigit())
-                                                .foregroundStyle(gradeColor(avg))
-                                                .padding(.horizontal, 10)
-                                                .padding(.vertical, 4)
-                                                .background(gradeColor(avg).opacity(0.12), in: Capsule())
+                            if !gradeSubjects.isEmpty {
+                                let allGrades = gradeSubjects.flatMap { store.gradesForSubject($0) }
+                                if !allGrades.isEmpty {
+                                    let totalAvg = allGrades.map(\.grade).reduce(0, +) / Double(allGrades.count)
+                                    let schriftlich = allGrades.filter { $0.type == .schriftlich }
+                                    let muendlich = allGrades.filter { $0.type == .muendlich }
+                                    HStack(spacing: 16) {
+                                        VStack(spacing: 4) {
+                                            Text(String(format: "%.1f", totalAvg))
+                                                .font(.system(size: 36, weight: .bold, design: .rounded))
+                                                .foregroundStyle(gradeColor(totalAvg))
+                                            Text("Gesamtschnitt").font(.caption).foregroundStyle(.secondary)
                                         }
-                                        .padding(.horizontal)
-
-                                        // Noten als Zeilen
-                                        VStack(spacing: 0) {
-                                            ForEach(Array(grades.enumerated()), id: \.offset) { index, item in
-                                                HStack(spacing: 8) {
-                                                    Image(systemName: item.type.icon)
-                                                        .font(.caption)
-                                                        .foregroundStyle(item.type == .schriftlich ? .blue : .orange)
-                                                        .frame(width: 20)
-                                                    Text(item.date, format: .dateTime.day().month(.abbreviated).year())
-                                                        .font(.subheadline)
-                                                        .foregroundStyle(.secondary)
-                                                    Text(item.type.rawValue)
-                                                        .font(.caption2)
-                                                        .foregroundStyle(.tertiary)
-                                                    Spacer()
-                                                    Text(gradeString(item.grade))
-                                                        .font(.title3.bold().monospacedDigit())
-                                                        .foregroundStyle(gradeColor(item.grade))
-                                                        .frame(width: 40, alignment: .trailing)
-                                                }
-                                                .padding(.horizontal, 16)
-                                                .padding(.vertical, 10)
-
-                                                if index < grades.count - 1 {
-                                                    Divider()
-                                                        .padding(.leading, 16)
-                                                }
+                                        .frame(width: 100)
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            if !schriftlich.isEmpty {
+                                                let sAvg = schriftlich.map(\.grade).reduce(0, +) / Double(schriftlich.count)
+                                                Label("Schriftlich: Ø \(String(format: "%.1f", sAvg)) (\(schriftlich.count)x)", systemImage: "doc.text.fill")
+                                                    .font(.caption).foregroundStyle(.secondary)
+                                            }
+                                            if !muendlich.isEmpty {
+                                                let mAvg = muendlich.map(\.grade).reduce(0, +) / Double(muendlich.count)
+                                                Label("Mündlich: Ø \(String(format: "%.1f", mAvg)) (\(muendlich.count)x)", systemImage: "bubble.left.fill")
+                                                    .font(.caption).foregroundStyle(.secondary)
+                                            }
+                                            let best = allGrades.map(\.grade).min() ?? 0
+                                            let worst = allGrades.map(\.grade).max() ?? 0
+                                            HStack(spacing: 12) {
+                                                Label("Beste: \(gradeString(best))", systemImage: "arrow.up.circle.fill").font(.caption).foregroundStyle(.green)
+                                                Label("\(gradeString(worst))", systemImage: "arrow.down.circle.fill").font(.caption).foregroundStyle(.red)
                                             }
                                         }
-                                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
-                                        .padding(.horizontal)
-
-                                        // Trend-Anzeige
-                                        if grades.count >= 2 {
-                                            let lastGrade = grades.last!.grade
-                                            let prevGrade = grades[grades.count - 2].grade
-                                            let diff = prevGrade - lastGrade
-                                            HStack(spacing: 4) {
-                                                Image(systemName: diff > 0 ? "arrow.up.right" : diff < 0 ? "arrow.down.right" : "arrow.right")
-                                                    .font(.caption2.bold())
-                                                Text(diff > 0 ? "Verbessert um \(String(format: "%.1f", diff))" : diff < 0 ? "Verschlechtert um \(String(format: "%.1f", abs(diff)))" : "Gleichgeblieben")
-                                                    .font(.caption)
-                                            }
-                                            .foregroundStyle(diff > 0 ? .green : diff < 0 ? .red : .secondary)
-                                            .padding(.horizontal)
-                                        }
+                                        Spacer()
                                     }
-                                    .padding(.bottom, 8)
+                                    .padding()
+                                    .background(gradeColor(totalAvg).opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
                                 }
+
+                                // Notenentwicklung-Chart
+                                GradeLineChart(store: store)
+
+                                // Pro Fach
+                                ForEach(gradeSubjects, id: \.self) { subject in
+                                    let grades = store.gradesForSubject(subject)
+                                    if !grades.isEmpty {
+                                        let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            HStack {
+                                                Text(subject).font(.subheadline.bold())
+                                                Spacer()
+                                                Text("Ø \(String(format: "%.1f", avg))")
+                                                    .font(.subheadline.bold().monospacedDigit())
+                                                    .foregroundStyle(gradeColor(avg))
+                                                    .padding(.horizontal, 10).padding(.vertical, 4)
+                                                    .background(gradeColor(avg).opacity(0.12), in: Capsule())
+                                            }
+                                            VStack(spacing: 0) {
+                                                ForEach(Array(grades.enumerated()), id: \.offset) { index, item in
+                                                    HStack(spacing: 8) {
+                                                        Image(systemName: item.type.icon).font(.caption)
+                                                            .foregroundStyle(item.type == .schriftlich ? .blue : .orange).frame(width: 20)
+                                                        Text(item.date, format: .dateTime.day().month(.abbreviated).year())
+                                                            .font(.subheadline).foregroundStyle(.secondary)
+                                                        Text(item.type.rawValue).font(.caption2).foregroundStyle(.tertiary)
+                                                        Spacer()
+                                                        Text(gradeString(item.grade))
+                                                            .font(.title3.bold().monospacedDigit())
+                                                            .foregroundStyle(gradeColor(item.grade))
+                                                            .frame(width: 40, alignment: .trailing)
+                                                    }
+                                                    .padding(.horizontal, 16).padding(.vertical, 10)
+                                                    if index < grades.count - 1 { Divider().padding(.leading, 16) }
+                                                }
+                                            }
+                                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+
+                                            if grades.count >= 2 {
+                                                let diff = grades[grades.count - 2].grade - grades.last!.grade
+                                                HStack(spacing: 4) {
+                                                    Image(systemName: diff > 0 ? "arrow.up.right" : diff < 0 ? "arrow.down.right" : "arrow.right").font(.caption2.bold())
+                                                    Text(diff > 0 ? "Verbessert um \(String(format: "%.1f", diff))" : diff < 0 ? "Verschlechtert um \(String(format: "%.1f", abs(diff)))" : "Gleichgeblieben").font(.caption)
+                                                }
+                                                .foregroundStyle(diff > 0 ? .green : diff < 0 ? .red : .secondary)
+                                            }
+                                        }
+                                        .padding(.bottom, 8)
+                                    }
+                                }
+                            } else {
+                                VStack(spacing: 8) {
+                                    Image(systemName: "graduationcap").font(.system(size: 28)).foregroundStyle(.tertiary)
+                                    Text("Noch keine Noten").font(.subheadline).foregroundStyle(.secondary)
+                                }
+                                .frame(maxWidth: .infinity).padding(.vertical, 16)
                             }
-                        } else {
-                            VStack(spacing: 8) {
-                                Image(systemName: "graduationcap")
-                                    .font(.system(size: 28))
-                                    .foregroundStyle(.tertiary)
-                                Text("Noch keine Noten")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
                         }
                     }
 
                     if periodSessions.isEmpty && gradeSubjects.isEmpty {
                         VStack(spacing: 12) {
-                            Image(systemName: "chart.bar")
-                                .font(.system(size: 40))
-                                .foregroundStyle(.secondary)
-                            Text("Noch keine Lernzeiten eingetragen")
-                                .foregroundStyle(.secondary)
+                            Image(systemName: "chart.bar").font(.system(size: 40)).foregroundStyle(.secondary)
+                            Text("Noch keine Lernzeiten eingetragen").foregroundStyle(.secondary)
                             Text("Trage im \"Lernzeit\"-Tab ein, wann du gelernt hast.")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                                .multilineTextAlignment(.center)
+                                .font(.caption).foregroundStyle(.tertiary).multilineTextAlignment(.center)
                         }
                         .padding(.top, 40)
                     }
@@ -549,5 +526,51 @@ struct BarChartView: View {
                 .frame(maxWidth: .infinity)
             }
         }
+    }
+}
+
+// MARK: - Stat Section (aufklappbar)
+
+struct StatSection<Content: View>: View {
+    let title: String
+    let icon: String
+    let color: Color
+    @Binding var isExpanded: Bool
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.toggle()
+                }
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: icon)
+                        .font(.subheadline)
+                        .foregroundStyle(color)
+                        .frame(width: 24)
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+            }
+            .buttonStyle(.plain)
+
+            if isExpanded {
+                content
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .padding(.horizontal)
     }
 }

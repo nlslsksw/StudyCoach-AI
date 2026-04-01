@@ -7,15 +7,63 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		727C21012F7D1BD80007BE42 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727C21002F7D1BD80007BE42 /* WidgetKit.framework */; };
+		727C21032F7D1BD80007BE42 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727C21022F7D1BD80007BE42 /* SwiftUI.framework */; };
+		727C21142F7D1BD90007BE42 /* StudyTimerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 727C20FE2F7D1BD80007BE42 /* StudyTimerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		72E0E1FB2F51DE3200ABD87A /* SubjectsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E0E1FA2F51DE3200ABD87A /* SubjectsTab.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		727C21122F7D1BD90007BE42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 72E0E1D62F51CFD800ABD87A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 727C20FD2F7D1BD80007BE42;
+			remoteInfo = StudyTimerWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		727C21152F7D1BD90007BE42 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				727C21142F7D1BD90007BE42 /* StudyTimerWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		727C20FE2F7D1BD80007BE42 /* StudyTimerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StudyTimerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		727C21002F7D1BD80007BE42 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		727C21022F7D1BD80007BE42 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		72E0E1DE2F51CFD800ABD87A /* Lern Kalender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Lern Kalender.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		72E0E1FA2F51DE3200ABD87A /* SubjectsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectsTab.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		727C21182F7D1BD90007BE42 /* Exceptions for "StudyTimerWidget" folder in "StudyTimerWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 727C20FD2F7D1BD80007BE42 /* StudyTimerWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		727C21042F7D1BD80007BE42 /* StudyTimerWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				727C21182F7D1BD90007BE42 /* Exceptions for "StudyTimerWidget" folder in "StudyTimerWidgetExtension" target */,
+			);
+			path = StudyTimerWidget;
+			sourceTree = "<group>";
+		};
 		72E0E1E02F51CFD800ABD87A /* Lern Kalender */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Lern Kalender";
@@ -24,6 +72,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		727C20FB2F7D1BD80007BE42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				727C21032F7D1BD80007BE42 /* SwiftUI.framework in Frameworks */,
+				727C21012F7D1BD80007BE42 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		72E0E1DB2F51CFD800ABD87A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -34,10 +91,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		727C20FF2F7D1BD80007BE42 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				727C21002F7D1BD80007BE42 /* WidgetKit.framework */,
+				727C21022F7D1BD80007BE42 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		72E0E1D52F51CFD800ABD87A = {
 			isa = PBXGroup;
 			children = (
 				72E0E1E02F51CFD800ABD87A /* Lern Kalender */,
+				727C21042F7D1BD80007BE42 /* StudyTimerWidget */,
+				727C20FF2F7D1BD80007BE42 /* Frameworks */,
 				72E0E1DF2F51CFD800ABD87A /* Products */,
 				72E0E1FA2F51DE3200ABD87A /* SubjectsTab.swift */,
 			);
@@ -47,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				72E0E1DE2F51CFD800ABD87A /* Lern Kalender.app */,
+				727C20FE2F7D1BD80007BE42 /* StudyTimerWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -54,6 +123,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		727C20FD2F7D1BD80007BE42 /* StudyTimerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 727C21192F7D1BD90007BE42 /* Build configuration list for PBXNativeTarget "StudyTimerWidgetExtension" */;
+			buildPhases = (
+				727C20FA2F7D1BD80007BE42 /* Sources */,
+				727C20FB2F7D1BD80007BE42 /* Frameworks */,
+				727C20FC2F7D1BD80007BE42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				727C21042F7D1BD80007BE42 /* StudyTimerWidget */,
+			);
+			name = StudyTimerWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = StudyTimerWidgetExtension;
+			productReference = 727C20FE2F7D1BD80007BE42 /* StudyTimerWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		72E0E1DD2F51CFD800ABD87A /* Lern Kalender */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 72E0E1E92F51CFD800ABD87A /* Build configuration list for PBXNativeTarget "Lern Kalender" */;
@@ -61,10 +152,12 @@
 				72E0E1DA2F51CFD800ABD87A /* Sources */,
 				72E0E1DB2F51CFD800ABD87A /* Frameworks */,
 				72E0E1DC2F51CFD800ABD87A /* Resources */,
+				727C21152F7D1BD90007BE42 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				727C21132F7D1BD90007BE42 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				72E0E1E02F51CFD800ABD87A /* Lern Kalender */,
@@ -83,9 +176,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2630;
+				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					727C20FD2F7D1BD80007BE42 = {
+						CreatedOnToolsVersion = 26.4;
+					};
 					72E0E1DD2F51CFD800ABD87A = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -106,11 +202,19 @@
 			projectRoot = "";
 			targets = (
 				72E0E1DD2F51CFD800ABD87A /* Lern Kalender */,
+				727C20FD2F7D1BD80007BE42 /* StudyTimerWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		727C20FC2F7D1BD80007BE42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		72E0E1DC2F51CFD800ABD87A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -121,6 +225,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		727C20FA2F7D1BD80007BE42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		72E0E1DA2F51CFD800ABD87A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -131,7 +242,77 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		727C21132F7D1BD90007BE42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 727C20FD2F7D1BD80007BE42 /* StudyTimerWidgetExtension */;
+			targetProxy = 727C21122F7D1BD90007BE42 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		727C21162F7D1BD90007BE42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7826PAS33R;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StudyTimerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StudyTimerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Ralf-Lohrmann.Lern-Kalender.StudyTimerWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		727C21172F7D1BD90007BE42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7826PAS33R;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StudyTimerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StudyTimerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Ralf-Lohrmann.Lern-Kalender.StudyTimerWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		72E0E1E72F51CFD800ABD87A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -258,11 +439,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Lern Kalender/Lern Kalender.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7826PAS33R;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -290,11 +473,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Lern Kalender/Lern Kalender.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7826PAS33R;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -320,6 +505,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		727C21192F7D1BD90007BE42 /* Build configuration list for PBXNativeTarget "StudyTimerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				727C21162F7D1BD90007BE42 /* Debug */,
+				727C21172F7D1BD90007BE42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		72E0E1D92F51CFD800ABD87A /* Build configuration list for PBXProject "Lern Kalender" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
