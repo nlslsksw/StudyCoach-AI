@@ -9,6 +9,7 @@ struct CalendarTab: View {
     @State private var showingAddEntry = false
     @State private var showingAddSession = false
     @State private var showingDeleteAll = false
+    @State private var showingSettings = false
 
     var body: some View {
         NavigationStack {
@@ -54,13 +55,18 @@ struct CalendarTab: View {
                     }
                 }
                 ToolbarItem(placement: .navigation) {
-                    Button {
-                        withAnimation {
-                            selectedDate = Date()
-                            displayedMonth = Date()
+                    HStack(spacing: 12) {
+                        Button {
+                            withAnimation {
+                                selectedDate = Date()
+                                displayedMonth = Date()
+                            }
+                        } label: {
+                            Text("Heute")
                         }
-                    } label: {
-                        Text("Heute")
+                        Button { showingSettings = true } label: {
+                            Image(systemName: "gearshape")
+                        }
                     }
                 }
             }
@@ -69,6 +75,9 @@ struct CalendarTab: View {
             }
             .sheet(isPresented: $showingAddSession) {
                 AddStudySessionView(initialDate: selectedDate, store: store)
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView(store: store)
             }
             .alert("Alles löschen?", isPresented: $showingDeleteAll) {
                 Button("Abbrechen", role: .cancel) { }
@@ -162,7 +171,8 @@ struct CalendarGrid: View {
                             hasKlassenarbeit: store.hasKlassenarbeit(on: date),
                             colors: store.eventColors(on: date),
                             studyMinutes: store.dayStudyMinutes(on: date),
-                            itemCount: store.dayItemCount(on: date)
+                            itemCount: store.dayItemCount(on: date),
+                            holidayName: store.holidayName(on: date)
                         )
                         .onTapGesture {
                             withAnimation(.easeInOut(duration: 0.15)) {
@@ -209,6 +219,7 @@ struct DayCell: View {
     let colors: [Color]
     let studyMinutes: Int
     let itemCount: Int
+    var holidayName: String? = nil
 
     private let calendar = Calendar.current
 
@@ -263,6 +274,9 @@ struct DayCell: View {
         } else if itemCount > 0 || studyMinutes > 0 {
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color(.tertiarySystemFill))
+        } else if holidayName != nil {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.green.opacity(0.1))
         } else {
             Color.clear
         }
@@ -298,6 +312,20 @@ struct DayDetailSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // Ferien-Banner
+            if let holiday = store.holidayName(on: date) {
+                HStack(spacing: 6) {
+                    Image(systemName: "sun.max.fill")
+                        .foregroundStyle(.orange)
+                    Text(holiday)
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.green)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+                .background(Color.green.opacity(0.1))
+            }
+
             // Tages-Header
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -402,6 +430,40 @@ struct DayDetailSection: View {
                                         .tint(.purple)
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    // Shared entries from parents
+                    let sharedForDay = store.sharedCalendarEntries.filter {
+                        Calendar.current.isDate($0.date, inSameDayAs: date)
+                    }
+                    if !sharedForDay.isEmpty {
+                        Section("Von Eltern eingetragen") {
+                            ForEach(sharedForDay) { shared in
+                                HStack(spacing: 10) {
+                                    Image(systemName: "doc.text.fill")
+                                        .foregroundStyle(.red)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        HStack(spacing: 4) {
+                                            Text(shared.title)
+                                                .font(.subheadline.bold())
+                                            Image(systemName: "person.2.fill")
+                                                .font(.caption2)
+                                                .foregroundStyle(.blue)
+                                        }
+                                        if !shared.subject.isEmpty {
+                                            Text(shared.subject)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        Text(shared.date, format: .dateTime.hour().minute())
+                                            .font(.caption)
+                                            .foregroundStyle(.tertiary)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.vertical, 4)
                             }
                         }
                     }
