@@ -227,6 +227,7 @@ struct ParentPairingView: View {
     @State private var isChecking = false
     @State private var error: String?
     @State private var isPaired = false
+    @State private var childName = ""
 
     var body: some View {
         VStack(spacing: 20) {
@@ -242,6 +243,13 @@ struct ParentPairingView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+
+                TextField("Name des Kindes", text: $childName)
+                    .font(.title3)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, 40)
 
                 TextField("000000", text: $codeInput)
                     .font(.system(size: 28, weight: .bold, design: .monospaced))
@@ -259,7 +267,7 @@ struct ParentPairingView: View {
                     Label("Verbinden", systemImage: "link")
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(codeInput.count != 6 || isChecking)
+                .disabled(codeInput.count != 6 || childName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChecking)
 
                 if isChecking {
                     ProgressView()
@@ -299,7 +307,9 @@ struct ParentPairingView: View {
                 let found = try await CloudKitService.shared.lookupPairingCode(codeInput)
                 await MainActor.run {
                     if found {
-                        store.familyLink = FamilyLink(pairingCode: codeInput)
+                        let link = FamilyLink(pairingCode: codeInput, childName: childName.trimmingCharacters(in: .whitespacesAndNewlines))
+                        store.familyLinks.append(link)
+                        store.familyLink = link
                         store.appMode = .parent
                         isPaired = true
 
