@@ -296,6 +296,18 @@ final class DataStore {
     func addGrade(_ grade: Grade) {
         grades.append(grade)
         syncToCloudIfNeeded()
+        sendGradeNotification(grade)
+    }
+
+    private func sendGradeNotification(_ grade: Grade) {
+        guard appMode == .student, let link = familyLink, link.isActive else { return }
+        Task {
+            await CloudKitService.shared.sendActivityNotification(
+                type: "grade",
+                message: "Neue Note: \(grade.subject) \(gradeString(grade.grade))",
+                pairingCode: link.pairingCode
+            )
+        }
     }
 
     func deleteGrade(_ grade: Grade) { grades.removeAll { $0.id == grade.id } }
@@ -408,6 +420,18 @@ final class DataStore {
     func addSession(_ session: StudySession) {
         studySessions.append(session)
         syncToCloudIfNeeded()
+        sendSessionNotification(session)
+    }
+
+    private func sendSessionNotification(_ session: StudySession) {
+        guard appMode == .student, let link = familyLink, link.isActive else { return }
+        Task {
+            await CloudKitService.shared.sendActivityNotification(
+                type: "session",
+                message: "\(session.subject) - \(formatHoursMinutes(session.minutes)) gelernt",
+                pairingCode: link.pairingCode
+            )
+        }
     }
 
     func deleteSession(_ session: StudySession) { studySessions.removeAll { $0.id == session.id } }
