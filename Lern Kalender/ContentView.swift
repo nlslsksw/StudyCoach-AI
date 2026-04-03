@@ -8,17 +8,88 @@ struct ContentView: View {
     @State private var wrappedIsHalbjahr = false
     @State private var wrappedSchoolYear: SchoolYear?
     @State private var showingMotivation = false
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
         Group {
             if store.appMode == .parent {
-                TabView {
-                    ParentDashboardView(store: store)
-                        .tabItem { Label("Dashboard", systemImage: "chart.bar.fill") }
-                    ParentSettingsTab(store: store)
-                        .tabItem { Label("Einstellungen", systemImage: "gearshape.fill") }
+                parentView
+            } else {
+                studentView
+            }
+        }
+    }
+
+    // MARK: - Parent View
+
+    @ViewBuilder
+    private var parentView: some View {
+        if horizontalSizeClass == .regular {
+            // iPad: Sidebar
+            NavigationSplitView {
+                List {
+                    NavigationLink {
+                        ParentDashboardView(store: store)
+                    } label: {
+                        Label("Dashboard", systemImage: "chart.bar.fill")
+                    }
+                    NavigationLink {
+                        ParentSettingsTab(store: store)
+                    } label: {
+                        Label("Einstellungen", systemImage: "gearshape.fill")
+                    }
+                }
+                .navigationTitle("Lern Kalender")
+            } detail: {
+                ParentDashboardView(store: store)
+            }
+        } else {
+            // iPhone: TabView
+            TabView {
+                ParentDashboardView(store: store)
+                    .tabItem { Label("Dashboard", systemImage: "chart.bar.fill") }
+                ParentSettingsTab(store: store)
+                    .tabItem { Label("Einstellungen", systemImage: "gearshape.fill") }
+            }
+        }
+    }
+
+    // MARK: - Student View
+
+    @ViewBuilder
+    private var studentView: some View {
+        Group {
+            if horizontalSizeClass == .regular {
+                // iPad: Sidebar
+                NavigationSplitView {
+                    List {
+                        NavigationLink {
+                            CalendarTab(store: store)
+                        } label: {
+                            Label("Kalender", systemImage: "calendar")
+                        }
+                        NavigationLink {
+                            SubjectsTab(store: store)
+                        } label: {
+                            Label("Fächer", systemImage: "book.fill")
+                        }
+                        NavigationLink {
+                            StudyLogTab(store: store)
+                        } label: {
+                            Label("Lernzeit", systemImage: "clock.fill")
+                        }
+                        NavigationLink {
+                            StatisticsTab(store: store)
+                        } label: {
+                            Label("Statistik", systemImage: "chart.bar.fill")
+                        }
+                    }
+                    .navigationTitle("Lern Kalender")
+                } detail: {
+                    CalendarTab(store: store)
                 }
             } else {
+                // iPhone: TabView
                 TabView {
                     CalendarTab(store: store)
                         .tabItem { Label("Kalender", systemImage: "calendar") }
@@ -29,54 +100,58 @@ struct ContentView: View {
                     StatisticsTab(store: store)
                         .tabItem { Label("Statistik", systemImage: "chart.bar.fill") }
                 }
-                .onAppear {
-                    NotificationHelper.requestPermission()
-                    if let link = store.familyLink, link.isActive {
-                        Task {
-                            if let goal = await CloudKitService.shared.fetchStudyGoal(pairingCode: link.pairingCode) {
-                                await MainActor.run { store.studyGoal = goal }
-                            }
-                        }
+            }
+        }
+        .onAppear {
+            NotificationHelper.requestPermission()
+            // Kind-Daten beim Start zu CloudKit synchen
+            store.syncToCloudIfNeeded()
+            if let link = store.familyLink, link.isActive {
+                Task {
+                    if let goal = await CloudKitService.shared.fetchStudyGoal(pairingCode: link.pairingCode) {
+                        await MainActor.run { store.studyGoal = goal }
                     }
-                    // Motivations-Nachricht laden
-                    if let link = store.familyLink, link.isActive {
-                        Task {
-                            if let msg = await CloudKitService.shared.fetchMotivationMessage(pairingCode: link.pairingCode) {
-                                if store.motivationMessage == nil || store.motivationMessage?.text != msg.text {
-                                    await MainActor.run { store.motivationMessage = msg }
-                                }
-                            }
-                        }
-                    }
-                    // Shared calendar entries laden
-                    if let link = store.familyLink, link.isActive {
-                        Task {
-                            let shared = await CloudKitService.shared.fetchSharedCalendarEntries(pairingCode: link.pairingCode)
-                            await MainActor.run { store.sharedCalendarEntries = shared }
-                        }
-                    }
-                    // Lern-Wrapped automatisch anzeigen
-                    if let trigger = WrappedTrigger.shouldShowWrapped(store: store) {
-                        wrappedSchoolYear = trigger.schoolYear
-                        wrappedIsHalbjahr = trigger.isHalbjahr
-                        showWrapped = true
-                        WrappedTrigger.markAsShown(store: store, isHalbjahr: trigger.isHalbjahr)
-                    }
-                }
-                .fullScreenCover(isPresented: $showWrapped) {
-                    LernWrappedView(store: store, schoolYear: wrappedSchoolYear, isHalbjahr: wrappedIsHalbjahr)
-                }
-                .alert("Nachricht von deinen Eltern", isPresented: $showingMotivation) {
-                    Button("OK") {
-                        store.motivationMessage = nil
-                    }
-                } message: {
-                    Text(store.motivationMessage?.text ?? "")
-                }
-                .onChange(of: store.motivationMessage) { _, newValue in
-                    if newValue != nil { showingMotivation = true }
                 }
             }
+            // Motivations-Nachricht laden
+            if let link = store.familyLink, link.isActive {
+                Task {
+                    if let msg = await CloudKitService.shared.fetchMotivationMessage(pairingCode: link.pairingCode) {
+                        if store.motivationMessage == nil || store.motivationMessage?.text != msg.text {
+                            await MainActor.run { store.motivationMessage = msg }
+                        }
+                    }
+                }
+            }
+            // Shared calendar entries laden
+            if let link = store.familyLink, link.isActive {
+                Task {
+                    let shared = await CloudKitService.shared.fetchSharedCalendarEntries(pairingCode: link.pairingCode)
+                    await MainActor.run { store.sharedCalendarEntries = shared }
+                }
+            }
+            // Lern-Wrapped automatisch anzeigen
+            if let trigger = WrappedTrigger.shouldShowWrapped(store: store) {
+                wrappedSchoolYear = trigger.schoolYear
+                wrappedIsHalbjahr = trigger.isHalbjahr
+                showWrapped = true
+                WrappedTrigger.markAsShown(store: store, isHalbjahr: trigger.isHalbjahr)
+            }
+        }
+        .fullScreenCover(isPresented: $showWrapped) {
+            LernWrappedView(store: store, schoolYear: wrappedSchoolYear, isHalbjahr: wrappedIsHalbjahr)
+        }
+        .alert("Nachricht von deinen Eltern 💬", isPresented: $showingMotivation) {
+            Button("Gelesen") {
+                store.motivationMessage = nil
+            }
+        } message: {
+            if let msg = store.motivationMessage {
+                Text(msg.text)
+            }
+        }
+        .onChange(of: store.motivationMessage) { _, newValue in
+            if newValue != nil { showingMotivation = true }
         }
     }
 }
@@ -85,6 +160,7 @@ struct ContentView: View {
 
 struct ParentSettingsTab: View {
     var store: DataStore
+    @State private var showingLeaveAlert = false
 
     var body: some View {
         NavigationStack {
@@ -119,16 +195,26 @@ struct ParentSettingsTab: View {
 
                 Section {
                     Button(role: .destructive) {
-                        store.familyLinks = []
-                        store.familyLink = nil
-                        store.appMode = nil
-                        store.studyGoals = [:]
+                        showingLeaveAlert = true
                     } label: {
-                        Label("Alle Verbindungen trennen", systemImage: "xmark.circle")
+                        Label("Elternmodus verlassen", systemImage: "rectangle.portrait.and.arrow.right")
                     }
+                } footer: {
+                    Text("Du wirst zur normalen Ansicht zurückgeleitet. Verbindungen bleiben bestehen.")
                 }
             }
             .navigationTitle("Einstellungen")
+            .alert("Elternmodus verlassen?", isPresented: $showingLeaveAlert) {
+                Button("Abbrechen", role: .cancel) { }
+                Button("Verlassen", role: .destructive) {
+                    store.familyLinks = []
+                    store.familyLink = nil
+                    store.appMode = nil
+                    store.studyGoals = [:]
+                }
+            } message: {
+                Text("Möchtest du den Elternmodus wirklich verlassen? Alle Verbindungen werden getrennt.")
+            }
         }
     }
 }

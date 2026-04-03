@@ -150,7 +150,7 @@ struct StatisticsTab: View {
                                         .foregroundStyle(.secondary)
                                     ForEach(subjectBreakdown, id: \.subject) { item in
                                         HStack(spacing: 12) {
-                                            Circle().fill(colorForSubject(item.subject)).frame(width: 12, height: 12)
+                                            Circle().fill(store.colorForSubject(item.subject)).frame(width: 12, height: 12)
                                             Text(item.subject).fontWeight(.medium)
                                             Spacer()
                                             Text(formatHoursMinutes(item.minutes))
@@ -160,11 +160,11 @@ struct StatisticsTab: View {
                                             let width = geometry.size.width
                                             let ratio = totalMinutes > 0 ? CGFloat(item.minutes) / CGFloat(totalMinutes) : 0
                                             RoundedRectangle(cornerRadius: 4)
-                                                .fill(colorForSubject(item.subject).opacity(0.3))
+                                                .fill(store.colorForSubject(item.subject).opacity(0.3))
                                                 .frame(width: width, height: 8)
                                                 .overlay(alignment: .leading) {
                                                     RoundedRectangle(cornerRadius: 4)
-                                                        .fill(colorForSubject(item.subject))
+                                                        .fill(store.colorForSubject(item.subject))
                                                         .frame(width: width * ratio, height: 8)
                                                 }
                                         }

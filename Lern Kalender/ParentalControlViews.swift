@@ -352,32 +352,63 @@ struct ParentDashboardView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Child tabs
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(store.familyLinks) { link in
-                            Button {
-                                selectedChild = link
-                                refreshData()
-                            } label: {
-                                Text(link.childName.isEmpty ? link.pairingCode : link.childName)
-                                    .font(.subheadline.bold())
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(selectedChild?.id == link.id ? Color.blue : Color(.tertiarySystemFill), in: Capsule())
-                                    .foregroundStyle(selectedChild?.id == link.id ? .white : .primary)
-                            }
-                        }
+                if store.familyLinks.isEmpty {
+                    // Willkommens-Screen wenn noch kein Kind verbunden
+                    Spacer()
+                    VStack(spacing: 20) {
+                        Image(systemName: "person.2.fill")
+                            .font(.system(size: 60))
+                            .foregroundStyle(.blue)
+
+                        Text("Willkommen!")
+                            .font(.title.bold())
+
+                        Text("Verbinde dich mit dem Gerät deines Kindes, um Lernfortschritte zu sehen.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+
                         Button {
                             showingAddChild = true
                         } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title3)
-                                .foregroundStyle(.blue)
+                            Label("Kind hinzufügen", systemImage: "plus.circle.fill")
+                                .font(.headline)
                         }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
+                    Spacer()
+                } else {
+                    // Kind-Auswahl
+                    if store.familyLinks.count > 1 {
+                        HStack {
+                            Picker("Kind", selection: Binding(
+                                get: { selectedChild?.id },
+                                set: { newId in
+                                    if let link = store.familyLinks.first(where: { $0.id == newId }) {
+                                        selectedChild = link
+                                        refreshData()
+                                    }
+                                }
+                            )) {
+                                ForEach(store.familyLinks) { link in
+                                    Text(link.childName.isEmpty ? link.pairingCode : link.childName)
+                                        .tag(link.id as UUID?)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+
+                            Button {
+                                showingAddChild = true
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.title3)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                    }
                 }
 
                 if let child = selectedChild, let data = cloudKit.remoteData[child.pairingCode] {
@@ -405,6 +436,8 @@ struct ParentDashboardView: View {
 
                             todaySessionsSection(data: data)
                             weekOverviewSection(data: data)
+                            studyTimeDistributionSection(data: data)
+                            examCountdownSection(data: data)
                             gradesSection(data: data)
                             examsSection(data: data, pairingCode: child.pairingCode)
                             goalSettingSection(pairingCode: child.pairingCode)
@@ -427,13 +460,6 @@ struct ParentDashboardView: View {
                         }
                     }
                     .padding(.vertical, 60)
-                } else {
-                    VStack(spacing: 12) {
-                        Image(systemName: "person.2.fill")
-                            .font(.system(size: 40)).foregroundStyle(.secondary)
-                        Text("Wähle ein Kind aus oder füge eines hinzu.").foregroundStyle(.secondary)
-                    }
-                    .padding(.vertical, 60)
                 }
             }
             .navigationTitle("Eltern-Dashboard")
@@ -446,7 +472,13 @@ struct ParentDashboardView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingAddChild) {
+            .sheet(isPresented: $showingAddChild, onDismiss: {
+                // Nach Hinzufügen: neues Kind auswählen und Daten laden
+                if let last = store.familyLinks.last, selectedChild?.id != last.id {
+                    selectedChild = last
+                    refreshData()
+                }
+            }) {
                 ParentPairingView(store: store)
             }
             .sheet(isPresented: $showingAddExam) {
@@ -574,11 +606,110 @@ struct ParentDashboardView: View {
     }
 
     @ViewBuilder
+    private func studyTimeDistributionSection(data: CloudKitService.ChildRemoteData) -> some View {
+        let bySubject = Dictionary(grouping: data.sessions, by: \.subject)
+        let totalMinutes = data.sessions.reduce(0) { $0 + $1.minutes }
+
+        if totalMinutes > 0 {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Lernzeit-Verteilung").font(.headline)
+
+                ForEach(bySubject.keys.sorted(), id: \.self) { subject in
+                    let mins = bySubject[subject]?.reduce(0) { $0 + $1.minutes } ?? 0
+                    let pct = Double(mins) / Double(totalMinutes)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(subject).font(.subheadline)
+                            Spacer()
+                            Text("\(Int(pct * 100))%")
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                            Text(formatHoursMinutes(mins))
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.tertiary)
+                        }
+                        GeometryReader { geo in
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color(.tertiarySystemFill))
+                                .overlay(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .fill(Color.blue.opacity(0.7))
+                                        .frame(width: geo.size.width * CGFloat(pct))
+                                }
+                        }
+                        .frame(height: 8)
+                    }
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+            .padding(.horizontal)
+        }
+    }
+
+    @ViewBuilder
+    private func examCountdownSection(data: CloudKitService.ChildRemoteData) -> some View {
+        let upcoming = data.entries
+            .filter { $0.type == .klassenarbeit && $0.date > Date() }
+            .sorted { $0.date < $1.date }
+            .prefix(3)
+
+        if !upcoming.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Klassenarbeit-Countdown").font(.headline)
+
+                ForEach(Array(upcoming)) { entry in
+                    let daysLeft = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: entry.date)).day ?? 0
+                    let subjectMins = data.sessions
+                        .filter { $0.subject.localizedCaseInsensitiveCompare(entry.title) == .orderedSame && $0.date >= Calendar.current.date(byAdding: .weekOfYear, value: -1, to: Date())! }
+                        .reduce(0) { $0 + $1.minutes }
+
+                    HStack(spacing: 12) {
+                        VStack {
+                            Text("\(daysLeft)")
+                                .font(.title2.bold())
+                                .foregroundStyle(daysLeft <= 3 ? .red : .orange)
+                            Text(daysLeft == 1 ? "Tag" : "Tage")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(width: 50)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(entry.title)
+                                .font(.subheadline.bold())
+                            Text(entry.date, format: .dateTime.day().month().weekday(.wide))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("Diese Woche geübt: \(formatHoursMinutes(subjectMins))")
+                                .font(.caption2)
+                                .foregroundStyle(subjectMins > 0 ? .green : .red)
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+            .padding(.horizontal)
+        }
+    }
+
+    @ViewBuilder
     private func gradesSection(data: CloudKitService.ChildRemoteData) -> some View {
-        if !data.grades.isEmpty {
+        // Noten aus beiden Quellen: standalone Grades + Klassenarbeit-Einträge mit Note
+        let entryGrades: [Grade] = data.entries
+            .filter { $0.type == .klassenarbeit && $0.grade != nil }
+            .map { Grade(subject: $0.title, grade: $0.grade!, date: $0.date, type: .schriftlich) }
+        let allGrades = data.grades + entryGrades
+
+        if !allGrades.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Noten").font(.headline)
-                ForEach(data.grades.sorted(by: { $0.date > $1.date }).prefix(10)) { grade in
+                ForEach(allGrades.sorted(by: { $0.date > $1.date }).prefix(15)) { grade in
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(grade.subject).font(.subheadline.bold())
@@ -592,18 +723,16 @@ struct ParentDashboardView: View {
                     }
                     .padding(.vertical, 2)
                 }
-                let gradesBySubject = Dictionary(grouping: data.grades, by: \.subject)
-                if gradesBySubject.count > 1 {
-                    Divider()
-                    Text("Durchschnitte").font(.caption.bold()).foregroundStyle(.secondary)
-                    ForEach(gradesBySubject.keys.sorted(), id: \.self) { subject in
-                        let grades = gradesBySubject[subject] ?? []
-                        let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
-                        HStack {
-                            Text(subject).font(.caption)
-                            Spacer()
-                            Text("Ø \(gradeString(avg))").font(.caption.bold()).foregroundStyle(gradeColor(avg))
-                        }
+                let gradesBySubject = Dictionary(grouping: allGrades, by: \.subject)
+                Divider()
+                Text("Durchschnitte").font(.caption.bold()).foregroundStyle(.secondary)
+                ForEach(gradesBySubject.keys.sorted(), id: \.self) { subject in
+                    let grades = gradesBySubject[subject] ?? []
+                    let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
+                    HStack {
+                        Text(subject).font(.caption)
+                        Spacer()
+                        Text("Ø \(gradeString(avg))").font(.caption.bold()).foregroundStyle(gradeColor(avg))
                     }
                 }
             }
@@ -677,19 +806,28 @@ struct ParentDashboardView: View {
 
     @ViewBuilder
     private func motivationSection(pairingCode: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("Nachricht senden").font(.headline)
-            HStack {
-                TextField("Toll gemacht!", text: $motivationText)
-                    .textFieldStyle(.roundedBorder)
-                Button {
-                    sendMotivation(pairingCode: pairingCode)
-                } label: {
-                    if isSendingMotivation { ProgressView() }
-                    else { Image(systemName: "paperplane.fill") }
+            TextField("Toll gemacht!", text: $motivationText, axis: .vertical)
+                .lineLimit(1...4)
+                .padding(10)
+                .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 10))
+            Button {
+                sendMotivation(pairingCode: pairingCode)
+            } label: {
+                HStack {
+                    Spacer()
+                    if isSendingMotivation {
+                        ProgressView()
+                    } else {
+                        Label("Senden", systemImage: "paperplane.fill")
+                    }
+                    Spacer()
                 }
-                .disabled(motivationText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSendingMotivation)
             }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
+            .disabled(motivationText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSendingMotivation)
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))

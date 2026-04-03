@@ -17,6 +17,7 @@ struct SettingsView: View {
     @State private var sessionsCSVURL: URL?
     @State private var pdfURL: URL?
     @State private var showingPINSetup = false
+    @State private var geminiKey: String = GeminiService.shared.apiKey ?? ""
 
     var body: some View {
         NavigationStack {
@@ -170,32 +171,73 @@ struct SettingsView: View {
                     }
                 }
 
-                // CloudKit Setup
+                // KI-Lernplan
                 Section {
-                    Button {
-                        Task {
-                            await CloudKitService.shared.setupCloudKitSchema()
+                    HStack {
+                        Image(systemName: "key.fill")
+                            .foregroundStyle(.secondary)
+                        SecureField("API-Key eingeben", text: $geminiKey)
+                            .textContentType(.password)
+                            .autocorrectionDisabled()
+                    }
+                    if !geminiKey.isEmpty {
+                        Button("Key speichern") {
+                            GeminiService.shared.apiKey = geminiKey
                         }
-                    } label: {
+                        .disabled(geminiKey == (GeminiService.shared.apiKey ?? ""))
+                    }
+                    if GeminiService.shared.hasAPIKey {
                         HStack {
-                            Label("CloudKit Schema erstellen", systemImage: "icloud.and.arrow.up")
-                            Spacer()
-                            if CloudKitService.shared.schemaSetupComplete {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(.green)
-                            }
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                            Text("API-Key gespeichert")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                     }
 
-                    if let error = CloudKitService.shared.schemaSetupError {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                    DisclosureGroup {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Label("So bekommst du einen kostenlosen API-Key:", systemImage: "info.circle")
+                                .font(.subheadline.bold())
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack(alignment: .top, spacing: 8) {
+                                    Text("1.").font(.subheadline.bold()).frame(width: 20)
+                                    Text("Öffne **ai.google.dev** im Browser und melde dich mit deinem Google-Konto an.")
+                                        .font(.subheadline)
+                                }
+                                HStack(alignment: .top, spacing: 8) {
+                                    Text("2.").font(.subheadline.bold()).frame(width: 20)
+                                    Text("Klicke oben auf **\"Get API Key\"**.")
+                                        .font(.subheadline)
+                                }
+                                HStack(alignment: .top, spacing: 8) {
+                                    Text("3.").font(.subheadline.bold()).frame(width: 20)
+                                    Text("Klicke auf **\"Create API Key\"** und wähle ein Projekt aus (oder erstelle ein neues).")
+                                        .font(.subheadline)
+                                }
+                                HStack(alignment: .top, spacing: 8) {
+                                    Text("4.").font(.subheadline.bold()).frame(width: 20)
+                                    Text("Kopiere den angezeigten Key und füge ihn oben ein.")
+                                        .font(.subheadline)
+                                }
+                            }
+
+                            Text("Der Key ist komplett kostenlos. Es fallen keine Kosten an, solange du kein Zahlungskonto verknüpfst.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    } label: {
+                        Label("Anleitung", systemImage: "questionmark.circle")
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
                     }
                 } header: {
-                    Text("CloudKit")
+                    Text("KI-Lernplan (Gemini)")
                 } footer: {
-                    Text("Erstellt alle Record Types in CloudKit. Einmal ausführen, dann im CloudKit Dashboard 'Deploy to Production' klicken.")
+                    Text("Ermöglicht die automatische Lernplan-Erstellung aus Fotos von Schulaufgaben.")
                 }
 
                 // Import

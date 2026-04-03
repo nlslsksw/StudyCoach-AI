@@ -162,7 +162,7 @@ struct StudyLogTab: View {
                         ForEach(group.sessions) { session in
                             HStack(spacing: 12) {
                                 Circle()
-                                    .fill(colorForSubject(session.subject))
+                                    .fill(store.colorForSubject(session.subject))
                                     .frame(width: 10, height: 10)
 
                                 VStack(alignment: .leading, spacing: 2) {
@@ -228,13 +228,14 @@ struct StudyLogTab: View {
         .frame(maxWidth: .infinity)
     }
 
-    @ViewBuilder
+    @State private var sessionToEdit: StudySession?
+
     private func sessionList(_ sessions: [StudySession]) -> some View {
         List {
             ForEach(sessions) { session in
                 HStack(spacing: 12) {
                     Circle()
-                        .fill(colorForSubject(session.subject))
+                        .fill(store.colorForSubject(session.subject))
                         .frame(width: 10, height: 10)
 
                     VStack(alignment: .leading, spacing: 2) {
@@ -251,6 +252,18 @@ struct StudyLogTab: View {
                         .font(.subheadline.monospacedDigit())
                         .foregroundStyle(.secondary)
                 }
+                .contextMenu {
+                    Button {
+                        sessionToEdit = session
+                    } label: {
+                        Label("Bearbeiten", systemImage: "pencil")
+                    }
+                    Button(role: .destructive) {
+                        store.deleteSession(session)
+                    } label: {
+                        Label("Löschen", systemImage: "trash")
+                    }
+                }
                 .swipeActions(edge: .trailing) {
                     Button(role: .destructive) {
                         store.deleteSession(session)
@@ -261,6 +274,9 @@ struct StudyLogTab: View {
             }
         }
         .listStyle(.plain)
+        .sheet(item: $sessionToEdit) { session in
+            EditStudySessionView(store: store, session: session)
+        }
     }
 
     private func groupDateString(_ date: Date) -> String {
@@ -457,6 +473,7 @@ struct StudyTimerView: View {
             startTime = Date()
         }
         isRunning = true
+        UIApplication.shared.isIdleTimerDisabled = true
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             elapsedSeconds += 1
         }
@@ -492,6 +509,7 @@ struct StudyTimerView: View {
 
     private func pauseTimer() {
         isRunning = false
+        UIApplication.shared.isIdleTimerDisabled = false
         timer?.invalidate()
         timer = nil
 
@@ -508,6 +526,7 @@ struct StudyTimerView: View {
     }
 
     private func endLiveActivity() {
+        UIApplication.shared.isIdleTimerDisabled = false
         guard let activity else { return }
         let finalState = StudyTimerAttributes.ContentState(
             isPaused: true,
@@ -608,6 +627,94 @@ struct AddStudySessionView: View {
                         guard !trimmed.isEmpty else { return }
                         let session = StudySession(subject: trimmed, date: date, minutes: minutes)
                         store.addSession(session)
+                        dismiss()
+                    }
+                    .disabled(subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Edit Study Session View
+
+struct EditStudySessionView: View {
+    @Environment(\.dismiss) private var dismiss
+    var store: DataStore
+    let session: StudySession
+
+    @State private var subject: String
+    @State private var date: Date
+    @State private var minutes: Int
+
+    init(store: DataStore, session: StudySession) {
+        self.store = store
+        self.session = session
+        _subject = State(initialValue: session.subject)
+        _date = State(initialValue: session.date)
+        _minutes = State(initialValue: session.minutes)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Was hast du gelernt?") {
+                    TextField("Fach", text: $subject)
+
+                    if !store.subjects.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(store.subjects) { sub in
+                                    Button {
+                                        subject = sub.name
+                                    } label: {
+                                        Label(sub.name, systemImage: sub.icon)
+                                            .font(.caption)
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                                    .tint(sub.color)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section("Wann?") {
+                    DatePicker("Datum & Uhrzeit", selection: $date)
+                        .environment(\.locale, Locale(identifier: "de_DE"))
+                }
+
+                Section("Wie lange?") {
+                    Stepper("\(minutes) Minuten", value: $minutes, in: 1...600, step: 5)
+
+                    HStack(spacing: 8) {
+                        ForEach([15, 30, 45, 60, 90], id: \.self) { m in
+                            Button("\(m)m") {
+                                minutes = m
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                            .tint(minutes == m ? .blue : .secondary)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Lernzeit bearbeiten")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Abbrechen") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Speichern") {
+                        let trimmed = subject.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard !trimmed.isEmpty else { return }
+                        var updated = session
+                        updated.subject = trimmed
+                        updated.date = date
+                        updated.minutes = minutes
+                        store.updateSession(updated)
                         dismiss()
                     }
                     .disabled(subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

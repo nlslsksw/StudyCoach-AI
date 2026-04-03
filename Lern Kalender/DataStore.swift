@@ -27,7 +27,7 @@ final class DataStore {
         didSet { saveBundesland() }
     }
     var showHolidays: Bool = true {
-        didSet { UserDefaults.standard.set(showHolidays, forKey: showHolidaysKey) }
+        didSet { store.set(showHolidays, forKey: showHolidaysKey) }
     }
 
     var appMode: AppMode? = nil {
@@ -72,49 +72,99 @@ final class DataStore {
     private let motivationMessageKey = "motivationMessage"
     private let sharedEntriesKey = "sharedCalendarEntries"
 
+    private let store = NSUbiquitousKeyValueStore.default
+
+    private static let migrationKey = "didMigrateToiCloud"
+
     init() {
-        if let data = UserDefaults.standard.data(forKey: entriesKey),
+        store.synchronize()
+
+        // Migration: Daten von UserDefaults nach iCloud kopieren (einmalig)
+        if !UserDefaults.standard.bool(forKey: Self.migrationKey) {
+            migrateFromUserDefaults()
+            UserDefaults.standard.set(true, forKey: Self.migrationKey)
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: store,
+            queue: .main
+        ) { [weak self] _ in
+            self?.loadAll()
+        }
+
+        loadAll()
+    }
+
+    private func migrateFromUserDefaults() {
+        let ud = UserDefaults.standard
+        let keys = [entriesKey, recurringKey, sessionsKey, gradesKey, subjectsKey,
+                    schoolYearsKey, familyLinkKey, studyGoalKey, familyLinksKey,
+                    studyGoalsKey, motivationMessageKey, sharedEntriesKey]
+        for key in keys {
+            if let data = ud.data(forKey: key), store.data(forKey: key) == nil {
+                store.set(data, forKey: key)
+            }
+        }
+        // String-basierte Keys
+        if let bl = ud.string(forKey: bundeslandKey), store.string(forKey: bundeslandKey) == nil {
+            store.set(bl, forKey: bundeslandKey)
+        }
+        if let mode = ud.string(forKey: appModeKey), store.string(forKey: appModeKey) == nil {
+            store.set(mode, forKey: appModeKey)
+        }
+        if let pin = ud.string(forKey: parentalPINKey), store.string(forKey: parentalPINKey) == nil {
+            store.set(pin, forKey: parentalPINKey)
+        }
+        if ud.object(forKey: showHolidaysKey) != nil && store.object(forKey: showHolidaysKey) == nil {
+            store.set(ud.bool(forKey: showHolidaysKey), forKey: showHolidaysKey)
+        }
+        store.synchronize()
+    }
+
+    private func loadAll() {
+        if let data = store.data(forKey: entriesKey),
            let decoded = try? JSONDecoder().decode([CalendarEntry].self, from: data) {
             entries = decoded
         }
-        if let data = UserDefaults.standard.data(forKey: recurringKey),
+        if let data = store.data(forKey: recurringKey),
            let decoded = try? JSONDecoder().decode([RecurringTask].self, from: data) {
             recurringTasks = decoded
         }
-        if let data = UserDefaults.standard.data(forKey: sessionsKey),
+        if let data = store.data(forKey: sessionsKey),
            let decoded = try? JSONDecoder().decode([StudySession].self, from: data) {
             studySessions = decoded
         }
-        if let data = UserDefaults.standard.data(forKey: gradesKey),
+        if let data = store.data(forKey: gradesKey),
            let decoded = try? JSONDecoder().decode([Grade].self, from: data) {
             grades = decoded
         }
-        if let data = UserDefaults.standard.data(forKey: subjectsKey),
+        if let data = store.data(forKey: subjectsKey),
            let decoded = try? JSONDecoder().decode([Subject].self, from: data) {
             subjects = decoded
         }
-        if let data = UserDefaults.standard.data(forKey: schoolYearsKey),
+        if let data = store.data(forKey: schoolYearsKey),
            let decoded = try? JSONDecoder().decode([SchoolYear].self, from: data) {
             schoolYears = decoded
         }
-        if let blString = UserDefaults.standard.string(forKey: bundeslandKey),
+        if let blString = store.string(forKey: bundeslandKey),
            let bl = Bundesland(rawValue: blString) {
             selectedBundesland = bl
         }
-        showHolidays = UserDefaults.standard.object(forKey: showHolidaysKey) as? Bool ?? true
-        if let modeString = UserDefaults.standard.string(forKey: appModeKey),
+        showHolidays = store.object(forKey: showHolidaysKey) as? Bool ?? true
+        if let modeString = store.string(forKey: appModeKey),
            let mode = AppMode(rawValue: modeString) {
             appMode = mode
         }
-        if let data = UserDefaults.standard.data(forKey: familyLinkKey),
+        if let data = store.data(forKey: familyLinkKey),
            let decoded = try? JSONDecoder().decode(FamilyLink.self, from: data) {
             familyLink = decoded
         }
-        if let data = UserDefaults.standard.data(forKey: studyGoalKey),
+        if let data = store.data(forKey: studyGoalKey),
            let decoded = try? JSONDecoder().decode(StudyGoal.self, from: data) {
             studyGoal = decoded
         }
-        if let data = UserDefaults.standard.data(forKey: familyLinksKey),
+        if let data = store.data(forKey: familyLinksKey),
            let decoded = try? JSONDecoder().decode([FamilyLink].self, from: data) {
             familyLinks = decoded
         }
@@ -122,7 +172,7 @@ final class DataStore {
         if familyLinks.isEmpty, let link = familyLink, appMode == .parent {
             familyLinks = [link]
         }
-        if let data = UserDefaults.standard.data(forKey: studyGoalsKey),
+        if let data = store.data(forKey: studyGoalsKey),
            let decoded = try? JSONDecoder().decode([String: StudyGoal].self, from: data) {
             studyGoals = decoded
         }
@@ -130,69 +180,69 @@ final class DataStore {
         if studyGoals.isEmpty, let goal = studyGoal, let link = familyLink {
             studyGoals[link.pairingCode] = goal
         }
-        if let pin = UserDefaults.standard.string(forKey: parentalPINKey) {
+        if let pin = store.string(forKey: parentalPINKey) {
             parentalPIN = pin
         }
-        if let data = UserDefaults.standard.data(forKey: motivationMessageKey),
+        if let data = store.data(forKey: motivationMessageKey),
            let decoded = try? JSONDecoder().decode(MotivationMessage.self, from: data) {
             motivationMessage = decoded
         }
-        if let data = UserDefaults.standard.data(forKey: sharedEntriesKey),
+        if let data = store.data(forKey: sharedEntriesKey),
            let decoded = try? JSONDecoder().decode([SharedCalendarEntry].self, from: data) {
             sharedCalendarEntries = decoded
         }
     }
 
     private func saveEntries() {
-        if let data = try? JSONEncoder().encode(entries) { UserDefaults.standard.set(data, forKey: entriesKey) }
+        if let data = try? JSONEncoder().encode(entries) { store.set(data, forKey: entriesKey) }
     }
     private func saveRecurring() {
-        if let data = try? JSONEncoder().encode(recurringTasks) { UserDefaults.standard.set(data, forKey: recurringKey) }
+        if let data = try? JSONEncoder().encode(recurringTasks) { store.set(data, forKey: recurringKey) }
     }
     private func saveSessions() {
-        if let data = try? JSONEncoder().encode(studySessions) { UserDefaults.standard.set(data, forKey: sessionsKey) }
+        if let data = try? JSONEncoder().encode(studySessions) { store.set(data, forKey: sessionsKey) }
     }
     private func saveGrades() {
-        if let data = try? JSONEncoder().encode(grades) { UserDefaults.standard.set(data, forKey: gradesKey) }
+        if let data = try? JSONEncoder().encode(grades) { store.set(data, forKey: gradesKey) }
     }
     private func saveSubjects() {
-        if let data = try? JSONEncoder().encode(subjects) { UserDefaults.standard.set(data, forKey: subjectsKey) }
+        if let data = try? JSONEncoder().encode(subjects) { store.set(data, forKey: subjectsKey) }
     }
     private func saveSchoolYears() {
-        if let data = try? JSONEncoder().encode(schoolYears) { UserDefaults.standard.set(data, forKey: schoolYearsKey) }
+        if let data = try? JSONEncoder().encode(schoolYears) { store.set(data, forKey: schoolYearsKey) }
     }
     private func saveBundesland() {
-        if let bl = selectedBundesland { UserDefaults.standard.set(bl.rawValue, forKey: bundeslandKey) }
-        else { UserDefaults.standard.removeObject(forKey: bundeslandKey) }
+        if let bl = selectedBundesland { store.set(bl.rawValue, forKey: bundeslandKey) }
+        else { store.removeObject(forKey: bundeslandKey) }
     }
     private func saveAppMode() {
-        if let mode = appMode { UserDefaults.standard.set(mode.rawValue, forKey: appModeKey) }
-        else { UserDefaults.standard.removeObject(forKey: appModeKey) }
+        if let mode = appMode { store.set(mode.rawValue, forKey: appModeKey) }
+        else { store.removeObject(forKey: appModeKey) }
     }
     private func saveFamilyLink() {
-        if let link = familyLink, let data = try? JSONEncoder().encode(link) { UserDefaults.standard.set(data, forKey: familyLinkKey) }
-        else { UserDefaults.standard.removeObject(forKey: familyLinkKey) }
+        if let link = familyLink, let data = try? JSONEncoder().encode(link) { store.set(data, forKey: familyLinkKey) }
+        else { store.removeObject(forKey: familyLinkKey) }
     }
     private func saveStudyGoal() {
-        if let goal = studyGoal, let data = try? JSONEncoder().encode(goal) { UserDefaults.standard.set(data, forKey: studyGoalKey) }
-        else { UserDefaults.standard.removeObject(forKey: studyGoalKey) }
+        if let goal = studyGoal, let data = try? JSONEncoder().encode(goal) { store.set(data, forKey: studyGoalKey) }
+        else { store.removeObject(forKey: studyGoalKey) }
     }
     private func saveFamilyLinks() {
-        if let data = try? JSONEncoder().encode(familyLinks) { UserDefaults.standard.set(data, forKey: familyLinksKey) }
+        if let data = try? JSONEncoder().encode(familyLinks) { store.set(data, forKey: familyLinksKey) }
     }
     private func saveStudyGoals() {
-        if let data = try? JSONEncoder().encode(studyGoals) { UserDefaults.standard.set(data, forKey: studyGoalsKey) }
+        if let data = try? JSONEncoder().encode(studyGoals) { store.set(data, forKey: studyGoalsKey) }
     }
     private func saveParentalPIN() {
-        if let pin = parentalPIN { UserDefaults.standard.set(pin, forKey: parentalPINKey) }
-        else { UserDefaults.standard.removeObject(forKey: parentalPINKey) }
+        if let pin = parentalPIN { store.set(pin, forKey: parentalPINKey) }
+        else { store.removeObject(forKey: parentalPINKey) }
     }
     private func saveMotivationMessage() {
-        if let msg = motivationMessage, let data = try? JSONEncoder().encode(msg) { UserDefaults.standard.set(data, forKey: motivationMessageKey) }
-        else { UserDefaults.standard.removeObject(forKey: motivationMessageKey) }
+        if let msg = motivationMessage, let data = try? JSONEncoder().encode(msg) { store.set(data, forKey: motivationMessageKey) }
+        else { store.removeObject(forKey: motivationMessageKey) }
     }
     private func saveSharedEntries() {
-        if let data = try? JSONEncoder().encode(sharedCalendarEntries) { UserDefaults.standard.set(data, forKey: sharedEntriesKey) }
+        if let data = try? JSONEncoder().encode(sharedCalendarEntries) { store.set(data, forKey: sharedEntriesKey) }
     }
 
     // MARK: Holiday helpers
@@ -320,6 +370,15 @@ final class DataStore {
 
     // MARK: Subject helpers
 
+    func colorForSubject(_ name: String) -> Color {
+        if let sub = subjects.first(where: { $0.name.localizedCaseInsensitiveCompare(name) == .orderedSame }) {
+            return sub.color
+        }
+        let colors: [Color] = [.blue, .green, .orange, .purple, .pink, .red, .teal, .indigo, .mint, .cyan]
+        let hash = abs(name.hashValue)
+        return colors[hash % colors.count]
+    }
+
     func addSubject(_ subject: Subject) { subjects.append(subject) }
 
     func deleteSubject(_ subject: Subject) { subjects.removeAll { $0.id == subject.id } }
@@ -432,6 +491,10 @@ final class DataStore {
                 pairingCode: link.pairingCode
             )
         }
+    }
+
+    func updateSession(_ session: StudySession) {
+        if let idx = studySessions.firstIndex(where: { $0.id == session.id }) { studySessions[idx] = session }
     }
 
     func deleteSession(_ session: StudySession) { studySessions.removeAll { $0.id == session.id } }

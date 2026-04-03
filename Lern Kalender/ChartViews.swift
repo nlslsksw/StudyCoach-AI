@@ -177,26 +177,27 @@ struct GradeLineChart: View {
                     .frame(maxWidth: .infinity, minHeight: 100)
             } else {
                 Chart(gradePoints) { point in
+                    let flipped = 7.0 - point.grade
                     LineMark(
                         x: .value("Datum", point.date),
-                        y: .value("Note", point.grade)
+                        y: .value("Note", flipped)
                     )
                     .foregroundStyle(by: .value("Fach", point.subject))
                     .interpolationMethod(.catmullRom)
 
                     PointMark(
                         x: .value("Datum", point.date),
-                        y: .value("Note", point.grade)
+                        y: .value("Note", flipped)
                     )
                     .foregroundStyle(by: .value("Fach", point.subject))
                 }
-                .chartYScale(domain: 6...1)
+                .chartYScale(domain: 1...6)
                 .chartYAxis {
                     AxisMarks(values: [1, 2, 3, 4, 5, 6]) { value in
                         AxisGridLine()
                         AxisValueLabel {
                             if let v = value.as(Int.self) {
-                                Text("\(v)")
+                                Text("\(7 - v)")
                             }
                         }
                     }

@@ -10,6 +10,7 @@ struct CalendarTab: View {
     @State private var showingAddSession = false
     @State private var showingDeleteAll = false
     @State private var showingSettings = false
+    @State private var showingStudyPlan = false
 
     var body: some View {
         NavigationStack {
@@ -45,28 +46,28 @@ struct CalendarTab: View {
                             Label("Lernzeit eintragen", systemImage: "clock.badge.checkmark")
                         }
                         Divider()
-                        Button(role: .destructive) {
-                            showingDeleteAll = true
+                        Button {
+                            showingStudyPlan = true
                         } label: {
-                            Label("Alles löschen", systemImage: "trash")
+                            Label("Lernplan erstellen", systemImage: "sparkles")
                         }
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
                 ToolbarItem(placement: .navigation) {
-                    HStack(spacing: 12) {
-                        Button {
-                            withAnimation {
-                                selectedDate = Date()
-                                displayedMonth = Date()
-                            }
-                        } label: {
-                            Text("Heute")
+                    Button {
+                        withAnimation {
+                            selectedDate = Date()
+                            displayedMonth = Date()
                         }
-                        Button { showingSettings = true } label: {
-                            Image(systemName: "gearshape")
-                        }
+                    } label: {
+                        Text("Heute")
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button { showingSettings = true } label: {
+                        Image(systemName: "gearshape")
                     }
                 }
             }
@@ -78,6 +79,9 @@ struct CalendarTab: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView(store: store)
+            }
+            .sheet(isPresented: $showingStudyPlan) {
+                StudyPlanView(store: store)
             }
             .alert("Alles löschen?", isPresented: $showingDeleteAll) {
                 Button("Abbrechen", role: .cancel) { }
@@ -302,6 +306,7 @@ struct DayDetailSection: View {
     @State private var gradeInput: Double = 3.0
     @State private var entryToLogTime: CalendarEntry?
     @State private var minutesInput: Int = 30
+    @State private var sessionToEdit: StudySession?
 
     private var dateString: String {
         let formatter = DateFormatter()
@@ -408,9 +413,25 @@ struct DayDetailSection: View {
                                         store.toggleCompleted(entry)
                                     }
                                 }
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    entryToEdit = entry
+                                .contextMenu {
+                                    Button {
+                                        entryToEdit = entry
+                                    } label: {
+                                        Label("Bearbeiten", systemImage: "pencil")
+                                    }
+                                    if entry.type == .klassenarbeit {
+                                        Button {
+                                            gradeInput = entry.grade ?? 3.0
+                                            entryToGrade = entry
+                                        } label: {
+                                            Label("Note eingeben", systemImage: "graduationcap")
+                                        }
+                                    }
+                                    Button(role: .destructive) {
+                                        entryToDelete = entry
+                                    } label: {
+                                        Label("Löschen", systemImage: "trash")
+                                    }
                                 }
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
@@ -473,7 +494,7 @@ struct DayDetailSection: View {
                             ForEach(daySessions) { session in
                                 HStack(spacing: 12) {
                                     Circle()
-                                        .fill(colorForSubject(session.subject))
+                                        .fill(store.colorForSubject(session.subject))
                                         .frame(width: 10, height: 10)
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(session.subject)
@@ -488,6 +509,18 @@ struct DayDetailSection: View {
                                         .foregroundStyle(.secondary)
                                 }
                                 .padding(.vertical, 2)
+                                .contextMenu {
+                                    Button {
+                                        sessionToEdit = session
+                                    } label: {
+                                        Label("Bearbeiten", systemImage: "pencil")
+                                    }
+                                    Button(role: .destructive) {
+                                        store.deleteSession(session)
+                                    } label: {
+                                        Label("Löschen", systemImage: "trash")
+                                    }
+                                }
                             }
                         }
                     }
@@ -498,6 +531,9 @@ struct DayDetailSection: View {
         }
         .sheet(item: $entryToEdit) { entry in
             EditEntryView(entry: entry, store: store)
+        }
+        .sheet(item: $sessionToEdit) { session in
+            EditStudySessionView(store: store, session: session)
         }
         .alert("Eintrag löschen?", isPresented: Binding(
             get: { entryToDelete != nil },
