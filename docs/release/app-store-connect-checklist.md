@@ -110,13 +110,13 @@ Schule,Lernen,Kalender,Noten,Hausaufgaben,KI,Quiz,Karteikarten,Lernplan,Schüler
 ```
 
 ### Support-URL
-`https://github.com/nlslksw/StudyCoach-AI/issues`
+`https://github.com/nlslsksw/StudyCoach-AI/issues`
 
 ### Marketing-URL (optional)
-`https://nlslksw.github.io/StudyCoach-AI/legal/index-en.html`
+`https://nlslsksw.github.io/StudyCoach-AI/legal/index-en.html`
 
 ### Datenschutz-URL
-`https://nlslksw.github.io/StudyCoach-AI/legal/privacy-en.html`
+`https://nlslsksw.github.io/StudyCoach-AI/legal/privacy-en.html`
 
 ---
 
