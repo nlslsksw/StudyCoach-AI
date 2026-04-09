@@ -16,7 +16,6 @@ struct HivemindTab: View {
                 VStack(alignment: .leading, spacing: 24) {
                     welcomeHeader
                     schoolTopicsSection
-                    calendarSuggestionsSection
                     discoverSection
                     Spacer(minLength: 20)
                 }
@@ -188,56 +187,6 @@ struct HivemindTab: View {
         .frame(maxWidth: .infinity)
         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
         .padding(.horizontal)
-    }
-
-    // MARK: - Calendar suggestions
-
-    private var calendarSuggestionsSection: some View {
-        let upcomingExams = store.entries
-            .filter { $0.type == .klassenarbeit && $0.date > Date() && $0.date < Date().addingTimeInterval(14 * 86400) }
-            .prefix(3)
-
-        return Group {
-            if !upcomingExams.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Aus deinem Kalender").font(.title3.bold()).padding(.horizontal)
-                    ForEach(Array(upcomingExams)) { exam in
-                        Button {
-                            // Pre-create a topic from the exam metadata.
-                            let topic = Topic(
-                                title: exam.title,
-                                subject: nil,
-                                iconName: "doc.text.fill",
-                                colorHex: "#EF4444",
-                                source: .calendarSuggestion(examId: exam.id)
-                            )
-                            topicStore.addTopic(topic)
-                            topicToOpen = topic
-                        } label: {
-                            HStack(spacing: 12) {
-                                Image(systemName: "calendar")
-                                    .font(.body)
-                                    .foregroundStyle(.white)
-                                    .frame(width: 36, height: 36)
-                                    .background(.red.gradient, in: RoundedRectangle(cornerRadius: 8))
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(exam.title).font(.subheadline.bold()).foregroundStyle(.primary)
-                                    Text(exam.date, format: .dateTime.day().month().weekday(.wide))
-                                        .font(.caption).foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                Image(systemName: "sparkles")
-                                    .foregroundStyle(.purple)
-                            }
-                            .padding(12)
-                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
-                        }
-                        .buttonStyle(.plain)
-                        .padding(.horizontal)
-                    }
-                }
-            }
-        }
     }
 
     // MARK: - Discover
