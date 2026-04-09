@@ -8,39 +8,80 @@ struct TopicFeedView: View {
     @State private var isGenerating = false
     @State private var error: String?
     @State private var dailyLimitHit = false
+    @State private var currentPostId: UUID?
 
     private let store = TopicStore.shared
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if isGenerating {
-                    generatingView
-                } else if dailyLimitHit && posts.isEmpty {
-                    dailyLimitView
-                } else if posts.isEmpty {
-                    emptyView
-                } else {
-                    feedScroll
-                }
+        ZStack {
+            Color(.systemBackground).ignoresSafeArea()
+
+            if isGenerating {
+                generatingView
+            } else if dailyLimitHit && posts.isEmpty {
+                dailyLimitView
+            } else if posts.isEmpty {
+                emptyView
+            } else {
+                feedScroll
             }
-            .navigationTitle(topic.title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button { dismiss() } label: { Image(systemName: "chevron.left") }
-                }
-            }
-            .alert("Fehler", isPresented: Binding(
-                get: { error != nil },
-                set: { if !$0 { error = nil } }
-            )) {
-                Button("OK") { error = nil }
-            } message: {
-                Text(error ?? "")
+
+            // Top overlay (X + topic title + post counter)
+            VStack {
+                topOverlay
+                Spacer()
             }
         }
+        .alert("Fehler", isPresented: Binding(
+            get: { error != nil },
+            set: { if !$0 { error = nil } }
+        )) {
+            Button("OK") { error = nil }
+        } message: {
+            Text(error ?? "")
+        }
         .task { await loadOrGenerate() }
+    }
+
+    // MARK: - Top overlay
+
+    private var topOverlay: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.body.bold())
+                    .foregroundStyle(.primary)
+                    .frame(width: 36, height: 36)
+                    .background(.ultraThinMaterial, in: Circle())
+            }
+
+            Spacer()
+
+            VStack(spacing: 2) {
+                Text(topic.title)
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                if !posts.isEmpty, let currentId = currentPostId,
+                   let idx = posts.firstIndex(where: { $0.id == currentId }) {
+                    Text("\(idx + 1) / \(posts.count)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial, in: Capsule())
+
+            Spacer()
+
+            // Symmetrical placeholder so the title stays centered
+            Color.clear.frame(width: 36, height: 36)
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
     }
 
     // MARK: - States
@@ -83,25 +124,53 @@ struct TopicFeedView: View {
         .padding()
     }
 
-    private var feedScroll: some View {
-        ScrollView {
-            LazyVStack(spacing: 32) {
-                ForEach(posts) { post in
-                    FeedPostView(post: post, topicColor: topic.color) { answer in
-                        store.recordAnswer(post: post, answer: answer)
-                    }
-                    .padding(.top, 8)
-                }
+    // MARK: - TikTok-style paging feed
 
-                Color.clear
-                    .frame(height: 80)
-                    .onAppear {
-                        // Mark feed as exhausted when we reach the end (the spacer at the bottom).
-                        store.markFeedExhausted(topicId: topic.id)
+    private var feedScroll: some View {
+        GeometryReader { proxy in
+            ScrollView(.vertical) {
+                LazyVStack(spacing: 0) {
+                    ForEach(posts) { post in
+                        FeedPostView(post: post, topicColor: topic.color) { answer in
+                            store.recordAnswer(post: post, answer: answer)
+                        }
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .id(post.id)
                     }
+
+                    // End-of-feed marker
+                    endOfFeedView
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .id("end")
+                        .onAppear {
+                            store.markFeedExhausted(topicId: topic.id)
+                        }
+                }
+                .scrollTargetLayout()
             }
-            .padding(.vertical)
+            .scrollTargetBehavior(.paging)
+            .scrollPosition(id: $currentPostId)
+            .ignoresSafeArea()
         }
+    }
+
+    private var endOfFeedView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "checkmark.seal.fill")
+                .font(.system(size: 60))
+                .foregroundStyle(.green)
+            Text("Geschafft!")
+                .font(.title.bold())
+            Text("Du hast alle Posts für heute durch.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            Button("Fertig") { dismiss() }
+                .buttonStyle(.borderedProminent)
+                .tint(topic.color)
+                .padding(.top, 8)
+        }
+        .padding()
     }
 
     // MARK: - Loading / Generation
@@ -115,6 +184,7 @@ struct TopicFeedView: View {
            let lastGen = progress.feedGeneratedDate,
            Calendar.current.isDateInToday(lastGen) {
             posts = cached
+            currentPostId = cached.first?.id
             return
         }
 
@@ -143,6 +213,7 @@ struct TopicFeedView: View {
             )
             store.markFeedGenerated(topicId: topic.id)
             posts = generated
+            currentPostId = generated.first?.id
         } catch let err as FeedGenerationError {
             if case .dailyLimitReached = err {
                 dailyLimitHit = true

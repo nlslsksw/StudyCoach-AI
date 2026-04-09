@@ -4,12 +4,27 @@ struct ProfileSheetView: View {
     @Environment(\.dismiss) private var dismiss
     var store: DataStore
     private let engine = LearningEngine.shared
+    @Bindable private var topicStore = TopicStore.shared
+
+    private var totalPostsViewed: Int {
+        topicStore.progress.values.reduce(0) { $0 + $1.postsViewed }
+    }
+
+    private var totalPostsCorrect: Int {
+        topicStore.progress.values.reduce(0) { $0 + $1.postsCorrect }
+    }
+
+    private var accuracyPercent: Int {
+        guard totalPostsViewed > 0 else { return 0 }
+        return Int(Double(totalPostsCorrect) / Double(totalPostsViewed) * 100)
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     levelHeader
+                    feedStatsSection
                     subjectMasterySection
                     badgesSection
                     Spacer(minLength: 20)
@@ -65,6 +80,87 @@ struct ProfileSheetView: View {
             Text(value).font(.headline)
             Text(label).font(.caption2).foregroundStyle(.secondary)
         }
+    }
+
+    // MARK: - Feed Stats
+
+    private var feedStatsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Lern-Feed").font(.headline).padding(.horizontal)
+
+            HStack(spacing: 12) {
+                feedStatCard(
+                    icon: "eye.fill",
+                    value: "\(totalPostsViewed)",
+                    label: "Posts angeschaut",
+                    color: .purple
+                )
+                feedStatCard(
+                    icon: "checkmark.circle.fill",
+                    value: "\(totalPostsCorrect)",
+                    label: "Richtig",
+                    color: .green
+                )
+                feedStatCard(
+                    icon: "percent",
+                    value: "\(accuracyPercent)%",
+                    label: "Treffer",
+                    color: .pink
+                )
+            }
+            .padding(.horizontal)
+
+            // Per-topic breakdown
+            if !topicStore.topics.isEmpty {
+                VStack(spacing: 8) {
+                    ForEach(topicStore.topics) { topic in
+                        let p = topicStore.progress(for: topic.id)
+                        if p.postsViewed > 0 {
+                            HStack(spacing: 12) {
+                                Image(systemName: topic.iconName)
+                                    .font(.body)
+                                    .foregroundStyle(.white)
+                                    .frame(width: 32, height: 32)
+                                    .background(topic.color.gradient, in: RoundedRectangle(cornerRadius: 8))
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(topic.title)
+                                        .font(.subheadline.bold())
+                                        .lineLimit(1)
+                                    Text("\(p.postsViewed) angeschaut · \(p.postsCorrect) richtig")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text("\(Int(p.percent(totalPosts: FeedGenerator.postsPerBatch) * 100))%")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(topic.color)
+                            }
+                            .padding(12)
+                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+
+    private func feedStatCard(icon: String, value: String, label: String, color: Color) -> some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(color)
+            Text(value)
+                .font(.title2.bold())
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
     }
 
     private var subjectMasterySection: some View {

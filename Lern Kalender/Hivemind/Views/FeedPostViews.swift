@@ -25,33 +25,50 @@ struct FeedPostView: View {
     }
 }
 
-// MARK: - Common card chrome
+// MARK: - Full-screen container
 
-private struct PostCard<Content: View>: View {
+private struct FullScreenPost<Content: View>: View {
     let icon: String
     let label: String
     let accent: Color
     @ViewBuilder let content: Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.caption.bold())
-                    .foregroundStyle(.white)
-                    .frame(width: 28, height: 28)
-                    .background(accent.gradient, in: Circle())
-                Text(label)
-                    .font(.caption.bold())
-                    .foregroundStyle(.secondary)
-                    .textCase(.uppercase)
+        ZStack {
+            // Subtle topic-tinted gradient background.
+            LinearGradient(
+                colors: [
+                    accent.opacity(0.22),
+                    accent.opacity(0.05),
+                    Color(.systemBackground)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            VStack(alignment: .leading, spacing: 24) {
+                // Type label badge
+                HStack(spacing: 10) {
+                    Image(systemName: icon)
+                        .font(.body.bold())
+                        .foregroundStyle(.white)
+                        .frame(width: 36, height: 36)
+                        .background(accent.gradient, in: Circle())
+                    Text(label)
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+                        .textCase(.uppercase)
+                        .tracking(1.2)
+                }
+                .padding(.top, 60)   // breathing room from top overlay
+
+                content
             }
-            content
+            .padding(.horizontal, 28)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(.bottom, 80)    // breathing room at bottom for swipe hint
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 24))
-        .padding(.horizontal)
     }
 }
 
@@ -66,13 +83,19 @@ struct TextLessonPostView: View {
     @State private var hasMarkedViewed = false
 
     var body: some View {
-        PostCard(icon: "lightbulb.fill", label: "Lektion", accent: accent) {
+        FullScreenPost(icon: "lightbulb.fill", label: "Lektion", accent: accent) {
             Text(title)
-                .font(.title3.bold())
+                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+
             Text(bodyText)
-                .font(.body)
+                .font(.title3)
                 .foregroundStyle(.primary.opacity(0.85))
                 .fixedSize(horizontal: false, vertical: true)
+                .lineSpacing(4)
+
+            Spacer()
         }
         .onAppear {
             guard !hasMarkedViewed else { return }
@@ -95,58 +118,94 @@ struct QuizPostView: View {
     @State private var selected: Int?
 
     var body: some View {
-        PostCard(icon: "questionmark.circle.fill", label: "Quiz", accent: accent) {
+        FullScreenPost(icon: "questionmark.circle.fill", label: "Quiz", accent: accent) {
             Text(question)
-                .font(.title3.bold())
+                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
 
-            VStack(spacing: 10) {
+            VStack(spacing: 12) {
                 ForEach(Array(options.enumerated()), id: \.offset) { idx, option in
                     Button {
                         guard selected == nil else { return }
-                        selected = idx
+                        withAnimation(.spring(response: 0.4)) {
+                            selected = idx
+                        }
                         onAnswer(.quiz(selectedIndex: idx, correct: idx == correctIndex))
                     } label: {
-                        HStack {
-                            Text(option).font(.subheadline)
+                        HStack(spacing: 14) {
+                            Text(letter(for: idx))
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                                .frame(width: 32, height: 32)
+                                .background(badgeColor(idx).gradient, in: Circle())
+                            Text(option)
+                                .font(.body.weight(.medium))
+                                .foregroundStyle(.primary)
+                                .multilineTextAlignment(.leading)
                             Spacer()
                             if let s = selected {
                                 if idx == correctIndex {
-                                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(.green).font(.title3)
                                 } else if idx == s {
-                                    Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(.red).font(.title3)
                                 }
                             }
                         }
-                        .padding(14)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(answerBackground(idx), in: RoundedRectangle(cornerRadius: 14))
+                        .padding(16)
+                        .background(answerBackground(idx), in: RoundedRectangle(cornerRadius: 16))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 14).stroke(answerBorder(idx), lineWidth: 1.5)
+                            RoundedRectangle(cornerRadius: 16).stroke(answerBorder(idx), lineWidth: 2)
                         )
                     }
                     .buttonStyle(.plain)
                     .disabled(selected != nil)
                 }
             }
+            .padding(.top, 4)
 
             if selected != nil {
-                Text(explanation)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 4)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(selected == correctIndex ? "Richtig!" : "Nicht ganz.")
+                        .font(.headline)
+                        .foregroundStyle(selected == correctIndex ? .green : .orange)
+                    Text(explanation)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 14))
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
+
+            Spacer()
         }
     }
 
+    private func letter(for idx: Int) -> String {
+        ["A", "B", "C", "D"][min(idx, 3)]
+    }
+
+    private func badgeColor(_ idx: Int) -> Color {
+        guard let s = selected else { return accent }
+        if idx == correctIndex { return .green }
+        if idx == s { return .red }
+        return .secondary
+    }
+
     private func answerBackground(_ idx: Int) -> Color {
-        guard let s = selected else { return Color(.tertiarySystemGroupedBackground) }
-        if idx == correctIndex { return .green.opacity(0.15) }
-        if idx == s { return .red.opacity(0.15) }
-        return Color(.tertiarySystemGroupedBackground)
+        guard let s = selected else { return Color(.secondarySystemBackground) }
+        if idx == correctIndex { return .green.opacity(0.18) }
+        if idx == s { return .red.opacity(0.18) }
+        return Color(.secondarySystemBackground)
     }
 
     private func answerBorder(_ idx: Int) -> Color {
-        guard let s = selected else { return Color(.separator).opacity(0.3) }
+        guard let s = selected else { return .clear }
         if idx == correctIndex { return .green }
         if idx == s { return .red }
         return .clear
@@ -165,47 +224,62 @@ struct FlashcardPostView: View {
     @State private var answered = false
 
     var body: some View {
-        PostCard(icon: "rectangle.on.rectangle", label: "Karteikarte", accent: accent) {
-            Text(flipped ? back : front)
-                .font(.title3.bold())
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity, minHeight: 100)
-                .padding(.vertical, 12)
-                .onTapGesture { withAnimation(.spring(response: 0.4)) { flipped.toggle() } }
+        FullScreenPost(icon: "rectangle.on.rectangle", label: "Karteikarte", accent: accent) {
+            Spacer()
 
-            if !flipped {
-                Text("Tippe zum Umdrehen")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-            } else if !answered {
-                HStack(spacing: 12) {
-                    Button {
-                        answered = true
-                        onAnswer(.flashcard(known: false))
-                    } label: {
-                        Label("Wusste ich nicht", systemImage: "xmark")
-                            .frame(maxWidth: .infinity)
+            VStack(spacing: 24) {
+                Text(flipped ? back : front)
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(28)
+                    .frame(maxWidth: .infinity, minHeight: 180)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(Color(.secondarySystemBackground))
+                            .shadow(color: accent.opacity(0.2), radius: 16, y: 6)
+                    )
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.4)) { flipped.toggle() }
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.red)
 
-                    Button {
-                        answered = true
-                        onAnswer(.flashcard(known: true))
-                    } label: {
-                        Label("Wusste ich", systemImage: "checkmark")
-                            .frame(maxWidth: .infinity)
+                if !flipped {
+                    Label("Tippe zum Umdrehen", systemImage: "hand.tap.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else if !answered {
+                    HStack(spacing: 12) {
+                        Button {
+                            answered = true
+                            onAnswer(.flashcard(known: false))
+                        } label: {
+                            Label("Wusste ich nicht", systemImage: "xmark")
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.red)
+
+                        Button {
+                            answered = true
+                            onAnswer(.flashcard(known: true))
+                        } label: {
+                            Label("Wusste ich", systemImage: "checkmark")
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.green)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.green)
+                } else {
+                    Text("Gespeichert ✓")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.green)
                 }
-            } else {
-                Text("Gespeichert ✓")
-                    .font(.caption.bold())
-                    .foregroundStyle(.green)
-                    .frame(maxWidth: .infinity, alignment: .center)
             }
+
+            Spacer()
         }
     }
 }
@@ -221,13 +295,19 @@ struct ExamplePostView: View {
     @State private var hasMarkedViewed = false
 
     var body: some View {
-        PostCard(icon: "wand.and.stars", label: "Beispiel", accent: accent) {
+        FullScreenPost(icon: "wand.and.stars", label: "Beispiel", accent: accent) {
             Text(scenario)
-                .font(.title3.bold())
+                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+
             Text(walkthrough)
-                .font(.body)
+                .font(.title3)
                 .foregroundStyle(.primary.opacity(0.85))
                 .fixedSize(horizontal: false, vertical: true)
+                .lineSpacing(4)
+
+            Spacer()
         }
         .onAppear {
             guard !hasMarkedViewed else { return }
@@ -256,41 +336,57 @@ struct FeynmanPostView: View {
     @State private var request: SFSpeechAudioBufferRecognitionRequest?
 
     var body: some View {
-        PostCard(icon: "mic.fill", label: "Erkläre es", accent: accent) {
+        FullScreenPost(icon: "mic.fill", label: "Erkläre es", accent: accent) {
             Text(prompt)
-                .font(.title3.bold())
+                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
 
             if !transcript.isEmpty {
                 Text(transcript)
-                    .font(.footnote)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .padding(10)
+                    .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 14))
             }
 
             if let fb = feedback, let s = score {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Score: \(s)/100")
-                        .font(.caption.bold())
-                        .foregroundStyle(s >= 60 ? .green : .orange)
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Image(systemName: s >= 60 ? "checkmark.seal.fill" : "exclamationmark.circle.fill")
+                            .foregroundStyle(s >= 60 ? .green : .orange)
+                        Text("Score: \(s)/100")
+                            .font(.headline)
+                            .foregroundStyle(s >= 60 ? .green : .orange)
+                    }
                     Text(fb)
-                        .font(.footnote)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(10)
+                .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
-            } else {
+                .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 14))
+            }
+
+            Spacer()
+
+            if feedback == nil {
                 Button {
                     isRecording ? stopRecording() : startRecording()
                 } label: {
-                    Label(isRecording ? "Aufnahme stoppen" : "Erklärung aufnehmen",
-                          systemImage: isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                        .frame(maxWidth: .infinity)
+                    HStack {
+                        Image(systemName: isRecording ? "stop.fill" : "mic.fill")
+                        Text(isRecording ? "Aufnahme stoppen" : "Erklärung aufnehmen")
+                    }
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .foregroundStyle(.white)
+                    .background((isRecording ? Color.red : accent).gradient, in: Capsule())
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(isRecording ? .red : accent)
+                .buttonStyle(.plain)
             }
         }
     }
