@@ -9,6 +9,7 @@ struct TopicFeedView: View {
     @State private var error: String?
     @State private var dailyLimitHit = false
     @State private var currentPostId: UUID?
+    @State private var closeGesture: FeedCloseGesture = FeedCloseGesture.current
 
     private let store = TopicStore.shared
 
@@ -26,7 +27,27 @@ struct TopicFeedView: View {
                 feedScroll
             }
 
-            // Back button only — top left
+            // Close affordance — depends on user setting
+            closeAffordance
+        }
+        .onAppear { closeGesture = FeedCloseGesture.current }
+        .alert("Fehler", isPresented: Binding(
+            get: { error != nil },
+            set: { if !$0 { error = nil } }
+        )) {
+            Button("OK") { error = nil }
+        } message: {
+            Text(error ?? "")
+        }
+        .task { await loadOrGenerate() }
+    }
+
+    // MARK: - Close affordance
+
+    @ViewBuilder
+    private var closeAffordance: some View {
+        switch closeGesture {
+        case .backButton:
             VStack {
                 HStack {
                     Button {
@@ -44,16 +65,26 @@ struct TopicFeedView: View {
                 .padding(.top, 8)
                 Spacer()
             }
+        case .doubleTapTop:
+            VStack(spacing: 0) {
+                // Tappable strip at the very top — full width, ~70pt tall.
+                // Double-tap dismisses. A subtle pill in the middle hints at it.
+                ZStack {
+                    Color.clear
+                    Capsule()
+                        .fill(.secondary.opacity(0.4))
+                        .frame(width: 44, height: 5)
+                        .padding(.top, 8)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 70)
+                .contentShape(Rectangle())
+                .onTapGesture(count: 2) {
+                    dismiss()
+                }
+                Spacer()
+            }
         }
-        .alert("Fehler", isPresented: Binding(
-            get: { error != nil },
-            set: { if !$0 { error = nil } }
-        )) {
-            Button("OK") { error = nil }
-        } message: {
-            Text(error ?? "")
-        }
-        .task { await loadOrGenerate() }
     }
 
     // MARK: - States

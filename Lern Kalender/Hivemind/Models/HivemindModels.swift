@@ -118,6 +118,27 @@ enum PostAnswer: Codable, Hashable {
     case viewed
 }
 
+// MARK: - Feed Close Gesture Setting
+
+enum FeedCloseGesture: String, CaseIterable, Identifiable {
+    case backButton = "Zurück-Button"
+    case doubleTapTop = "Doppel-Tap oben"
+
+    var id: String { rawValue }
+
+    private static let key = "hivemindCloseGesture"
+
+    static var current: FeedCloseGesture {
+        get {
+            let raw = UserDefaults.standard.string(forKey: key) ?? FeedCloseGesture.doubleTapTop.rawValue
+            return FeedCloseGesture(rawValue: raw) ?? .doubleTapTop
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: key)
+        }
+    }
+}
+
 // MARK: - Color hex helper (used by Topic)
 
 extension Color {

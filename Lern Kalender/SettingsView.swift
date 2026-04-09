@@ -17,7 +17,7 @@ struct SettingsView: View {
     @State private var sessionsCSVURL: URL?
     @State private var pdfURL: URL?
     @State private var showingPINSetup = false
-    @State private var geminiKey: String = GeminiService.shared.apiKey ?? ""
+    @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
 
     var body: some View {
         NavigationStack {
@@ -38,6 +38,22 @@ struct SettingsView: View {
                     Text("Lern-Rückblick")
                 } footer: {
                     Text("Sieh dir deinen persönlichen Lern-Rückblick im Story-Format an.")
+                }
+
+                // Lern-Feed
+                Section {
+                    Picker("Feed schließen mit", selection: $feedCloseGesture) {
+                        ForEach(FeedCloseGesture.allCases) { gesture in
+                            Text(gesture.rawValue).tag(gesture)
+                        }
+                    }
+                    .onChange(of: feedCloseGesture) { _, newValue in
+                        FeedCloseGesture.current = newValue
+                    }
+                } header: {
+                    Text("Lern-Feed")
+                } footer: {
+                    Text("Wähle, wie du den Topic-Feed schließen möchtest. Bei \"Doppel-Tap oben\" tippst du oben auf den Bildschirm zweimal kurz hintereinander.")
                 }
 
                 // Schulferien
@@ -169,75 +185,6 @@ struct SettingsView: View {
                     } footer: {
                         Text("Schützt die Einstellungen mit einem 4-stelligen PIN.")
                     }
-                }
-
-                // KI-Lernplan
-                Section {
-                    HStack {
-                        Image(systemName: "key.fill")
-                            .foregroundStyle(.secondary)
-                        SecureField("API-Key eingeben", text: $geminiKey)
-                            .textContentType(.password)
-                            .autocorrectionDisabled()
-                    }
-                    if !geminiKey.isEmpty {
-                        Button("Key speichern") {
-                            GeminiService.shared.apiKey = geminiKey
-                        }
-                        .disabled(geminiKey == (GeminiService.shared.apiKey ?? ""))
-                    }
-                    if GeminiService.shared.hasAPIKey {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
-                            Text("API-Key gespeichert")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-
-                    DisclosureGroup {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Label("So bekommst du einen kostenlosen API-Key:", systemImage: "info.circle")
-                                .font(.subheadline.bold())
-
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack(alignment: .top, spacing: 8) {
-                                    Text("1.").font(.subheadline.bold()).frame(width: 20)
-                                    Text("Öffne **ai.google.dev** im Browser und melde dich mit deinem Google-Konto an.")
-                                        .font(.subheadline)
-                                }
-                                HStack(alignment: .top, spacing: 8) {
-                                    Text("2.").font(.subheadline.bold()).frame(width: 20)
-                                    Text("Klicke oben auf **\"Get API Key\"**.")
-                                        .font(.subheadline)
-                                }
-                                HStack(alignment: .top, spacing: 8) {
-                                    Text("3.").font(.subheadline.bold()).frame(width: 20)
-                                    Text("Klicke auf **\"Create API Key\"** und wähle ein Projekt aus (oder erstelle ein neues).")
-                                        .font(.subheadline)
-                                }
-                                HStack(alignment: .top, spacing: 8) {
-                                    Text("4.").font(.subheadline.bold()).frame(width: 20)
-                                    Text("Kopiere den angezeigten Key und füge ihn oben ein.")
-                                        .font(.subheadline)
-                                }
-                            }
-
-                            Text("Der Key ist komplett kostenlos. Es fallen keine Kosten an, solange du kein Zahlungskonto verknüpfst.")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(.vertical, 4)
-                    } label: {
-                        Label("Anleitung", systemImage: "questionmark.circle")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
-                    }
-                } header: {
-                    Text("KI-Lernplan (Gemini)")
-                } footer: {
-                    Text("Ermöglicht die automatische Lernplan-Erstellung aus Fotos von Schulaufgaben.")
                 }
 
                 // Import
