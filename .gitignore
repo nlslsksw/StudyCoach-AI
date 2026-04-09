@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+*.xcworkspace/xcuserdata/
+*.xcuserdata/
+
+# Build artifacts
+build/
+DerivedData/
+*.o
+*.a
+*.dSYM
+*.ipa
+*.xcarchive
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+
+# CocoaPods (not used here, but just in case)
+Pods/
+
+# Carthage (not used here, but just in case)
+Carthage/Build/
+
+# Local backup folder — not part of the project
+Lern Kalender Kopie/
+
+# Editor / OS junk
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
