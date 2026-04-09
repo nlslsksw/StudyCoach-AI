@@ -26,9 +26,22 @@ struct TopicFeedView: View {
                 feedScroll
             }
 
-            // Top overlay (X + topic title + post counter)
+            // Back button only — top left
             VStack {
-                topOverlay
+                HStack {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.body.bold())
+                            .foregroundStyle(.primary)
+                            .frame(width: 40, height: 40)
+                            .background(.ultraThinMaterial, in: Circle())
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
                 Spacer()
             }
         }
@@ -41,47 +54,6 @@ struct TopicFeedView: View {
             Text(error ?? "")
         }
         .task { await loadOrGenerate() }
-    }
-
-    // MARK: - Top overlay
-
-    private var topOverlay: some View {
-        HStack {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.body.bold())
-                    .foregroundStyle(.primary)
-                    .frame(width: 36, height: 36)
-                    .background(.ultraThinMaterial, in: Circle())
-            }
-
-            Spacer()
-
-            VStack(spacing: 2) {
-                Text(topic.title)
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                if !posts.isEmpty, let currentId = currentPostId,
-                   let idx = posts.firstIndex(where: { $0.id == currentId }) {
-                    Text("\(idx + 1) / \(posts.count)")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(.ultraThinMaterial, in: Capsule())
-
-            Spacer()
-
-            // Symmetrical placeholder so the title stays centered
-            Color.clear.frame(width: 36, height: 36)
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
     }
 
     // MARK: - States
@@ -127,31 +99,29 @@ struct TopicFeedView: View {
     // MARK: - TikTok-style paging feed
 
     private var feedScroll: some View {
-        GeometryReader { proxy in
-            ScrollView(.vertical) {
-                LazyVStack(spacing: 0) {
-                    ForEach(posts) { post in
-                        FeedPostView(post: post, topicColor: topic.color) { answer in
-                            store.recordAnswer(post: post, answer: answer)
-                        }
-                        .frame(width: proxy.size.width, height: proxy.size.height)
-                        .id(post.id)
+        ScrollView(.vertical) {
+            LazyVStack(spacing: 0) {
+                ForEach(posts) { post in
+                    FeedPostView(post: post, topicColor: topic.color) { answer in
+                        store.recordAnswer(post: post, answer: answer)
                     }
-
-                    // End-of-feed marker
-                    endOfFeedView
-                        .frame(width: proxy.size.width, height: proxy.size.height)
-                        .id("end")
-                        .onAppear {
-                            store.markFeedExhausted(topicId: topic.id)
-                        }
+                    .containerRelativeFrame([.horizontal, .vertical])
+                    .id(post.id)
                 }
-                .scrollTargetLayout()
+
+                // End-of-feed marker
+                endOfFeedView
+                    .containerRelativeFrame([.horizontal, .vertical])
+                    .id("end")
+                    .onAppear {
+                        store.markFeedExhausted(topicId: topic.id)
+                    }
             }
-            .scrollTargetBehavior(.paging)
-            .scrollPosition(id: $currentPostId)
-            .ignoresSafeArea()
+            .scrollTargetLayout()
         }
+        .scrollTargetBehavior(.paging)
+        .scrollPosition(id: $currentPostId)
+        .ignoresSafeArea()
     }
 
     private var endOfFeedView: some View {
@@ -171,6 +141,8 @@ struct TopicFeedView: View {
                 .padding(.top, 8)
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
     }
 
     // MARK: - Loading / Generation

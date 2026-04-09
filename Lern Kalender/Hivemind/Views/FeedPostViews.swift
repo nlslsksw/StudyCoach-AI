@@ -35,7 +35,7 @@ private struct FullScreenPost<Content: View>: View {
 
     var body: some View {
         ZStack {
-            // Subtle topic-tinted gradient background.
+            // Subtle topic-tinted gradient background — full edge-to-edge.
             LinearGradient(
                 colors: [
                     accent.opacity(0.22),
@@ -45,10 +45,9 @@ private struct FullScreenPost<Content: View>: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            .ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 24) {
-                // Type label badge
+                // Type label badge — placed below the back button.
                 HStack(spacing: 10) {
                     Image(systemName: icon)
                         .font(.body.bold())
@@ -61,14 +60,15 @@ private struct FullScreenPost<Content: View>: View {
                         .textCase(.uppercase)
                         .tracking(1.2)
                 }
-                .padding(.top, 60)   // breathing room from top overlay
+                .padding(.top, 70)   // sits below the back button
 
                 content
             }
             .padding(.horizontal, 28)
+            .padding(.bottom, 60)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding(.bottom, 80)    // breathing room at bottom for swipe hint
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
