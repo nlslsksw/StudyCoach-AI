@@ -67,21 +67,14 @@ struct TopicFeedView: View {
             }
         case .doubleTapTop:
             VStack(spacing: 0) {
-                // Tappable strip at the very top — full width, ~70pt tall.
-                // Double-tap dismisses. A subtle pill in the middle hints at it.
-                ZStack {
-                    Color.clear
-                    Capsule()
-                        .fill(.secondary.opacity(0.4))
-                        .frame(width: 44, height: 5)
-                        .padding(.top, 8)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 70)
-                .contentShape(Rectangle())
-                .onTapGesture(count: 2) {
-                    dismiss()
-                }
+                // Invisible tap strip at the very top — no visible affordance.
+                Color.clear
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 70)
+                    .contentShape(Rectangle())
+                    .onTapGesture(count: 2) {
+                        dismiss()
+                    }
                 Spacer()
             }
         }
