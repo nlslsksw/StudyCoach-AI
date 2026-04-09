@@ -84,11 +84,6 @@ struct ContentView: View {
                             Label("KI", systemImage: "sparkles")
                         }
                         NavigationLink {
-                            HivemindTab(store: store)
-                        } label: {
-                            Label("Lernen", systemImage: "brain.head.profile")
-                        }
-                        NavigationLink {
                             StatisticsTab(store: store)
                         } label: {
                             Label("Statistik", systemImage: "chart.bar.fill")
@@ -109,8 +104,6 @@ struct ContentView: View {
                         .tabItem { Label("Lernzeit", systemImage: "clock.fill") }
                     AIAssistantTab(store: store)
                         .tabItem { Label("KI", systemImage: "sparkles") }
-                    HivemindTab(store: store)
-                        .tabItem { Label("Lernen", systemImage: "brain.head.profile") }
                     StatisticsTab(store: store)
                         .tabItem { Label("Statistik", systemImage: "chart.bar.fill") }
                 }

@@ -125,7 +125,7 @@ struct AIChatView: View {
     @State private var showingStudyPlan = false
     @State private var showingSettings = false
     @State private var showingContent = false
-    @State private var isTemporary = false
+    @State private var showingHivemind = false
     @State private var quizToPlay: SavedQuiz?
     @State private var flashcardsToPlay: SavedFlashcardSet?
     @State private var navigateToTab: String?
@@ -167,23 +167,13 @@ struct AIChatView: View {
                                             in: RoundedRectangle(cornerRadius: 16)
                                         )
 
-                                    if isTemporary {
-                                        Text("Temporärer Chat")
-                                            .font(.title3.bold())
-                                        Text("Dieser Chat wird nicht gespeichert und erscheint nicht im Verlauf.")
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                            .multilineTextAlignment(.center)
-                                            .padding(.horizontal, 40)
-                                    } else {
-                                        Text("Willkommen!")
-                                            .font(.title3.bold())
-                                        Text("Ich bin dein persönlicher Lern-Assistent. Stelle mir Fragen, lass dir Themen erklären oder erstelle einen Lernplan.")
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                            .multilineTextAlignment(.center)
-                                            .padding(.horizontal, 30)
-                                    }
+                                    Text("Willkommen!")
+                                        .font(.title3.bold())
+                                    Text("Ich bin dein persönlicher Lern-Assistent. Stelle mir Fragen, lass dir Themen erklären oder erstelle einen Lernplan.")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.horizontal, 30)
 
                                     Spacer()
                                 }
@@ -231,7 +221,7 @@ struct AIChatView: View {
                         }
 
                         HStack(spacing: 8) {
-                            TextField(isTemporary ? "Temporärer Chat" : "\(AIService.shared.assistantName) fragen", text: $inputText, axis: .vertical)
+                            TextField("\(AIService.shared.assistantName) fragen", text: $inputText, axis: .vertical)
                                 .lineLimit(1...4)
                                 .focused($inputFocused)
 
@@ -289,17 +279,23 @@ struct AIChatView: View {
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        saveCurrentChat()
-                        isTemporary.toggle()
-                        messages = []
+                        showingHivemind = true
                     } label: {
-                        Image(systemName: isTemporary ? "checkmark.circle.dotted" : "circle.dotted")
-                            .font(.title3)
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(isTemporary ? .pink : .primary)
-                            .frame(width: 36, height: 36)
+                        HStack(spacing: 4) {
+                            Image(systemName: "brain.head.profile")
+                                .font(.body)
+                            Text("Lernen")
+                                .font(.subheadline.bold())
+                        }
+                        .foregroundStyle(.purple)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(.purple.opacity(0.12), in: Capsule())
                     }
                 }
+            }
+            .fullScreenCover(isPresented: $showingHivemind) {
+                HivemindTab(store: store)
             }
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showingPlusSheet) {
@@ -1133,14 +1129,14 @@ struct AIChatView: View {
     }
 
     private func saveCurrentChat() {
-        guard !messages.isEmpty, !isTemporary else { return }
+        guard !messages.isEmpty else { return }
         let title = messages.first(where: { $0.role == "user" })?.text.prefix(40).description ?? "Chat"
         let session = ChatSession(title: String(title), messages: messages)
         history.addSession(session)
     }
 
     private func autoSaveChat() {
-        guard !messages.isEmpty, !isTemporary else { return }
+        guard !messages.isEmpty else { return }
         // Aktuellen Chat als "aktiv" speichern
         if let data = try? JSONEncoder().encode(messages) {
             UserDefaults.standard.set(data, forKey: "activeChat")
