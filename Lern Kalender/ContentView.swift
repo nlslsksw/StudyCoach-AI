@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var wrappedIsHalbjahr = false
     @State private var wrappedSchoolYear: SchoolYear?
     @State private var showingMotivation = false
+    @State private var showingOnboarding = !OnboardingTracker.hasCompleted
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
@@ -17,6 +18,9 @@ struct ContentView: View {
             } else {
                 studentView
             }
+        }
+        .fullScreenCover(isPresented: $showingOnboarding) {
+            OnboardingView()
         }
     }
 

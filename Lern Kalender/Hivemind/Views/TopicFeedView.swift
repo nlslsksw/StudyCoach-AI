@@ -8,6 +8,7 @@ struct TopicFeedView: View {
     @State private var isGenerating = false
     @State private var error: String?
     @State private var dailyLimitHit = false
+    @State private var needsAPIKey = false
     @State private var currentPostId: UUID?
     @State private var closeGesture: FeedCloseGesture = FeedCloseGesture.current
 
@@ -19,6 +20,8 @@ struct TopicFeedView: View {
 
             if isGenerating {
                 generatingView
+            } else if needsAPIKey {
+                needsAPIKeyView
             } else if dailyLimitHit && posts.isEmpty {
                 dailyLimitView
             } else if posts.isEmpty {
@@ -100,6 +103,37 @@ struct TopicFeedView: View {
             Button("Feed generieren") { Task { await regenerate() } }
                 .buttonStyle(.borderedProminent)
         }
+    }
+
+    private var needsAPIKeyView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "key.slash.fill")
+                .font(.system(size: 50))
+                .foregroundStyle(.orange)
+            Text("Kein KI-Schlüssel")
+                .font(.title3.bold())
+            Text("Um Lern-Feeds zu generieren, brauchst du einen kostenlosen API-Schlüssel von Groq.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Schließe diese Ansicht", systemImage: "1.circle.fill")
+                Label("Geh zur KI-Tab → Schlüssel-Symbol", systemImage: "2.circle.fill")
+                Label("Hol dir kostenlos einen Key bei console.groq.com", systemImage: "3.circle.fill")
+            }
+            .font(.footnote)
+            .foregroundStyle(.primary.opacity(0.85))
+            .padding()
+            .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 14))
+            .padding(.horizontal)
+
+            Button("Schließen") { dismiss() }
+                .buttonStyle(.borderedProminent)
+                .tint(.purple)
+                .padding(.top, 8)
+        }
+        .padding()
     }
 
     private var dailyLimitView: some View {
@@ -211,9 +245,12 @@ struct TopicFeedView: View {
             posts = generated
             currentPostId = generated.first?.id
         } catch let err as FeedGenerationError {
-            if case .dailyLimitReached = err {
+            switch err {
+            case .dailyLimitReached:
                 dailyLimitHit = true
-            } else {
+            case .noAPIKey:
+                needsAPIKey = true
+            default:
                 error = err.localizedDescription
             }
         } catch {
