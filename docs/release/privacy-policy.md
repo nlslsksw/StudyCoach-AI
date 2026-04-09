@@ -10,8 +10,11 @@ Diese Datenschutzerklärung informiert dich darüber, welche Daten die App **Ler
 ## 1. Verantwortlich
 
 Ralf Lohrmann
-[Adresse einsetzen]
-E-Mail: [Kontakt-E-Mail einsetzen]
+Heilbronner Straße 9
+73728 Esslingen
+Deutschland
+
+E-Mail: geldtracker.contact@gmail.com
 
 ---
 
@@ -129,4 +132,4 @@ Diese Datenschutzerklärung kann bei Änderungen der App aktualisiert werden. Di
 
 ## 9. Kontakt
 
-Bei Fragen zum Datenschutz: [Kontakt-E-Mail einsetzen]
+Bei Fragen zum Datenschutz: geldtracker.contact@gmail.com

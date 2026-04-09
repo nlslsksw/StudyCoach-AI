@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Lern Kalender</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <a href="index-en.html" class="brand">
+            <div class="brand-icon">📚</div>
+            Lern Kalender
+        </a>
+        <nav>
+            <a href="index-en.html">Overview</a>
+            <a href="privacy-en.html" class="active">Privacy</a>
+            <a href="terms-en.html">Terms of Use</a>
+            <a href="imprint.html">Imprint</a>
+            <div class="lang-switch">
+                <a href="privacy-de.html">DE</a>
+                <a href="privacy-en.html">EN</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Privacy Policy</h1>
+        <p class="subtitle">Last updated: 9 April 2026</p>
+
+        <p>This Privacy Policy explains what data the <strong>Lern Kalender</strong> app processes, where it is stored, and who has access.</p>
+
+        <h2>1. Data controller</h2>
+        <p>
+            Ralf Lohrmann<br>
+            Heilbronner Straße 9<br>
+            73728 Esslingen<br>
+            Germany
+        </p>
+        <p>Email: <a href="mailto:geldtracker.contact@gmail.com">geldtracker.contact@gmail.com</a></p>
+
+        <h2>2. What data does the app process?</h2>
+
+        <h3>2.1 Local data (on your device)</h3>
+        <p>The following data is stored exclusively on your iPhone/iPad in the standard storage areas iOS provides for apps (<code>UserDefaults</code>, <code>iCloud Key-Value Store</code>, local file system):</p>
+        <ul>
+            <li>Calendar entries (study days, exams, reminders)</li>
+            <li>Subjects and school years</li>
+            <li>Study sessions and statistics</li>
+            <li>Grades</li>
+            <li>Flashcards and quiz results</li>
+            <li>Topics and study feed content from the Hivemind area</li>
+            <li>App settings</li>
+        </ul>
+
+        <h3>2.2 iCloud synchronisation</h3>
+        <p>If you use the app with your iCloud account, the data listed above is also automatically synced between your devices via your private iCloud account. Apple acts as the data processor in this case. We have no access to that data — it lives exclusively in your iCloud storage and is protected by your Apple account.</p>
+
+        <h3>2.3 Family feature (parent ↔ child)</h3>
+        <p>If you enable the family feature and connect a parent device with a child device:</p>
+        <ul>
+            <li>Connecting generates a 6-digit <strong>pairing code</strong>.</li>
+            <li>Specific child study data (study time, grades, streak, topics, exams) is written to the <strong>public CloudKit database</strong> of the app provider so the parent device can fetch it.</li>
+            <li>This data is only retrievable using the secret pairing code — other users have no access.</li>
+            <li>Parents can send <strong>topics</strong>, <strong>study goals</strong>, and <strong>motivation messages</strong> to the child, which are also transmitted via CloudKit.</li>
+        </ul>
+        <p>You can disconnect the family link at any time in settings.</p>
+
+        <h3>2.4 AI features (beta)</h3>
+        <p>The AI features of the app (AI assistant, study feed generation, quiz/flashcard creation, photo-based study plan) use the external provider <strong>Groq, Inc.</strong> (<a href="https://groq.com">https://groq.com</a>). When you use the AI, the following data is transmitted to Groq:</p>
+        <ul>
+            <li>Your <strong>input texts</strong> (question, topic name, OCR text)</li>
+            <li>For photo study plans: the <strong>text recognized</strong> by the Vision framework (the image itself never leaves your device)</li>
+            <li>Optionally: instructions such as language, response style</li>
+        </ul>
+        <p>Groq processes this data according to its own privacy policy (<a href="https://groq.com/privacy-policy/">https://groq.com/privacy-policy/</a>).</p>
+        <p><strong>Important:</strong> Do <strong>not</strong> store or send any sensitive personal data through the AI features.</p>
+        <p>The AI feature is optional and requires your own API key, which you store in settings.</p>
+
+        <h3>2.5 Voice input</h3>
+        <p>When you use voice input (in the AI assistant or Feynman mode), the <strong>Apple Speech Recognition Framework</strong> is used. Apple processes voice input according to its own privacy policy.</p>
+
+        <h3>2.6 Photo selection</h3>
+        <p>When creating a study plan or topic from a photo, the selected image is processed <strong>locally with the Apple Vision Framework</strong> (OCR). The image never leaves your device. Only the recognized text is sent to the AI.</p>
+
+        <h2>3. What we do NOT do</h2>
+        <ul>
+            <li>❌ <strong>No tracking</strong> — the app uses no tracking frameworks.</li>
+            <li>❌ <strong>No advertising.</strong></li>
+            <li>❌ <strong>No selling to third parties.</strong></li>
+            <li>❌ <strong>No profile building.</strong></li>
+            <li>❌ <strong>No location data</strong> is collected.</li>
+            <li>❌ <strong>No access to contacts, system calendar, reminders, or media library</strong> outside of photo selections you explicitly trigger.</li>
+        </ul>
+
+        <h2>4. Permissions</h2>
+        <p>The app only requests the following permissions — and only when you actually use the corresponding feature:</p>
+        <ul>
+            <li><strong>Microphone</strong> — for voice input</li>
+            <li><strong>Speech recognition</strong> — for the same feature</li>
+            <li><strong>Photos</strong> — when you pick an image</li>
+            <li><strong>Notifications</strong> — for reminders and parent notifications</li>
+        </ul>
+
+        <h2>5. Retention</h2>
+        <ul>
+            <li><strong>Local data</strong> stays on your device until you delete it or uninstall the app.</li>
+            <li><strong>iCloud data</strong> stays in your iCloud account until you delete it.</li>
+            <li><strong>CloudKit data of the family feature</strong> is removed when you disconnect the family link.</li>
+            <li><strong>AI inputs at Groq</strong> are subject to Groq's retention policies.</li>
+        </ul>
+
+        <h2>6. Your rights (GDPR)</h2>
+        <p>As a user in the EU/EEA you have the following rights under the GDPR:</p>
+        <ul>
+            <li><strong>Right of access</strong> to your stored data</li>
+            <li><strong>Right to rectification</strong> of inaccurate data</li>
+            <li><strong>Right to erasure</strong> of your data</li>
+            <li><strong>Right to restriction</strong> of processing</li>
+            <li><strong>Right to data portability</strong></li>
+            <li><strong>Right to object</strong> to processing</li>
+            <li><strong>Right to lodge a complaint</strong> with a supervisory authority</li>
+        </ul>
+        <p>Since most data lives locally on your device, you can manage it yourself via the app settings or iOS settings. For CloudKit data of the family feature, contact us at the email listed in section 1.</p>
+
+        <h2>7. Children</h2>
+        <p>The app is suitable for students of all ages. For children under 16 we recommend using it with parental consent. The family feature gives parents insight into their child's study progress.</p>
+
+        <h2>8. Changes</h2>
+        <p>This privacy policy may be updated when the app changes. The current version is linked from the app under <strong>Settings → Privacy</strong>.</p>
+
+        <h2>9. Contact</h2>
+        <p>For privacy questions: <a href="mailto:geldtracker.contact@gmail.com">geldtracker.contact@gmail.com</a></p>
+    </main>
+
+    <footer>
+        <p>© 2026 Ralf Lohrmann · <a href="privacy-de.html">Deutsche Version</a></p>
+    </footer>
+</div>
+</body>
+</html>

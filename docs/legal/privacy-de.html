@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datenschutz — Lern Kalender</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <a href="index.html" class="brand">
+            <div class="brand-icon">📚</div>
+            Lern Kalender
+        </a>
+        <nav>
+            <a href="index.html">Übersicht</a>
+            <a href="privacy-de.html" class="active">Datenschutz</a>
+            <a href="terms-de.html">Nutzungsbedingungen</a>
+            <a href="imprint.html">Impressum</a>
+            <div class="lang-switch">
+                <a href="privacy-de.html">DE</a>
+                <a href="privacy-en.html">EN</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Datenschutzerklärung</h1>
+        <p class="subtitle">Stand: 9. April 2026</p>
+
+        <p>Diese Datenschutzerklärung informiert dich darüber, welche Daten die App <strong>Lern Kalender</strong> verarbeitet, wo sie gespeichert werden und wer Zugriff hat.</p>
+
+        <h2>1. Verantwortlich</h2>
+        <p>
+            Ralf Lohrmann<br>
+            Heilbronner Straße 9<br>
+            73728 Esslingen<br>
+            Deutschland
+        </p>
+        <p>E-Mail: <a href="mailto:geldtracker.contact@gmail.com">geldtracker.contact@gmail.com</a></p>
+
+        <h2>2. Welche Daten verarbeitet die App?</h2>
+
+        <h3>2.1 Lokale Daten (auf deinem Gerät)</h3>
+        <p>Die folgenden Daten werden ausschließlich lokal auf deinem iPhone/iPad gespeichert (in den Standard-Speicherbereichen, die iOS für Apps bereitstellt — <code>UserDefaults</code>, <code>iCloud Key-Value Store</code>, lokales Dateisystem):</p>
+        <ul>
+            <li>Schul-Kalendereinträge (Lerntage, Klassenarbeiten, Erinnerungen)</li>
+            <li>Fächer und Schuljahre</li>
+            <li>Lernzeiten und Lernstatistiken</li>
+            <li>Noten</li>
+            <li>Karteikarten und Quiz-Ergebnisse</li>
+            <li>Topics und Lern-Feed-Inhalte des Hivemind-Bereichs</li>
+            <li>App-Einstellungen</li>
+        </ul>
+
+        <h3>2.2 iCloud-Synchronisation</h3>
+        <p>Wenn du die App mit deinem iCloud-Account verwendest, werden die genannten Daten zusätzlich automatisch über deinen privaten iCloud-Account zwischen deinen Geräten synchronisiert. Apple ist in diesem Fall der Auftragsverarbeiter. Wir haben keinen Zugriff auf diese Daten — sie liegen ausschließlich in deinem iCloud-Speicher und sind durch deinen Apple-Account geschützt.</p>
+
+        <h3>2.3 Familien-Funktion (Eltern ↔ Kind)</h3>
+        <p>Wenn du die Familien-Funktion aktivierst und ein Eltern- mit einem Kind-Gerät verbindest:</p>
+        <ul>
+            <li>Beim Verbinden wird ein 6-stelliger <strong>Pairing-Code</strong> generiert.</li>
+            <li>Bestimmte Lerndaten des Kindes (Lernzeit, Noten, Streak, Topics, Klassenarbeiten) werden in die <strong>öffentliche CloudKit-Datenbank</strong> des App-Anbieters geschrieben, damit das Eltern-Gerät sie abrufen kann.</li>
+            <li>Diese Daten sind nur über den geheimen Pairing-Code abrufbar — andere Nutzer haben keinen Zugriff.</li>
+            <li>Eltern können <strong>Topics</strong>, <strong>Lernziele</strong> und <strong>Motivationsnachrichten</strong> an das Kind senden, die ebenfalls über CloudKit übertragen werden.</li>
+        </ul>
+        <p>Du kannst die Familien-Verbindung jederzeit in den Einstellungen wieder trennen.</p>
+
+        <h3>2.4 KI-Funktionen (Beta)</h3>
+        <p>Die KI-Funktionen der App (KI-Assistent, Lern-Feed-Generierung, Quiz-/Karteikarten-Erstellung, Lernplan aus Foto) verwenden den externen Anbieter <strong>Groq, Inc.</strong> (<a href="https://groq.com">https://groq.com</a>). Wenn du die KI nutzt, werden die folgenden Daten an Groq übertragen:</p>
+        <ul>
+            <li>Deine <strong>Eingabetexte</strong> (Frage, Topic-Name, OCR-Text)</li>
+            <li>Bei Foto-Lernplänen: der per Vision-Framework <strong>erkannte Text</strong> (das Bild selbst verlässt dein Gerät nicht)</li>
+            <li>Optional: Anweisungen wie Sprache, Antwort-Stil</li>
+        </ul>
+        <p>Groq verarbeitet diese Daten gemäß seiner eigenen Datenschutzbestimmungen (<a href="https://groq.com/privacy-policy/">https://groq.com/privacy-policy/</a>).</p>
+        <p><strong>Wichtig:</strong> Speichere oder sende <strong>keine sensiblen persönlichen Daten</strong> über die KI-Funktionen.</p>
+        <p>Die KI-Funktion ist optional und erfordert einen eigenen API-Schlüssel, den du in den Einstellungen hinterlegst.</p>
+
+        <h3>2.5 Spracheingabe</h3>
+        <p>Wenn du die Spracheingabe nutzt (im KI-Assistenten oder im Feynman-Modus), wird das <strong>Apple Speech Recognition Framework</strong> verwendet. Apple verarbeitet die Spracheingabe gemäß seinen Datenschutzbestimmungen.</p>
+
+        <h3>2.6 Foto-Auswahl</h3>
+        <p>Beim Erstellen eines Lernplans oder Topics aus einem Foto wird das ausgewählte Bild <strong>lokal mit dem Apple Vision Framework</strong> verarbeitet (OCR). Das Bild verlässt dein Gerät nicht. Nur der erkannte Text wird an die KI gesendet.</p>
+
+        <h2>3. Was wir NICHT tun</h2>
+        <ul>
+            <li>❌ <strong>Kein Tracking</strong> — die App nutzt keine Tracking-Frameworks.</li>
+            <li>❌ <strong>Keine Werbung.</strong></li>
+            <li>❌ <strong>Keine Verkäufe an Dritte.</strong></li>
+            <li>❌ <strong>Kein Profil-Building.</strong></li>
+            <li>❌ <strong>Keine Standortdaten</strong> werden erhoben.</li>
+            <li>❌ <strong>Kein Zugriff auf Kontakte, System-Kalender, Erinnerungen oder Mediathek</strong> außerhalb der Foto-Auswahl, die du selbst auslöst.</li>
+        </ul>
+
+        <h2>4. Berechtigungen</h2>
+        <p>Die App fragt nur folgende Berechtigungen ab — und nur wenn du die jeweilige Funktion verwendest:</p>
+        <ul>
+            <li><strong>Mikrofon</strong> — für die Spracheingabe</li>
+            <li><strong>Spracherkennung</strong> — für dieselbe Funktion</li>
+            <li><strong>Fotos</strong> — beim Auswählen eines Bildes</li>
+            <li><strong>Mitteilungen</strong> — für Erinnerungen und Eltern-Benachrichtigungen</li>
+        </ul>
+
+        <h2>5. Speicherdauer</h2>
+        <ul>
+            <li><strong>Lokale Daten</strong> bleiben auf deinem Gerät, bis du sie löschst oder die App deinstallierst.</li>
+            <li><strong>iCloud-Daten</strong> bleiben in deinem iCloud-Account, bis du sie löschst.</li>
+            <li><strong>CloudKit-Daten der Familien-Funktion</strong> werden gelöscht, wenn du die Familien-Verbindung trennst.</li>
+            <li><strong>KI-Eingaben bei Groq</strong> unterliegen den Speicherrichtlinien von Groq.</li>
+        </ul>
+
+        <h2>6. Deine Rechte (DSGVO)</h2>
+        <p>Als Nutzer in der EU/EWR hast du nach der DSGVO folgende Rechte:</p>
+        <ul>
+            <li><strong>Auskunft</strong> über deine gespeicherten Daten</li>
+            <li><strong>Berichtigung</strong> falscher Daten</li>
+            <li><strong>Löschung</strong> deiner Daten</li>
+            <li><strong>Einschränkung</strong> der Verarbeitung</li>
+            <li><strong>Datenübertragbarkeit</strong></li>
+            <li><strong>Widerspruch</strong> gegen die Verarbeitung</li>
+            <li><strong>Beschwerde</strong> bei einer Aufsichtsbehörde</li>
+        </ul>
+        <p>Da die meisten Daten lokal auf deinem Gerät liegen, kannst du sie selbst über die Einstellungen der App oder die iOS-Einstellungen verwalten. Für CloudKit-Daten der Familien-Funktion wende dich an die unter Punkt 1 angegebene E-Mail-Adresse.</p>
+
+        <h2>7. Kinder</h2>
+        <p>Die App ist für Schüler aller Altersstufen geeignet. Für Kinder unter 16 Jahren empfehlen wir die Nutzung mit Einwilligung der Eltern. Die Familien-Funktion gibt Eltern Einblick in den Lernfortschritt ihres Kindes.</p>
+
+        <h2>8. Änderungen</h2>
+        <p>Diese Datenschutzerklärung kann bei Änderungen der App aktualisiert werden. Die jeweils aktuelle Version ist in der App unter <strong>Einstellungen → Datenschutz</strong> verlinkt.</p>
+
+        <h2>9. Kontakt</h2>
+        <p>Bei Fragen zum Datenschutz: <a href="mailto:geldtracker.contact@gmail.com">geldtracker.contact@gmail.com</a></p>
+    </main>
+
+    <footer>
+        <p>© 2026 Ralf Lohrmann · <a href="privacy-en.html">English version</a></p>
+    </footer>
+</div>
+</body>
+</html>
