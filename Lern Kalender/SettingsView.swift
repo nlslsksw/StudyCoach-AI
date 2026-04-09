@@ -26,12 +26,6 @@ struct SettingsView: View {
         return "\(v) (\(b))"
     }
 
-    private func legalURL(_ page: String) -> String {
-        let base = "https://nlslsksw.github.io/StudyCoach-AI/legal"
-        let lang = Locale.current.language.languageCode?.identifier ?? "de"
-        let suffix = lang == "en" ? "en" : "de"
-        return "\(base)/\(page)-\(suffix).html"
-    }
 
     var body: some View {
         NavigationStack {
@@ -229,27 +223,24 @@ struct SettingsView: View {
 
                 // Rechtliches
                 Section {
-                    Link(destination: URL(string: legalURL("privacy"))!) {
-                        HStack {
-                            Label("Datenschutz", systemImage: "lock.shield.fill")
-                            Spacer()
-                            Image(systemName: "arrow.up.right.square")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                        }
+                    NavigationLink {
+                        PrivacyPolicyView()
+                    } label: {
+                        Label("Datenschutz", systemImage: "lock.shield.fill")
                     }
-                    Link(destination: URL(string: legalURL("terms"))!) {
-                        HStack {
-                            Label("Nutzungsbedingungen", systemImage: "doc.text.fill")
-                            Spacer()
-                            Image(systemName: "arrow.up.right.square")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                        }
+                    NavigationLink {
+                        TermsView()
+                    } label: {
+                        Label("Nutzungsbedingungen", systemImage: "doc.text.fill")
                     }
-                    Link(destination: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/imprint.html")!) {
+                    NavigationLink {
+                        ImprintView()
+                    } label: {
+                        Label("Impressum", systemImage: "info.circle.fill")
+                    }
+                    Link(destination: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/")!) {
                         HStack {
-                            Label("Impressum", systemImage: "info.circle.fill")
+                            Label("Alle rechtlichen Hinweise online", systemImage: "globe")
                             Spacer()
                             Image(systemName: "arrow.up.right.square")
                                 .font(.caption)
@@ -259,7 +250,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Rechtliches")
                 } footer: {
-                    Text("Öffnet die rechtlichen Hinweise in deinem Browser.")
+                    Text("Datenschutz, Nutzungsbedingungen und Impressum direkt in der App.")
                 }
 
                 // App-Info
