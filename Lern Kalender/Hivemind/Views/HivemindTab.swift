@@ -8,6 +8,7 @@ struct HivemindTab: View {
     @State private var showDiscover = false
     @State private var showProfile = false
     @State private var topicToOpen: Topic?
+    @State private var topicToDelete: Topic?
 
     var body: some View {
         NavigationStack {
@@ -46,6 +47,18 @@ struct HivemindTab: View {
             }
             .sheet(item: $topicToOpen) { topic in
                 TopicFeedView(topic: topic)
+            }
+            .alert("Topic löschen?", isPresented: Binding(
+                get: { topicToDelete != nil },
+                set: { if !$0 { topicToDelete = nil } }
+            ), presenting: topicToDelete) { topic in
+                Button("Abbrechen", role: .cancel) { topicToDelete = nil }
+                Button("Löschen", role: .destructive) {
+                    topicStore.deleteTopic(id: topic.id)
+                    topicToDelete = nil
+                }
+            } message: { topic in
+                Text("\"\(topic.title)\" und alle generierten Posts werden gelöscht.")
             }
         }
     }
@@ -140,6 +153,13 @@ struct HivemindTab: View {
                     ForEach(topicStore.schoolTopics) { topic in
                         TopicCard(topic: topic, progress: topicStore.progress(for: topic.id)) {
                             topicToOpen = topic
+                        }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                topicToDelete = topic
+                            } label: {
+                                Label("Löschen", systemImage: "trash")
+                            }
                         }
                     }
                 }
