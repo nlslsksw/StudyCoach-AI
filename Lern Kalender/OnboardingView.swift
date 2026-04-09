@@ -8,32 +8,38 @@ struct OnboardingView: View {
 
     private let pages: [OnboardingPage] = [
         OnboardingPage(
-            icon: "calendar",
-            iconColors: [.blue, .cyan],
+            kind: .image("onboarding-calendar"),
+            accent: .blue,
             title: "Willkommen im Lern Kalender",
-            subtitle: "Plane deine Schule. Tracke deine Lernzeit. Behalte den Überblick."
+            subtitle: "Plane deine Schule. Trag deine Lernzeiten ein. Behalte den Überblick über alle Klassenarbeiten."
         ),
         OnboardingPage(
-            icon: "chart.bar.fill",
-            iconColors: [.green, .mint],
+            kind: .image("onboarding-subjects"),
+            accent: .green,
+            title: "Fächer & Noten",
+            subtitle: "Verwalte alle Fächer eines Schuljahres. Jedes Fach mit Noten, Lernzeit und Schnitt."
+        ),
+        OnboardingPage(
+            kind: .image("onboarding-statistics"),
+            accent: .orange,
             title: "Statistiken & Streak",
-            subtitle: "Sieh deine Fortschritte. Halte deine Lern-Serie. Erhalte einen Schuljahres-Wrapped."
+            subtitle: "Sieh deine Fortschritte. Halte deine Lern-Serie. Schau, wo du diese Woche stehst."
         ),
         OnboardingPage(
-            icon: "sparkles",
-            iconColors: [.pink, .purple],
-            title: "KI-Lern-Assistent (Beta)",
-            subtitle: "Stelle Fragen, erstelle Lernpläne aus Foto, generiere Quiz und Karteikarten. KI kann Fehler machen — prüf Antworten selbst."
+            kind: .image("onboarding-ai"),
+            accent: .pink,
+            title: "KI-Lern-Assistent",
+            subtitle: "Sag der KI 'trag 90 Minuten Englisch ein' — sie macht es. Frage Themen ab. Lass dir Lernpläne erstellen. (Beta)"
         ),
         OnboardingPage(
-            icon: "brain.head.profile",
-            iconColors: [.purple, .indigo],
+            kind: .icon("brain.head.profile", colors: [.purple, .indigo]),
+            accent: .purple,
             title: "Lern-Feed (Hivemind)",
             subtitle: "Scroll dich schlauer. Kurze Lektionen, Quiz, Karteikarten und Sprach-Übungen — wie ein Feed, nur lehrreich."
         ),
         OnboardingPage(
-            icon: "person.2.fill",
-            iconColors: [.orange, .red],
+            kind: .icon("person.2.fill", colors: [.orange, .red]),
+            accent: .red,
             title: "Familie & Eltern",
             subtitle: "Eltern können Lernfortschritte einsehen, Topics zuweisen und motivieren. Sicher über iCloud verbunden."
         )
@@ -58,7 +64,7 @@ struct OnboardingView: View {
                         .animation(.spring(response: 0.4), value: currentPage)
                 }
             }
-            .padding(.bottom, 16)
+            .padding(.bottom, 12)
 
             // Bottom button
             Button {
@@ -80,7 +86,7 @@ struct OnboardingView: View {
                     )
             }
             .padding(.horizontal, 24)
-            .padding(.bottom, 24)
+            .padding(.bottom, 12)
 
             if currentPage > 0 {
                 Button("Überspringen") {
@@ -89,7 +95,7 @@ struct OnboardingView: View {
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-                .padding(.bottom, 16)
+                .padding(.bottom, 12)
             }
         }
         .background(Color(.systemBackground))
@@ -98,44 +104,77 @@ struct OnboardingView: View {
 
     @ViewBuilder
     private func pageView(_ page: OnboardingPage) -> some View {
-        VStack(spacing: 24) {
-            Spacer()
+        VStack(spacing: 20) {
+            Spacer(minLength: 12)
 
-            ZStack {
-                Circle()
-                    .fill(LinearGradient(colors: page.iconColors, startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: 140, height: 140)
-                    .shadow(color: page.iconColors.first?.opacity(0.4) ?? .clear, radius: 30, y: 12)
-                Image(systemName: page.icon)
-                    .font(.system(size: 64, weight: .medium))
-                    .foregroundStyle(.white)
+            Group {
+                switch page.kind {
+                case .image(let name):
+                    screenshotFrame(imageName: name, accent: page.accent)
+                case .icon(let symbol, let colors):
+                    iconCircle(symbol: symbol, colors: colors)
+                }
             }
 
-            VStack(spacing: 12) {
+            VStack(spacing: 10) {
                 Text(page.title)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.system(size: 26, weight: .bold, design: .rounded))
                     .multilineTextAlignment(.center)
+                    .padding(.horizontal)
 
                 Text(page.subtitle)
-                    .font(.body)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            .padding(.bottom, 8)
 
-            Spacer()
-            Spacer()
+            Spacer(minLength: 0)
         }
         .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    private func screenshotFrame(imageName: String, accent: Color) -> some View {
+        Image(imageName)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(maxHeight: 460)
+            .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+            )
+            .shadow(color: accent.opacity(0.18), radius: 24, y: 12)
+            .padding(.horizontal, 32)
+    }
+
+    @ViewBuilder
+    private func iconCircle(symbol: String, colors: [Color]) -> some View {
+        ZStack {
+            Circle()
+                .fill(LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing))
+                .frame(width: 180, height: 180)
+                .shadow(color: colors.first?.opacity(0.4) ?? .clear, radius: 30, y: 12)
+            Image(systemName: symbol)
+                .font(.system(size: 80, weight: .medium))
+                .foregroundStyle(.white)
+        }
+        .frame(maxHeight: 460)
     }
 }
 
 // MARK: - Page model
 
 private struct OnboardingPage {
-    let icon: String
-    let iconColors: [Color]
+    enum Kind {
+        case image(String)
+        case icon(String, colors: [Color])
+    }
+    let kind: Kind
+    let accent: Color
     let title: String
     let subtitle: String
 }
