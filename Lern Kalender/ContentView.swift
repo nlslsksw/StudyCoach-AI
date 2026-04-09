@@ -151,6 +151,14 @@ struct ContentView: View {
                     }
                 }
             }
+            // Parental controls: pull aiAllowed flag from the parent
+            if let link = store.familyLink, link.isActive {
+                Task {
+                    if let allowed = await CloudKitService.shared.fetchAIAllowed(pairingCode: link.pairingCode) {
+                        await MainActor.run { store.aiAllowed = allowed }
+                    }
+                }
+            }
             // Lern-Wrapped automatisch anzeigen
             if let trigger = WrappedTrigger.shouldShowWrapped(store: store) {
                 wrappedSchoolYear = trigger.schoolYear
@@ -250,14 +258,23 @@ struct ParentSettingsTab: View {
                 Section {
                     Toggle(isOn: Binding(
                         get: { store.aiAllowed },
-                        set: { store.aiAllowed = $0 }
+                        set: { newValue in
+                            store.aiAllowed = newValue
+                            // Push to every linked child via CloudKit
+                            let codes = store.familyLinks.filter(\.isActive).map(\.pairingCode)
+                            Task {
+                                for code in codes {
+                                    try? await CloudKitService.shared.saveAIAllowed(newValue, pairingCode: code)
+                                }
+                            }
+                        }
                     )) {
                         Label("KI-Assistent erlauben", systemImage: "sparkles")
                     }
                 } header: {
                     Text("KI-Assistent")
                 } footer: {
-                    Text("Erlaubt dem Kind den KI-Lernassistenten zu nutzen. Standardmäßig aktiviert.")
+                    Text("Erlaubt dem Kind den KI-Lernassistenten zu nutzen. Die Einstellung wird an alle verbundenen Kinder gesendet. Standardmäßig aktiviert.")
                 }
 
                 Section {

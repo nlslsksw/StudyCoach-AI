@@ -145,6 +145,44 @@ final class CloudKitService {
         }
     }
 
+    // MARK: - Parental Settings (e.g. KI allowed)
+
+    /// Parent device writes which features the child is allowed to use.
+    /// Currently just a flag for the AI assistant.
+    func saveAIAllowed(_ allowed: Bool, pairingCode: String) async throws {
+        let record = try await findOrCreateParentalSettingsRecord(pairingCode: pairingCode)
+        record["aiAllowed"] = (allowed ? 1 : 0) as CKRecordValue
+        record["lastUpdated"] = Date() as CKRecordValue
+        try await publicDB.save(record)
+    }
+
+    /// Child device reads the parental AI-allowed flag. Returns nil if no
+    /// record exists yet (in which case the client should default to true).
+    func fetchAIAllowed(pairingCode: String) async -> Bool? {
+        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let query = CKQuery(recordType: "ParentalSettings", predicate: predicate)
+        guard let results = try? await publicDB.records(matching: query),
+              let matchResult = results.matchResults.first,
+              let record = try? matchResult.1.get() else {
+            return nil
+        }
+        let raw = record["aiAllowed"] as? Int ?? 1
+        return raw == 1
+    }
+
+    private func findOrCreateParentalSettingsRecord(pairingCode: String) async throws -> CKRecord {
+        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let query = CKQuery(recordType: "ParentalSettings", predicate: predicate)
+        let results = try await publicDB.records(matching: query)
+        if let matchResult = results.matchResults.first,
+           let record = try? matchResult.1.get() {
+            return record
+        }
+        let new = CKRecord(recordType: "ParentalSettings")
+        new["pairingCode"] = pairingCode as CKRecordValue
+        return new
+    }
+
     // MARK: - Study Goals
 
     func saveStudyGoal(_ goal: StudyGoal, pairingCode: String) async throws {
@@ -408,6 +446,13 @@ final class CloudKitService {
             hivemind["lastUpdated"] = Date() as CKRecordValue
             let savedHM = try await publicDB.save(hivemind)
 
+            // 8. ParentalSettings
+            let parental = CKRecord(recordType: "ParentalSettings")
+            parental["pairingCode"] = "__setup__" as CKRecordValue
+            parental["aiAllowed"] = 1 as CKRecordValue
+            parental["lastUpdated"] = Date() as CKRecordValue
+            let savedPS = try await publicDB.save(parental)
+
             // Setup-Records wieder löschen
             try await publicDB.deleteRecord(withID: savedFL.recordID)
             try await publicDB.deleteRecord(withID: savedSD.recordID)
@@ -416,6 +461,7 @@ final class CloudKitService {
             try await publicDB.deleteRecord(withID: savedSE.recordID)
             try await publicDB.deleteRecord(withID: savedMM.recordID)
             try await publicDB.deleteRecord(withID: savedHM.recordID)
+            try await publicDB.deleteRecord(withID: savedPS.recordID)
 
             await MainActor.run {
                 schemaSetupComplete = true
