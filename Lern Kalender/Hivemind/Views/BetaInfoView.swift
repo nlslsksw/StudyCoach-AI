@@ -6,18 +6,18 @@ struct BetaInfoView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 16) {
                     header
-                    whatIsBetaSection
-                    importantNoticesSection
+                    noticesSection
                     worksSection
                     comingSoonSection
                     privacySection
-                    Spacer(minLength: 20)
+                    Spacer(minLength: 8)
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.top, 4)
             }
-            .navigationTitle("Beta-Info")
+            .navigationTitle("KI-Beta")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -32,99 +32,79 @@ struct BetaInfoView: View {
     // MARK: - Header
 
     private var header: some View {
-        VStack(spacing: 12) {
+        HStack(spacing: 12) {
             ZStack {
                 Circle()
                     .fill(LinearGradient(colors: [.pink, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: 80, height: 80)
+                    .frame(width: 44, height: 44)
                 Image(systemName: "sparkles")
-                    .font(.system(size: 36))
+                    .font(.body)
                     .foregroundStyle(.white)
             }
 
-            HStack(spacing: 8) {
-                Text("KI-Funktionen")
-                    .font(.title.bold())
-                Text("BETA")
-                    .font(.caption.bold())
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(.pink.gradient, in: Capsule())
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text("KI-Funktionen")
+                        .font(.headline)
+                    Text("BETA")
+                        .font(.caption2.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(.pink.gradient, in: Capsule())
+                }
+                Text("Neu und noch in Entwicklung")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
-            Text("Diese Funktionen sind neu und werden noch verbessert.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            Spacer()
         }
-        .padding(.top, 8)
+        .padding(14)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
     }
 
-    // MARK: - What is Beta
+    // MARK: - Sections
 
-    private var whatIsBetaSection: some View {
-        section(title: "Was bedeutet Beta?", icon: "info.circle.fill", color: .blue) {
-            Text("Beta heißt: das Feature funktioniert, ist aber noch in Entwicklung. Es kann Fehler geben, Antworten können falsch sein, und die Bedienung kann sich ändern.")
-                .font(.subheadline)
-                .foregroundStyle(.primary.opacity(0.85))
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    // MARK: - Important Notices
-
-    private var importantNoticesSection: some View {
-        section(title: "Wichtige Hinweise", icon: "exclamationmark.triangle.fill", color: .orange) {
-            VStack(alignment: .leading, spacing: 12) {
-                bullet("KI kann Fehler machen — prüf wichtige Antworten immer selbst nach.", icon: "checkmark.shield")
-                bullet("Kopiere KI-Antworten nicht 1:1 in Hausaufgaben oder Klassenarbeiten.", icon: "doc.on.clipboard")
-                bullet("Antworten können bei jedem Klick anders sein, auch bei derselben Frage.", icon: "arrow.triangle.2.circlepath")
-                bullet("Die KI kennt nichts Aktuelles aus den letzten Wochen.", icon: "calendar.badge.exclamationmark")
+    private var noticesSection: some View {
+        section(title: "Wichtig", icon: "exclamationmark.triangle.fill", color: .orange) {
+            VStack(alignment: .leading, spacing: 8) {
+                bullet("KI kann Fehler machen — prüf wichtige Antworten selbst.")
+                bullet("Nicht 1:1 in Hausaufgaben oder Klassenarbeiten kopieren.")
+                bullet("Antworten können bei jedem Klick anders ausfallen.")
+                bullet("Die KI kennt nichts Aktuelles aus den letzten Wochen.")
             }
         }
     }
-
-    // MARK: - What works
 
     private var worksSection: some View {
         section(title: "Was schon geht", icon: "checkmark.circle.fill", color: .green) {
-            VStack(alignment: .leading, spacing: 10) {
-                feature("Chat mit der KI", subtitle: "Fragen, Erklärungen, Lerntipps")
-                feature("KI-Lernpläne aus Foto", subtitle: "Heft fotografieren → Lernplan im Kalender")
-                feature("Quiz & Karteikarten generieren", subtitle: "Aus jedem Thema, automatisch")
-                feature("Lern-Feed (Hivemind)", subtitle: "TikTok-Style Topics mit Mikro-Lektionen, Quiz, Feynman-Modus")
-                feature("Eltern können Topics zuweisen", subtitle: "Aus dem Eltern-Dashboard heraus")
+            VStack(alignment: .leading, spacing: 6) {
+                feature("Chat mit der KI")
+                feature("Lernpläne aus Foto")
+                feature("Quiz & Karteikarten generieren")
+                feature("Lern-Feed (Hivemind) mit Topics")
+                feature("Eltern-Topics zuweisen")
             }
         }
     }
-
-    // MARK: - Coming soon
 
     private var comingSoonSection: some View {
-        section(title: "Was bald kommt", icon: "hourglass", color: .purple) {
-            VStack(alignment: .leading, spacing: 10) {
-                feature("Bild- und Meme-Generierung", subtitle: "Visuelle Lerninhalte im Feed")
-                feature("Podcast-Import", subtitle: "Folge reinwerfen → Lerninhalte daraus machen")
-                feature("Audio-Posts mit Sprachausgabe", subtitle: "Lernen unterwegs ohne Bildschirm")
+        section(title: "Bald", icon: "hourglass", color: .purple) {
+            VStack(alignment: .leading, spacing: 6) {
+                feature("Bilder & Memes")
+                feature("Podcast-Import")
+                feature("Audio-Lektionen")
             }
         }
     }
-
-    // MARK: - Privacy
 
     private var privacySection: some View {
         section(title: "Datenschutz", icon: "lock.shield.fill", color: .teal) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Wenn du die KI nutzt, werden deine Eingaben an einen externen KI-Anbieter geschickt (Groq). Speicher dort keine sensiblen persönlichen Daten.")
-                    .font(.subheadline)
-                    .foregroundStyle(.primary.opacity(0.85))
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("Deine Lerndaten (Topics, Karteikarten, Lernzeit) bleiben in der App und werden nur über iCloud zwischen deinen Geräten und mit deinen Eltern (wenn verbunden) geteilt.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text("KI-Eingaben gehen an Groq als externen Anbieter — speicher dort keine sensiblen Daten. Lerndaten bleiben in der App und werden nur über iCloud mit deinen Geräten und Eltern geteilt.")
+                .font(.footnote)
+                .foregroundStyle(.primary.opacity(0.85))
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -137,48 +117,44 @@ struct BetaInfoView: View {
         color: Color,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 10) {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.body.bold())
+                    .font(.caption.bold())
                     .foregroundStyle(.white)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 22, height: 22)
                     .background(color.gradient, in: Circle())
                 Text(title)
-                    .font(.headline)
+                    .font(.subheadline.bold())
             }
             content()
         }
-        .padding(18)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18))
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
     }
 
-    private func bullet(_ text: String, icon: String) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: icon)
-                .font(.subheadline)
-                .foregroundStyle(.orange)
-                .frame(width: 20)
+    private func bullet(_ text: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Circle()
+                .fill(.orange)
+                .frame(width: 5, height: 5)
+                .padding(.top, 7)
             Text(text)
-                .font(.subheadline)
+                .font(.footnote)
                 .foregroundStyle(.primary.opacity(0.85))
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
 
-    private func feature(_ title: String, subtitle: String) -> some View {
-        HStack(alignment: .top, spacing: 10) {
+    private func feature(_ title: String) -> some View {
+        HStack(spacing: 8) {
             Image(systemName: "checkmark")
-                .font(.caption.bold())
-                .foregroundStyle(.white)
-                .frame(width: 18, height: 18)
-                .background(.green.gradient, in: Circle())
-                .padding(.top, 2)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.subheadline.bold())
-                Text(subtitle).font(.caption).foregroundStyle(.secondary)
-            }
+                .font(.caption2.bold())
+                .foregroundStyle(.green)
+                .frame(width: 14)
+            Text(title)
+                .font(.footnote)
         }
     }
 }
