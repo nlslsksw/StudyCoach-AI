@@ -45,7 +45,7 @@ struct HivemindTab: View {
             .sheet(isPresented: $showProfile) {
                 ProfileSheetView(store: store)
             }
-            .sheet(item: $topicToOpen) { topic in
+            .fullScreenCover(item: $topicToOpen) { topic in
                 TopicFeedView(topic: topic)
             }
             .alert("Topic löschen?", isPresented: Binding(
