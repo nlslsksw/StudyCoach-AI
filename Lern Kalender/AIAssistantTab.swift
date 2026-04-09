@@ -281,16 +281,11 @@ struct AIChatView: View {
                     Button {
                         showingHivemind = true
                     } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "brain.head.profile")
-                                .font(.body)
-                            Text("Lernen")
-                                .font(.subheadline.bold())
-                        }
-                        .foregroundStyle(.purple)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(.purple.opacity(0.12), in: Capsule())
+                        Image(systemName: "brain.head.profile")
+                            .font(.body)
+                            .foregroundStyle(.white)
+                            .frame(width: 32, height: 32)
+                            .background(.purple.gradient, in: Circle())
                     }
                 }
             }

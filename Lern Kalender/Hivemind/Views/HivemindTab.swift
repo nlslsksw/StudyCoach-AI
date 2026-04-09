@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HivemindTab: View {
     var store: DataStore
+    @Environment(\.dismiss) private var dismiss
     @Bindable private var topicStore = TopicStore.shared
 
     @State private var showCreateTopic = false
@@ -23,6 +24,17 @@ struct HivemindTab: View {
             }
             .navigationTitle("Lernen")
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.body.bold())
+                            .foregroundStyle(.primary)
+                            .frame(width: 32, height: 32)
+                            .background(Color(.secondarySystemBackground), in: Circle())
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showProfile = true
