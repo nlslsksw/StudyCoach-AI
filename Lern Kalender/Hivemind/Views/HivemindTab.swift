@@ -22,6 +22,8 @@ struct HivemindTab: View {
                     Spacer(minLength: 20)
                 }
                 .padding(.vertical)
+                .frame(maxWidth: 700)   // iPad: cap content width so topics don't stretch
+                .frame(maxWidth: .infinity)
             }
             .navigationTitle("Lernen")
             .toolbar {
@@ -33,6 +35,7 @@ struct HivemindTab: View {
                             .font(.body.weight(.semibold))
                             .foregroundStyle(.purple)
                     }
+                    .accessibilityLabel("Schließen")
                 }
                 ToolbarItemGroup(placement: .primaryAction) {
                     Button {
@@ -42,6 +45,7 @@ struct HivemindTab: View {
                             .font(.title3)
                             .foregroundStyle(.purple)
                     }
+                    .accessibilityLabel("Beta-Info anzeigen")
                     Button {
                         showProfile = true
                     } label: {
@@ -49,6 +53,7 @@ struct HivemindTab: View {
                             .font(.title2)
                             .foregroundStyle(.purple)
                     }
+                    .accessibilityLabel("Profil öffnen")
                 }
             }
             .sheet(isPresented: $showBetaInfo) {

@@ -62,6 +62,7 @@ struct TopicFeedView: View {
                             .frame(width: 40, height: 40)
                             .background(.ultraThinMaterial, in: Circle())
                     }
+                    .accessibilityLabel("Feed schließen")
                     Spacer()
                 }
                 .padding(.horizontal, 16)

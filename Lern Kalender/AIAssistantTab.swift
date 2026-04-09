@@ -286,6 +286,7 @@ struct AIChatView: View {
                             .font(.title3)
                             .foregroundStyle(.purple)
                     }
+                    .accessibilityLabel("Beta-Info anzeigen")
                     Button {
                         showingHivemind = true
                     } label: {
@@ -295,6 +296,7 @@ struct AIChatView: View {
                             .frame(width: 32, height: 32)
                             .background(.purple.gradient, in: Circle())
                     }
+                    .accessibilityLabel("Lernen-Feed öffnen")
                 }
             }
             .fullScreenCover(isPresented: $showingHivemind) {
