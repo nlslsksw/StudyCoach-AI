@@ -10,7 +10,7 @@ struct OnboardingView: View {
         OnboardingPage(
             kind: .image("onboarding-calendar"),
             accent: .blue,
-            title: "Willkommen im Lern Kalender",
+            title: "Willkommen bei StudiCoach AI",
             subtitle: "Plane deine Schule. Trag deine Lernzeiten ein. Behalte den Überblick über alle Klassenarbeiten."
         ),
         OnboardingPage(

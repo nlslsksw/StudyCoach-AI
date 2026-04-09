@@ -1,6 +1,134 @@
 {
   "sourceLanguage": "de",
   "strings": {
+    "": {},
+    "\"%@\" und alle generierten Posts werden gelöscht.": {},
+    "\"%@\" wirklich löschen?": {},
+    "%@": {},
+    "%@ - %@ speichern?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ - %2$@ speichern?"
+          }
+        }
+      }
+    },
+    "%@ – %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ – %2$@"
+          }
+        }
+      }
+    },
+    "%@ / %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ / %2$@"
+          }
+        }
+      }
+    },
+    "%@ fragen": {},
+    "%@ gelernt": {},
+    "%@%lld%%": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@%2$lld%%"
+          }
+        }
+      }
+    },
+    "%lld": {},
+    "%lld angeschaut · %lld richtig": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld angeschaut · %2$lld richtig"
+          }
+        }
+      }
+    },
+    "%lld Einträge": {},
+    "%lld Fächer": {},
+    "%lld min": {},
+    "%lld min gelernt": {},
+    "%lld min vorher": {},
+    "%lld min/Note": {},
+    "%lld Minuten": {},
+    "%lld Noten": {},
+    "%lld Tage": {},
+    "%lld von %lld gewusst": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld von %2$lld gewusst"
+          }
+        }
+      }
+    },
+    "%lld von %lld richtig": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld von %2$lld richtig"
+          }
+        }
+      }
+    },
+    "%lld XP": {},
+    "%lld XP bis Level %lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld XP bis Level %2$lld"
+          }
+        }
+      }
+    },
+    "%lld/%lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "%lld%%": {},
+    "%lld%% gemeistert": {},
+    "%lld%% weniger gelernt": {},
+    "%lldm": {},
+    "•": {},
+    "••••••••": {},
+    "© 2026 Ralf Lohrmann": {},
+    "+%lld%% mehr gelernt": {},
+    "000000": {},
+    "1.0": {},
+    "5 Nachrichten": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 messages"
+          }
+        }
+      }
+    },
     "10 Nachrichten": {
       "extractionState": "manual",
       "localizations": {
@@ -23,17 +151,6 @@
         }
       }
     },
-    "5 Nachrichten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "5 messages"
-          }
-        }
-      }
-    },
     "50 Nachrichten": {
       "extractionState": "manual",
       "localizations": {
@@ -41,17 +158,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "50 messages"
-          }
-        }
-      }
-    },
-    "API-Key": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "API Key"
           }
         }
       }
@@ -89,6 +195,7 @@
         }
       }
     },
+    "Aktivieren": {},
     "Aktualisieren": {
       "extractionState": "manual",
       "localizations": {
@@ -122,17 +229,6 @@
         }
       }
     },
-    "Alle Lernzeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All study sessions"
-          }
-        }
-      }
-    },
     "Alle gespeicherten Chats werden unwiderruflich gelöscht.": {
       "extractionState": "manual",
       "localizations": {
@@ -144,6 +240,18 @@
         }
       }
     },
+    "Alle Lernzeiten": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All study sessions"
+          }
+        }
+      }
+    },
+    "Alle rechtlichen Hinweise online": {},
     "Alles löschen": {
       "extractionState": "manual",
       "localizations": {
@@ -166,6 +274,7 @@
         }
       }
     },
+    "Anderes Foto": {},
     "Anmerkung": {
       "extractionState": "manual",
       "localizations": {
@@ -188,6 +297,7 @@
         }
       }
     },
+    "Antwort": {},
     "Antwort-Sprache": {
       "extractionState": "manual",
       "localizations": {
@@ -210,6 +320,18 @@
         }
       }
     },
+    "API-Key": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "API Key"
+          }
+        }
+      }
+    },
+    "Archivieren": {},
     "Archiviert": {
       "extractionState": "manual",
       "localizations": {
@@ -243,6 +365,7 @@
         }
       }
     },
+    "Aufnahme stoppen": {},
     "Auswählen...": {
       "extractionState": "manual",
       "localizations": {
@@ -250,17 +373,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Select..."
-          }
-        }
-      }
-    },
-    "BETA": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BETA"
           }
         }
       }
@@ -287,6 +399,20 @@
         }
       }
     },
+    "Beste: %@": {},
+    "BETA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BETA"
+          }
+        }
+      }
+    },
+    "Beta-Info anzeigen": {},
+    "Bild ändern": {},
     "Bild auswählen": {
       "extractionState": "manual",
       "localizations": {
@@ -298,6 +424,7 @@
         }
       }
     },
+    "Bild wählen": {},
     "Bitte zuerst in den Einstellungen eingeben.": {
       "extractionState": "manual",
       "localizations": {
@@ -386,6 +513,8 @@
         }
       }
     },
+    "Code: %@": {},
+    "Copyright": {},
     "Das dauert nur einen Moment.": {
       "extractionState": "manual",
       "localizations": {
@@ -419,6 +548,7 @@
         }
       }
     },
+    "Daten werden geladen...": {},
     "Datenschutz": {
       "extractionState": "manual",
       "localizations": {
@@ -441,6 +571,10 @@
         }
       }
     },
+    "Datenschutz, Nutzungsbedingungen und Impressum direkt in der App.": {},
+    "Datum": {},
+    "Datum & Uhrzeit": {},
+    "Dauer (Minuten)": {},
     "Daueraufgaben": {
       "extractionState": "manual",
       "localizations": {
@@ -529,6 +663,7 @@
         }
       }
     },
+    "Diese Woche geübt: %@": {},
     "Du hast alle Posts für heute durch!": {
       "extractionState": "manual",
       "localizations": {
@@ -551,6 +686,7 @@
         }
       }
     },
+    "Du hast eine %lld-Tage-Serie": {},
     "Du kannst jetzt die Lernfortschritte deines Kindes einsehen.": {
       "extractionState": "manual",
       "localizations": {
@@ -639,6 +775,7 @@
         }
       }
     },
+    "Eintragen": {},
     "Eltern-Code": {
       "extractionState": "manual",
       "localizations": {
@@ -716,6 +853,7 @@
         }
       }
     },
+    "Ende": {},
     "Entdecken": {
       "extractionState": "manual",
       "localizations": {
@@ -804,6 +942,8 @@
         }
       }
     },
+    "Erkenne Text…": {},
+    "Erklärung aufnehmen": {},
     "Erlaubt dem Kind den KI-Lernassistenten zu nutzen. Standardmäßig aktiviert.": {
       "extractionState": "manual",
       "localizations": {
@@ -822,17 +962,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Create backups or reports of your data."
-          }
-        }
-      }
-    },
-    "Erstelle Quizze oder Karteikarten mit KI": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create quizzes or flashcards with AI"
           }
         }
       }
@@ -866,6 +995,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Create a 6-digit code to give to your parents."
+          }
+        }
+      }
+    },
+    "Erstelle Quizze oder Karteikarten mit KI": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create quizzes or flashcards with AI"
           }
         }
       }
@@ -936,6 +1076,29 @@
         }
       }
     },
+    "Fach hinzufügen": {},
+    "Fächer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subjects"
+          }
+        }
+      }
+    },
+    "Fächervergleich": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subject comparison"
+          }
+        }
+      }
+    },
     "Familie": {
       "extractionState": "manual",
       "localizations": {
@@ -947,6 +1110,7 @@
         }
       }
     },
+    "Farbe": {},
     "Fasse Notizen zusammen": {
       "extractionState": "manual",
       "localizations": {
@@ -969,6 +1133,7 @@
         }
       }
     },
+    "Feed schließen": {},
     "Feed schließen mit": {
       "extractionState": "manual",
       "localizations": {
@@ -1013,6 +1178,7 @@
         }
       }
     },
+    "Foto auswählen": {},
     "Foto senden": {
       "extractionState": "manual",
       "localizations": {
@@ -1068,28 +1234,8 @@
         }
       }
     },
-    "Fächer": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subjects"
-          }
-        }
-      }
-    },
-    "Fächervergleich": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subject comparison"
-          }
-        }
-      }
-    },
+    "Frage": {},
+    "Füge deine Schulfächer hinzu, um Noten und Lernzeit zu verwalten.": {},
     "Geh zur KI-Tab → Schlüssel-Symbol": {
       "extractionState": "manual",
       "localizations": {
@@ -1189,6 +1335,9 @@
         }
       }
     },
+    "Gleich viel gelernt": {},
+    "Gleichgeblieben": {},
+    "Groq API-Key einfügen": {},
     "Groq speichert keine Daten (Free Tier)": {
       "extractionState": "manual",
       "localizations": {
@@ -1211,6 +1360,7 @@
         }
       }
     },
+    "HALBJAHRES-RÜCKBLICK": {},
     "Heute": {
       "extractionState": "manual",
       "localizations": {
@@ -1233,6 +1383,7 @@
         }
       }
     },
+    "Hilfe": {},
     "Hinzufügen": {
       "extractionState": "manual",
       "localizations": {
@@ -1251,6 +1402,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Get a free key at console.groq.com"
+          }
+        }
+      }
+    },
+    "https://…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "https://…"
           }
         }
       }
@@ -1288,6 +1450,8 @@
         }
       }
     },
+    "Import erfolgreich": {},
+    "Import fehlgeschlagen": {},
     "Importieren": {
       "extractionState": "manual",
       "localizations": {
@@ -1299,6 +1463,7 @@
         }
       }
     },
+    "Impressum": {},
     "Inhalte": {
       "extractionState": "manual",
       "localizations": {
@@ -1339,6 +1504,195 @@
           "stringUnit": {
             "state": "translated",
             "value": "Share JSON backup"
+          }
+        }
+      }
+    },
+    "Kalender": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendar"
+          }
+        }
+      }
+    },
+    "Kalendereinträge": {},
+    "Karteikarten": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flashcards"
+          }
+        }
+      }
+    },
+    "Karteikarten erstellen": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create flashcards"
+          }
+        }
+      }
+    },
+    "Karteikarten generieren": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate flashcards"
+          }
+        }
+      }
+    },
+    "Karteikarten öffnen": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open flashcards"
+          }
+        }
+      }
+    },
+    "Karten werden erstellt...": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creating cards..."
+          }
+        }
+      }
+    },
+    "Kein Gemini API-Key": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Gemini API key"
+          }
+        }
+      }
+    },
+    "Kein KI-Schlüssel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No AI key"
+          }
+        }
+      }
+    },
+    "Keine anstehenden Klassenarbeiten": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No upcoming exams"
+          }
+        }
+      }
+    },
+    "Keine Einträge": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No entries"
+          }
+        }
+      }
+    },
+    "Keine Fächer in diesem Schuljahr": {},
+    "Keine Kinder verbunden": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No children connected"
+          }
+        }
+      }
+    },
+    "Keine persönlichen Daten übertragen": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No personal data transmitted"
+          }
+        }
+      }
+    },
+    "Keine Posts": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No posts"
+          }
+        }
+      }
+    },
+    "Keines": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
+          }
+        }
+      }
+    },
+    "Key aktiv": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key active"
+          }
+        }
+      }
+    },
+    "Key entfernen & abmelden": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove key & sign out"
+          }
+        }
+      }
+    },
+    "Key entfernen?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove key?"
           }
         }
       }
@@ -1449,193 +1803,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "AI model"
-          }
-        }
-      }
-    },
-    "Kalender": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Calendar"
-          }
-        }
-      }
-    },
-    "Karteikarten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flashcards"
-          }
-        }
-      }
-    },
-    "Karteikarten erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create flashcards"
-          }
-        }
-      }
-    },
-    "Karteikarten generieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Generate flashcards"
-          }
-        }
-      }
-    },
-    "Karteikarten öffnen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open flashcards"
-          }
-        }
-      }
-    },
-    "Karten werden erstellt...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Creating cards..."
-          }
-        }
-      }
-    },
-    "Kein Gemini API-Key": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No Gemini API key"
-          }
-        }
-      }
-    },
-    "Kein KI-Schlüssel": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No AI key"
-          }
-        }
-      }
-    },
-    "Keine Einträge": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No entries"
-          }
-        }
-      }
-    },
-    "Keine Kinder verbunden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No children connected"
-          }
-        }
-      }
-    },
-    "Keine Posts": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No posts"
-          }
-        }
-      }
-    },
-    "Keine anstehenden Klassenarbeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No upcoming exams"
-          }
-        }
-      }
-    },
-    "Keine persönlichen Daten übertragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No personal data transmitted"
-          }
-        }
-      }
-    },
-    "Keines": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "None"
-          }
-        }
-      }
-    },
-    "Key aktiv": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Key active"
-          }
-        }
-      }
-    },
-    "Key entfernen & abmelden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remove key & sign out"
-          }
-        }
-      }
-    },
-    "Key entfernen?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remove key?"
           }
         }
       }
@@ -1805,6 +1972,7 @@
         }
       }
     },
+    "Lernen-Feed öffnen": {},
     "Lernkalender": {
       "extractionState": "manual",
       "localizations": {
@@ -1838,6 +2006,7 @@
         }
       }
     },
+    "Lernplan für %@": {},
     "Lernplan wird erstellt...": {
       "extractionState": "manual",
       "localizations": {
@@ -1893,6 +2062,7 @@
         }
       }
     },
+    "Lernzeit für %@": {},
     "Lernzeit speichern?": {
       "extractionState": "manual",
       "localizations": {
@@ -1970,6 +2140,7 @@
         }
       }
     },
+    "Lese PDF…": {},
     "Llama 3.1 8B (Schnell)": {
       "extractionState": "manual",
       "localizations": {
@@ -2014,6 +2185,8 @@
         }
       }
     },
+    "Loslegen": {},
+    "Lv.%lld": {},
     "Mache ein Foto von deinen Aufgaben oder wähle ein Bild aus der Galerie.": {
       "extractionState": "manual",
       "localizations": {
@@ -2080,6 +2253,17 @@
         }
       }
     },
+    "Möchtest du den Elternmodus wirklich verlassen? Alle Verbindungen werden getrennt.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do you really want to leave parent mode? All connections will be disconnected."
+          }
+        }
+      }
+    },
     "Modell": {
       "extractionState": "manual",
       "localizations": {
@@ -2091,13 +2275,12 @@
         }
       }
     },
-    "Möchtest du den Elternmodus wirklich verlassen? Alle Verbindungen werden getrennt.": {
-      "extractionState": "manual",
+    "Mündlich: Ø %@ (%lldx)": {
       "localizations": {
-        "en": {
+        "de": {
           "stringUnit": {
-            "state": "translated",
-            "value": "Do you really want to leave parent mode? All connections will be disconnected."
+            "state": "new",
+            "value": "Mündlich: Ø %1$@ (%2$lldx)"
           }
         }
       }
@@ -2212,6 +2395,7 @@
         }
       }
     },
+    "Neues Topic": {},
     "Nicht ausgewählt": {
       "extractionState": "manual",
       "localizations": {
@@ -2223,6 +2407,8 @@
         }
       }
     },
+    "Nicht ganz.": {},
+    "Nicht zugeordnet": {},
     "Noch keine Daten": {
       "extractionState": "manual",
       "localizations": {
@@ -2245,6 +2431,7 @@
         }
       }
     },
+    "Noch keine Fächer": {},
     "Noch keine Inhalte": {
       "extractionState": "manual",
       "localizations": {
@@ -2256,6 +2443,7 @@
         }
       }
     },
+    "Noch keine Lernzeit eingetragen": {},
     "Noch keine Lernzeit heute": {
       "extractionState": "manual",
       "localizations": {
@@ -2388,6 +2576,7 @@
         }
       }
     },
+    "Note für %@": {},
     "Note hinzufügen": {
       "extractionState": "manual",
       "localizations": {
@@ -2410,6 +2599,7 @@
         }
       }
     },
+    "Note: %@": {},
     "Noten": {
       "extractionState": "manual",
       "localizations": {
@@ -2487,13 +2677,26 @@
         }
       }
     },
-    "OK": {
+    "Nutzungsbedingungen": {},
+    "Ø %@": {},
+    "oder wische nach links/rechts": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "OK"
+            "value": "or swipe left/right"
+          }
+        }
+      }
+    },
+    "Öffnen": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open"
           }
         }
       }
@@ -2516,6 +2719,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mark as done without grade"
+          }
+        }
+      }
+    },
+    "OK": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
           }
         }
       }
@@ -2553,6 +2767,17 @@
         }
       }
     },
+    "Personalisierung": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personalization"
+          }
+        }
+      }
+    },
     "PIN aktiv": {
       "extractionState": "manual",
       "localizations": {
@@ -2571,17 +2796,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Change PIN"
-          }
-        }
-      }
-    },
-    "Personalisierung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Personalization"
           }
         }
       }
@@ -2619,6 +2833,7 @@
         }
       }
     },
+    "Profil öffnen": {},
     "Quelle": {
       "extractionState": "manual",
       "localizations": {
@@ -2696,6 +2911,8 @@
         }
       }
     },
+    "Rechtliches": {},
+    "Richtig!": {},
     "Schließe diese Ansicht": {
       "extractionState": "manual",
       "localizations": {
@@ -2718,46 +2935,12 @@
         }
       }
     },
-    "Schulferien": {
-      "extractionState": "manual",
+    "Schriftlich: Ø %@ (%lldx)": {
       "localizations": {
-        "en": {
+        "de": {
           "stringUnit": {
-            "state": "translated",
-            "value": "School holidays"
-          }
-        }
-      }
-    },
-    "Schuljahr hinzufügen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add school year"
-          }
-        }
-      }
-    },
-    "Schuljahre": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "School years"
-          }
-        }
-      }
-    },
-    "Schuljahres-Rückblick": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "School year recap"
+            "state": "new",
+            "value": "Schriftlich: Ø %1$@ (%2$lldx)"
           }
         }
       }
@@ -2773,6 +2956,55 @@
         }
       }
     },
+    "Schulfächer": {},
+    "Schulferien": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "School holidays"
+          }
+        }
+      }
+    },
+    "Schuljahr": {},
+    "Schuljahr hinzufügen": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add school year"
+          }
+        }
+      }
+    },
+    "Schuljahr zuordnen": {},
+    "Schuljahre": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "School years"
+          }
+        }
+      }
+    },
+    "Schuljahre verwalten": {},
+    "Schuljahres-Rückblick": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "School year recap"
+          }
+        }
+      }
+    },
+    "SCHULJAHRES-RÜCKBLICK": {},
     "Schützt die Einstellungen mit einem 4-stelligen PIN.": {
       "extractionState": "manual",
       "localizations": {
@@ -2784,6 +3016,7 @@
         }
       }
     },
+    "Score: %lld/100": {},
     "Serie": {
       "extractionState": "manual",
       "localizations": {
@@ -2850,6 +3083,7 @@
         }
       }
     },
+    "Start": {},
     "Starten": {
       "extractionState": "manual",
       "localizations": {
@@ -2883,6 +3117,9 @@
         }
       }
     },
+    "Symbol": {},
+    "Tag": {},
+    "Tage": {},
     "Tagesplan": {
       "extractionState": "manual",
       "localizations": {
@@ -2894,6 +3131,20 @@
         }
       }
     },
+    "Täglich: %lld min": {},
+    "Tägliches Lernziel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily study goal"
+          }
+        }
+      }
+    },
+    "Tägliches Ziel: %lld min": {},
+    "Teile diesen Code mit deinen Eltern.\nSie geben ihn auf ihrem Gerät ein.": {},
     "Teile diesen Code mit deinen Eltern.\\nSie geben ihn auf ihrem Gerät ein.": {
       "extractionState": "manual",
       "localizations": {
@@ -2916,6 +3167,7 @@
         }
       }
     },
+    "Text wird erkannt...": {},
     "Texte werden an Groq (groq.com) gesendet": {
       "extractionState": "manual",
       "localizations": {
@@ -3004,6 +3256,7 @@
         }
       }
     },
+    "Topic dem Kind zuweisen": {},
     "Topic erstellen": {
       "extractionState": "manual",
       "localizations": {
@@ -3015,6 +3268,7 @@
         }
       }
     },
+    "Topic für Kind": {},
     "Topic löschen?": {
       "extractionState": "manual",
       "localizations": {
@@ -3048,6 +3302,8 @@
         }
       }
     },
+    "Trage im \"Lernzeit\"-Tab ein, wann du gelernt hast.": {},
+    "Tutorial erneut anzeigen": {},
     "Typ": {
       "extractionState": "manual",
       "localizations": {
@@ -3059,13 +3315,14 @@
         }
       }
     },
-    "Tägliches Lernziel": {
+    "Über die App": {},
+    "Überspringen": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Daily study goal"
+            "value": "Skip"
           }
         }
       }
@@ -3081,6 +3338,8 @@
         }
       }
     },
+    "und %lld weitere Einträge": {},
+    "Verbessert um %@": {},
     "Verbinde das Gerät eines Elternteils mit dieser App, um Lernfortschritte zu teilen.": {
       "extractionState": "manual",
       "localizations": {
@@ -3180,6 +3439,8 @@
         }
       }
     },
+    "Verschlechtert um %@": {},
+    "Version": {},
     "Version 1.0 — Powered by Groq": {
       "extractionState": "manual",
       "localizations": {
@@ -3235,17 +3496,6 @@
         }
       }
     },
-    "Von Eltern eingetragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Added by parents"
-          }
-        }
-      }
-    },
     "Von deinen Eltern": {
       "extractionState": "manual",
       "localizations": {
@@ -3257,6 +3507,19 @@
         }
       }
     },
+    "Von Eltern eingetragen": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added by parents"
+          }
+        }
+      }
+    },
+    "Vorschau": {},
+    "Vorschlag: %@": {},
     "Vorschläge anzeigen": {
       "extractionState": "manual",
       "localizations": {
@@ -3279,6 +3542,18 @@
         }
       }
     },
+    "Wähle dein Bundesland, um Schulferien im Kalender hervorzuheben.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose your state to highlight school holidays in the calendar."
+          }
+        }
+      }
+    },
+    "Wähle, wie du den Topic-Feed schließen möchtest. Bei \"Doppel-Tap oben\" tippst du oben auf den Bildschirm zweimal kurz hintereinander.": {},
     "Wann?": {
       "extractionState": "manual",
       "localizations": {
@@ -3323,6 +3598,8 @@
         }
       }
     },
+    "Weiter": {},
+    "Welche Note hast du für \"%@\" bekommen? (1-6)": {},
     "Welcome back!": {
       "extractionState": "manual",
       "localizations": {
@@ -3356,6 +3633,8 @@
         }
       }
     },
+    "Wie viele Minuten hast du für \"%@\" gelernt?": {},
+    "Willkommen im\nEltern-Dashboard": {},
     "Willkommen im\\nEltern-Dashboard": {
       "extractionState": "manual",
       "localizations": {
@@ -3389,6 +3668,7 @@
         }
       }
     },
+    "Woche": {},
     "Wochenbericht": {
       "extractionState": "manual",
       "localizations": {
@@ -3396,6 +3676,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Weekly report"
+          }
+        }
+      }
+    },
+    "Wöchentlich: %lld min": {},
+    "Wöchentliches Lernziel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly study goal"
+          }
+        }
+      }
+    },
+    "Wöchentliches Ziel: %lld min": {},
+    "Wochenübersicht": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week overview"
           }
         }
       }
@@ -3422,17 +3726,6 @@
         }
       }
     },
-    "Wochenübersicht": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Week overview"
-          }
-        }
-      }
-    },
     "Wusste ich": {
       "extractionState": "manual",
       "localizations": {
@@ -3451,94 +3744,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Didn't know"
-          }
-        }
-      }
-    },
-    "Wähle dein Bundesland, um Schulferien im Kalender hervorzuheben.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose your state to highlight school holidays in the calendar."
-          }
-        }
-      }
-    },
-    "Wöchentliches Lernziel": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weekly study goal"
-          }
-        }
-      }
-    },
-    "Zeitraum": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Period"
-          }
-        }
-      }
-    },
-    "Ziel speichern": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save goal"
-          }
-        }
-      }
-    },
-    "Zu viele Versuche. Bitte warte 30 Sekunden.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Too many attempts. Please wait 30 seconds."
-          }
-        }
-      }
-    },
-    "Zusammenfassung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Summary"
-          }
-        }
-      }
-    },
-    "https://…": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "https://…"
-          }
-        }
-      }
-    },
-    "oder wische nach links/rechts": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "or swipe left/right"
           }
         }
       }
@@ -3587,24 +3792,60 @@
         }
       }
     },
-    "Öffnen": {
+    "z.B. Mathematik, Deutsch...": {},
+    "Zeigt das Willkommens-Tutorial mit allen App-Funktionen noch einmal an.": {},
+    "Zeitraum": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open"
+            "value": "Period"
           }
         }
       }
     },
-    "Überspringen": {
+    "Ziel speichern": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Skip"
+            "value": "Save goal"
+          }
+        }
+      }
+    },
+    "Zu viele Versuche. Bitte warte 30 Sekunden.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many attempts. Please wait 30 seconds."
+          }
+        }
+      }
+    },
+    "Zuordnung entfernen": {},
+    "Zusammenfassung": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summary"
+          }
+        }
+      }
+    },
+    "Willkommen bei StudiCoach AI": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to StudiCoach AI"
           }
         }
       }
