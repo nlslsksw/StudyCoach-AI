@@ -8,6 +8,7 @@ struct HivemindTab: View {
     @State private var showCreateTopic = false
     @State private var showDiscover = false
     @State private var showProfile = false
+    @State private var showBetaInfo = false
     @State private var topicToOpen: Topic?
     @State private var topicToDelete: Topic?
 
@@ -33,7 +34,14 @@ struct HivemindTab: View {
                             .foregroundStyle(.purple)
                     }
                 }
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button {
+                        showBetaInfo = true
+                    } label: {
+                        Image(systemName: "info.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(.purple)
+                    }
                     Button {
                         showProfile = true
                     } label: {
@@ -42,6 +50,9 @@ struct HivemindTab: View {
                             .foregroundStyle(.purple)
                     }
                 }
+            }
+            .sheet(isPresented: $showBetaInfo) {
+                BetaInfoView()
             }
             .sheet(isPresented: $showCreateTopic) {
                 CreateTopicView(store: store)

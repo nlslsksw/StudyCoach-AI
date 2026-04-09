@@ -126,6 +126,7 @@ struct AIChatView: View {
     @State private var showingSettings = false
     @State private var showingContent = false
     @State private var showingHivemind = false
+    @State private var showingBetaInfo = false
     @State private var quizToPlay: SavedQuiz?
     @State private var flashcardsToPlay: SavedFlashcardSet?
     @State private var navigateToTab: String?
@@ -277,7 +278,14 @@ struct AIChatView: View {
                         }
                     }
                 }
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button {
+                        showingBetaInfo = true
+                    } label: {
+                        Image(systemName: "info.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(.purple)
+                    }
                     Button {
                         showingHivemind = true
                     } label: {
@@ -291,6 +299,9 @@ struct AIChatView: View {
             }
             .fullScreenCover(isPresented: $showingHivemind) {
                 HivemindTab(store: store)
+            }
+            .sheet(isPresented: $showingBetaInfo) {
+                BetaInfoView()
             }
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showingPlusSheet) {
@@ -346,6 +357,10 @@ struct AIChatView: View {
             }
             .onAppear {
                 restoreActiveChat()
+                if !BetaInfoTracker.hasSeenBeta {
+                    showingBetaInfo = true
+                    BetaInfoTracker.hasSeenBeta = true
+                }
             }
             .sheet(isPresented: Binding(
                 get: { navigateToTab != nil },
