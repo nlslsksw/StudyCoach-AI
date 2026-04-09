@@ -1104,6 +1104,21 @@ struct AIChatView: View {
                     results.append(ActionResult(icon: icon, color: color, title: "Fach erstellt", detail: name, destination: "subjects"))
                 }
 
+            case "create_topic":
+                let subject = action["subject"] as? String ?? ""
+                let topic = action["topic"] as? String ?? ""
+                if !topic.isEmpty {
+                    let newTopic = Topic(
+                        title: topic,
+                        subject: subject.isEmpty ? nil : subject,
+                        iconName: "sparkles",
+                        colorHex: "#7C3AED",
+                        source: .manual(prompt: "Erstellt aus KI-Chat: \(topic)")
+                    )
+                    TopicStore.shared.addTopic(newTopic)
+                    results.append(ActionResult(icon: "brain.head.profile", color: "purple", title: "Topic erstellt", detail: topic, destination: "hivemind"))
+                }
+
             default:
                 break
             }

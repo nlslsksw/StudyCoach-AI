@@ -340,9 +340,13 @@ struct ParentDashboardView: View {
     @State private var selectedChild: FamilyLink?
     @State private var showingAddChild = false
     @State private var showingAddExam = false
+    @State private var showingCreateTopicForChild = false
     @State private var showingWeeklyReport = false
-    @State private var motivationText = ""
     @State private var isSendingMotivation = false
+    @State private var showingOnboarding = false
+    @State private var sentEmoji: String?
+
+    private static let onboardingShownKey = "parentDashboardOnboardingShown"
 
     private var isWeekendReportAvailable: Bool {
         let weekday = Calendar.current.component(.weekday, from: Date())
@@ -425,6 +429,7 @@ struct ParentDashboardView: View {
                             // Goal progress
                             if let goal = store.studyGoals[child.pairingCode] {
                                 parentGoalSection(data: data, goal: goal)
+                                    .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             }
 
                             // Quick stats
@@ -433,15 +438,21 @@ struct ParentDashboardView: View {
                                 StatCard(title: "Diese Woche", value: formatHoursMinutes(data.weeklyMinutes), icon: "clock.fill", color: .blue)
                             }
                             .padding(.horizontal)
+                            .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
 
                             todaySessionsSection(data: data)
+                                .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             weekOverviewSection(data: data)
+                                .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             studyTimeDistributionSection(data: data)
+                                .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             examCountdownSection(data: data)
+                                .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             gradesSection(data: data)
+                                .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             examsSection(data: data, pairingCode: child.pairingCode)
+                                .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             goalSettingSection(pairingCode: child.pairingCode)
-                            motivationSection(pairingCode: child.pairingCode)
 
                             Spacer(minLength: 20)
                         }
@@ -464,12 +475,24 @@ struct ParentDashboardView: View {
             }
             .navigationTitle("Eltern-Dashboard")
             .toolbar {
+                if selectedChild != nil {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button { showingCreateTopicForChild = true } label: {
+                            Image(systemName: "brain.head.profile")
+                        }
+                    }
+                }
                 if isWeekendReportAvailable {
                     ToolbarItem(placement: .primaryAction) {
                         Button { showingWeeklyReport = true } label: {
                             Image(systemName: "doc.text.fill")
                         }
                     }
+                }
+            }
+            .sheet(isPresented: $showingCreateTopicForChild) {
+                if let child = selectedChild {
+                    CreateTopicView(store: store, parentMode: true, pairingCode: child.pairingCode)
                 }
             }
             .sheet(isPresented: $showingAddChild, onDismiss: {
@@ -492,6 +515,25 @@ struct ParentDashboardView: View {
             .onAppear {
                 if selectedChild == nil { selectedChild = store.familyLinks.first }
                 refreshData()
+                if !UserDefaults.standard.bool(forKey: Self.onboardingShownKey) {
+                    showingOnboarding = true
+                    UserDefaults.standard.set(true, forKey: Self.onboardingShownKey)
+                }
+            }
+            .sheet(isPresented: $showingOnboarding) {
+                ParentOnboardingView()
+            }
+            .overlay(alignment: .center) {
+                if let emoji = sentEmoji {
+                    Text(emoji)
+                        .font(.system(size: 80))
+                        .transition(.scale.combined(with: .opacity))
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                                withAnimation { sentEmoji = nil }
+                            }
+                        }
+                }
             }
         }
     }
@@ -804,35 +846,6 @@ struct ParentDashboardView: View {
         .padding(.horizontal)
     }
 
-    @ViewBuilder
-    private func motivationSection(pairingCode: String) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Nachricht senden").font(.headline)
-            TextField("Toll gemacht!", text: $motivationText, axis: .vertical)
-                .lineLimit(1...4)
-                .padding(10)
-                .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 10))
-            Button {
-                sendMotivation(pairingCode: pairingCode)
-            } label: {
-                HStack {
-                    Spacer()
-                    if isSendingMotivation {
-                        ProgressView()
-                    } else {
-                        Label("Senden", systemImage: "paperplane.fill")
-                    }
-                    Spacer()
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.small)
-            .disabled(motivationText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSendingMotivation)
-        }
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
-        .padding(.horizontal)
-    }
 
     // MARK: - Actions
 
@@ -846,14 +859,125 @@ struct ParentDashboardView: View {
         }
     }
 
-    private func sendMotivation(pairingCode: String) {
-        isSendingMotivation = true
-        let msg = MotivationMessage(text: motivationText, pairingCode: pairingCode)
+    private func sendReaction(emoji: String, pairingCode: String) {
+        withAnimation(.spring(response: 0.3)) { sentEmoji = emoji }
+        let msg = MotivationMessage(text: emoji, pairingCode: pairingCode)
         Task {
             try? await cloudKit.saveMotivationMessage(msg)
-            await MainActor.run {
-                motivationText = ""
-                isSendingMotivation = false
+        }
+    }
+}
+
+// MARK: - Emoji Reaction Modifier
+
+private struct EmojiReactionModifier: ViewModifier {
+    let onReact: (String) -> Void
+    private let emojis = ["👍", "⭐", "💪", "🎉", "❤️", "🔥"]
+
+    func body(content: Content) -> some View {
+        content.contextMenu {
+            ForEach(emojis, id: \.self) { emoji in
+                Button {
+                    onReact(emoji)
+                } label: {
+                    Text(emoji + " senden")
+                }
+            }
+        }
+    }
+}
+
+extension View {
+    func emojiReaction(onReact: @escaping (String) -> Void) -> some View {
+        modifier(EmojiReactionModifier(onReact: onReact))
+    }
+}
+
+// MARK: - Parent Onboarding
+
+struct ParentOnboardingView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 30) {
+                    Spacer(minLength: 20)
+
+                    Image(systemName: "person.2.fill")
+                        .font(.system(size: 60))
+                        .foregroundStyle(.blue)
+
+                    Text("Willkommen im\nEltern-Dashboard")
+                        .font(.largeTitle.bold())
+                        .multilineTextAlignment(.center)
+
+                    VStack(alignment: .leading, spacing: 20) {
+                        onboardingRow(
+                            icon: "chart.bar.fill",
+                            color: .blue,
+                            title: "Alles im Blick",
+                            text: "Sieh Lernzeiten, Noten, Streaks und Fortschritte deines Kindes."
+                        )
+                        onboardingRow(
+                            icon: "hand.tap.fill",
+                            color: .orange,
+                            title: "Lange drücken zum Reagieren",
+                            text: "Halte eine Karte gedrückt, um deinem Kind ein Emoji zu schicken."
+                        )
+                        onboardingRow(
+                            icon: "doc.text.fill",
+                            color: .green,
+                            title: "Klassenarbeiten eintragen",
+                            text: "Trage Klassenarbeiten ein, die im Kalender deines Kindes erscheinen."
+                        )
+                        onboardingRow(
+                            icon: "target",
+                            color: .purple,
+                            title: "Lernziele setzen",
+                            text: "Lege tägliche und wöchentliche Lernziele fest."
+                        )
+                        onboardingRow(
+                            icon: "doc.richtext",
+                            color: .teal,
+                            title: "Wochenbericht",
+                            text: "Freitag bis Sonntag: Zusammenfassung der Woche."
+                        )
+                    }
+                    .padding(.horizontal)
+
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Los geht's")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .padding(.horizontal, 40)
+                    .padding(.top, 10)
+
+                    Spacer(minLength: 30)
+                }
+            }
+        }
+    }
+
+    private func onboardingRow(icon: String, color: Color, title: String, text: String) -> some View {
+        HStack(alignment: .top, spacing: 14) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundStyle(.white)
+                .frame(width: 44, height: 44)
+                .background(color, in: RoundedRectangle(cornerRadius: 10))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.headline)
+                Text(text)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
         }
     }

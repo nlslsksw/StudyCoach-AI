@@ -79,6 +79,16 @@ struct ContentView: View {
                             Label("Lernzeit", systemImage: "clock.fill")
                         }
                         NavigationLink {
+                            AIAssistantTab(store: store)
+                        } label: {
+                            Label("KI", systemImage: "sparkles")
+                        }
+                        NavigationLink {
+                            HivemindTab(store: store)
+                        } label: {
+                            Label("Lernen", systemImage: "brain.head.profile")
+                        }
+                        NavigationLink {
                             StatisticsTab(store: store)
                         } label: {
                             Label("Statistik", systemImage: "chart.bar.fill")
@@ -97,6 +107,10 @@ struct ContentView: View {
                         .tabItem { Label("Fächer", systemImage: "book.fill") }
                     StudyLogTab(store: store)
                         .tabItem { Label("Lernzeit", systemImage: "clock.fill") }
+                    AIAssistantTab(store: store)
+                        .tabItem { Label("KI", systemImage: "sparkles") }
+                    HivemindTab(store: store)
+                        .tabItem { Label("Lernen", systemImage: "brain.head.profile") }
                     StatisticsTab(store: store)
                         .tabItem { Label("Statistik", systemImage: "chart.bar.fill") }
                 }
@@ -113,11 +127,12 @@ struct ContentView: View {
                     }
                 }
             }
-            // Motivations-Nachricht laden
+            // Motivations-Nachricht laden (nur neue anzeigen)
             if let link = store.familyLink, link.isActive {
                 Task {
                     if let msg = await CloudKitService.shared.fetchMotivationMessage(pairingCode: link.pairingCode) {
-                        if store.motivationMessage == nil || store.motivationMessage?.text != msg.text {
+                        let lastSeenId = UserDefaults.standard.string(forKey: "lastSeenMotivationId")
+                        if lastSeenId != msg.id.uuidString {
                             await MainActor.run { store.motivationMessage = msg }
                         }
                     }
@@ -128,6 +143,15 @@ struct ContentView: View {
                 Task {
                     let shared = await CloudKitService.shared.fetchSharedCalendarEntries(pairingCode: link.pairingCode)
                     await MainActor.run { store.sharedCalendarEntries = shared }
+                }
+            }
+            // Hivemind: pull parent-assigned topics
+            if let link = store.familyLink, link.isActive {
+                Task {
+                    let (remoteTopics, remoteProgress) = await CloudKitService.shared.fetchTopics(pairingCode: link.pairingCode)
+                    await MainActor.run {
+                        TopicStore.shared.mergeRemote(topics: remoteTopics, progress: remoteProgress)
+                    }
                 }
             }
             // Lern-Wrapped automatisch anzeigen
@@ -141,18 +165,44 @@ struct ContentView: View {
         .fullScreenCover(isPresented: $showWrapped) {
             LernWrappedView(store: store, schoolYear: wrappedSchoolYear, isHalbjahr: wrappedIsHalbjahr)
         }
-        .alert("Nachricht von deinen Eltern 💬", isPresented: $showingMotivation) {
-            Button("Gelesen") {
-                store.motivationMessage = nil
-            }
-        } message: {
-            if let msg = store.motivationMessage {
-                Text(msg.text)
+        .overlay(alignment: .top) {
+            if showingMotivation, let msg = store.motivationMessage {
+                HStack(spacing: 12) {
+                    Text(msg.text)
+                        .font(.system(size: 50))
+                    Text("Von deinen Eltern")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .onTapGesture {
+                    dismissMotivation()
+                }
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                        dismissMotivation()
+                    }
+                }
             }
         }
         .onChange(of: store.motivationMessage) { _, newValue in
-            if newValue != nil { showingMotivation = true }
+            if newValue != nil {
+                withAnimation { showingMotivation = true }
+            }
         }
+    }
+
+    private func dismissMotivation() {
+        if let msg = store.motivationMessage {
+            UserDefaults.standard.set(msg.id.uuidString, forKey: "lastSeenMotivationId")
+        }
+        withAnimation { showingMotivation = false }
+        store.motivationMessage = nil
     }
 }
 
@@ -161,6 +211,7 @@ struct ContentView: View {
 struct ParentSettingsTab: View {
     var store: DataStore
     @State private var showingLeaveAlert = false
+    @State private var showingAddChild = false
 
     var body: some View {
         NavigationStack {
@@ -191,6 +242,25 @@ struct ParentSettingsTab: View {
                             }
                         }
                     }
+
+                    Button {
+                        showingAddChild = true
+                    } label: {
+                        Label("Kind hinzufügen", systemImage: "plus.circle")
+                    }
+                }
+
+                Section {
+                    Toggle(isOn: Binding(
+                        get: { store.aiAllowed },
+                        set: { store.aiAllowed = $0 }
+                    )) {
+                        Label("KI-Assistent erlauben", systemImage: "sparkles")
+                    }
+                } header: {
+                    Text("KI-Assistent")
+                } footer: {
+                    Text("Erlaubt dem Kind den KI-Lernassistenten zu nutzen. Standardmäßig aktiviert.")
                 }
 
                 Section {
@@ -204,6 +274,9 @@ struct ParentSettingsTab: View {
                 }
             }
             .navigationTitle("Einstellungen")
+            .sheet(isPresented: $showingAddChild) {
+                ParentPairingView(store: store)
+            }
             .alert("Elternmodus verlassen?", isPresented: $showingLeaveAlert) {
                 Button("Abbrechen", role: .cancel) { }
                 Button("Verlassen", role: .destructive) {
