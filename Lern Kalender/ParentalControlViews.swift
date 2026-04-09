@@ -345,6 +345,7 @@ struct ParentDashboardView: View {
     @State private var isSendingMotivation = false
     @State private var showingOnboarding = false
     @State private var sentEmoji: String?
+    @State private var aiAllowedPerChild: [String: Bool] = [:]
 
     private static let onboardingShownKey = "parentDashboardOnboardingShown"
 
@@ -453,6 +454,7 @@ struct ParentDashboardView: View {
                             examsSection(data: data, pairingCode: child.pairingCode)
                                 .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             goalSettingSection(pairingCode: child.pairingCode)
+                            parentalControlsSection(pairingCode: child.pairingCode)
 
                             Spacer(minLength: 20)
                         }
@@ -821,6 +823,42 @@ struct ParentDashboardView: View {
     }
 
     @ViewBuilder
+    private func parentalControlsSection(pairingCode: String) -> some View {
+        let allowed = Binding(
+            get: { aiAllowedPerChild[pairingCode] ?? true },
+            set: { newValue in
+                aiAllowedPerChild[pairingCode] = newValue
+                Task {
+                    try? await CloudKitService.shared.saveAIAllowed(newValue, pairingCode: pairingCode)
+                }
+            }
+        )
+
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "lock.shield.fill")
+                    .foregroundStyle(.white)
+                    .frame(width: 28, height: 28)
+                    .background(.blue.gradient, in: RoundedRectangle(cornerRadius: 7))
+                Text("Elternkontrolle").font(.headline)
+            }
+
+            Toggle(isOn: allowed) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Label("KI-Assistent erlauben", systemImage: "sparkles")
+                    Text(allowed.wrappedValue ? "Dein Kind darf die KI nutzen." : "KI ist für dein Kind gesperrt.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .tint(.blue)
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .padding(.horizontal)
+    }
+
+    @ViewBuilder
     private func goalSettingSection(pairingCode: String) -> some View {
         let goal = Binding(
             get: { store.studyGoals[pairingCode] ?? StudyGoal() },
@@ -855,6 +893,9 @@ struct ParentDashboardView: View {
             await cloudKit.fetchStudentData(pairingCode: child.pairingCode)
             if let goal = await cloudKit.fetchStudyGoal(pairingCode: child.pairingCode) {
                 store.studyGoals[child.pairingCode] = goal
+            }
+            if let allowed = await cloudKit.fetchAIAllowed(pairingCode: child.pairingCode) {
+                await MainActor.run { aiAllowedPerChild[child.pairingCode] = allowed }
             }
         }
     }
