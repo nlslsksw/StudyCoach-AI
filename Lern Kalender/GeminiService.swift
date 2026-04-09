@@ -23,11 +23,45 @@ final class AIService {
         set { UserDefaults.standard.set(newValue, forKey: "aiModel") }
     }
 
+    var language: String {
+        get { UserDefaults.standard.string(forKey: "aiLanguage") ?? "Deutsch" }
+        set { UserDefaults.standard.set(newValue, forKey: "aiLanguage") }
+    }
+
+    var responseStyle: String {
+        get { UserDefaults.standard.string(forKey: "aiStyle") ?? "normal" }
+        set { UserDefaults.standard.set(newValue, forKey: "aiStyle") }
+    }
+
+    var chatHistoryLimit: Int {
+        get { UserDefaults.standard.object(forKey: "aiHistoryLimit") as? Int ?? 20 }
+        set { UserDefaults.standard.set(newValue, forKey: "aiHistoryLimit") }
+    }
+
+    var suggestionsEnabled: Bool {
+        get { UserDefaults.standard.object(forKey: "aiSuggestions") as? Bool ?? true }
+        set { UserDefaults.standard.set(newValue, forKey: "aiSuggestions") }
+    }
+
+    var assistantName: String {
+        get { UserDefaults.standard.string(forKey: "aiName") ?? "Lern-Assistent" }
+        set { UserDefaults.standard.set(newValue, forKey: "aiName") }
+    }
+
     static let availableModels = [
         "llama-3.3-70b-versatile",
         "llama-3.1-8b-instant",
         "mixtral-8x7b-32768",
         "gemma2-9b-it"
+    ]
+
+    static let availableLanguages = ["Deutsch", "Englisch", "Französisch", "Spanisch", "Türkisch"]
+
+    static let availableStyles = [
+        ("kurz", "Kurz & knapp"),
+        ("normal", "Normal"),
+        ("ausfuehrlich", "Ausführlich"),
+        ("kindgerecht", "Kindgerecht")
     ]
 
     var apiKey: String? {
@@ -156,13 +190,30 @@ final class AIService {
 
         let url = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
 
+        let styleInstruction: String = {
+            switch responseStyle {
+            case "kurz": return "Antworte sehr kurz und knapp, maximal 2-3 Sätze."
+            case "ausfuehrlich": return "Antworte ausführlich mit Erklärungen und Beispielen."
+            case "kindgerecht": return "Antworte kindgerecht, einfach und mit Beispielen. Nutze einfache Wörter."
+            default: return "Antworte kurz und direkt."
+            }
+        }()
+
         let systemPrompt = """
-        Du bist ein Lern-Assistent in einer Schüler-App. Regeln:
-        - Antworte auf Deutsch, kurz und direkt
-        - Keine langen Erklärungen wenn der Schüler nur etwas eintragen will
-        - Bei Aktionen: bestätige kurz was du gemacht hast, z.B. "Erledigt! 10 min Deutsch und 10 min Englisch eingetragen."
+        Du bist \(assistantName), ein Lern-Assistent in einer Schüler-App. Regeln:
+        - Antworte auf \(language)
+        - \(styleInstruction)
         - Sei freundlich aber nicht übertrieben
         - Nutze die App-Daten um hilfreiche Tipps zu geben
+
+        STRENGE REGELN für Aktionen:
+        - Du darfst NUR Aktionen ausführen wenn der Schüler dich DIREKT und EINDEUTIG darum bittet
+        - Wörter die eine Aktion auslösen: "trag ein", "erstelle", "mach mir", "speichere", "füge hinzu", "eintragen"
+        - Wörter die KEINE Aktion auslösen: "erkläre", "was ist", "wie geht", "hilf mir", "zeig mir", "erzähl"
+        - Im ZWEIFEL: KEINE Aktion ausführen, stattdessen nachfragen "Soll ich das eintragen?"
+        - NIEMALS Aktionen ausführen bei Fragen, Erklärungen, Quiz-Antworten oder allgemeinen Gesprächen
+        - Wenn du eine Aktion ausführst, schreibe GENAU was: "Erledigt! Eingetragen: 10 min Deutsch, 10 min Englisch."
+        - Wenn du NICHTS einträgst, schreibe KEINEN ///ACTIONS/// Block — gar nicht, auch nicht leer
 
         Du kannst Aktionen in der App ausführen. Füge dafür am Ende einen Block ein:
 
@@ -174,6 +225,10 @@ final class AIService {
         - add_session: Lernzeit (subject, minutes, date im Format YYYY-MM-DD)
         - add_entry: Kalendereintrag (title, date, type: "lerntag"/"klassenarbeit"/"erinnerung")
         - add_grade: Note (subject, grade als Zahl, type: "schriftlich"/"muendlich")
+        - create_quiz: Quiz erstellen (subject, topic) — Wenn der Schüler ein Quiz will, nutze diese Aktion
+        - create_flashcards: Karteikarten erstellen (subject, topic) — Wenn der Schüler Karteikarten will
+        - create_topic: Hivemind-Topic erstellen (subject, topic) — Wenn der Schüler ein Topic / einen Lernpfad / einen Lernfeed will
+        - add_subject: Fach erstellen (name, icon, color) — icon: eines von "book.fill","pencil","function","globe.europe.africa.fill","theatermasks.fill","sportscourt.fill","music.note","paintbrush.fill","cpu.fill","leaf.fill","cross.fill","building.columns.fill" — color: eines von "blue","green","orange","purple","pink","red","teal","indigo","mint","cyan"
 
         Nutze Aktionen wenn der Schüler darum bittet. Kurz bestätigen, nicht erklären was du tust.
         """
@@ -184,8 +239,8 @@ final class AIService {
         if !context.isEmpty {
             messages.append(["role": "system", "content": "App-Daten des Schülers:\n\(context)"])
         }
-        // Bisherigen Chat-Verlauf senden (max letzte 20 Nachrichten)
-        for msg in chatHistory.suffix(20) {
+        // Bisherigen Chat-Verlauf senden
+        for msg in chatHistory.suffix(chatHistoryLimit) {
             messages.append(["role": msg.role, "content": msg.text])
         }
         messages.append(["role": "user", "content": question])
@@ -227,15 +282,43 @@ final class AIService {
         var text = content
         var actions: [[String: Any]] = []
 
-        if let actionsRange = content.range(of: "///ACTIONS///"),
-           let endRange = content.range(of: "///END///") {
-            let actionsString = String(content[actionsRange.upperBound..<endRange.lowerBound])
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            text = String(content[..<actionsRange.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+        // Verschiedene Formate erkennen
+        let markers = [
+            ("///ACTIONS///", "///END///"),
+            ("///ACTIONS///", "///END"),
+            ("[{\"action\"", "}]")
+        ]
 
-            if let jsonData = actionsString.data(using: .utf8),
-               let parsed = try? JSONSerialization.jsonObject(with: jsonData) as? [[String: Any]] {
-                actions = parsed
+        for (startMarker, endMarker) in markers.prefix(2) {
+            if let actionsRange = content.range(of: startMarker),
+               let endRange = content.range(of: endMarker) {
+                let actionsString = String(content[actionsRange.upperBound..<endRange.lowerBound])
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .replacingOccurrences(of: "```json", with: "")
+                    .replacingOccurrences(of: "```", with: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                text = String(content[..<actionsRange.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+
+                if let jsonData = actionsString.data(using: .utf8),
+                   let parsed = try? JSONSerialization.jsonObject(with: jsonData) as? [[String: Any]] {
+                    actions = parsed
+                }
+                break
+            }
+        }
+
+        // Fallback: JSON-Array direkt im Text suchen
+        if actions.isEmpty, let jsonStart = content.range(of: "[{\"action\"") {
+            let jsonPart = String(content[jsonStart.lowerBound...])
+            // Finde das Ende des JSON-Arrays
+            if let jsonEnd = jsonPart.range(of: "}]") {
+                let jsonString = String(jsonPart[...jsonEnd.upperBound])
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                if let jsonData = jsonString.data(using: .utf8),
+                   let parsed = try? JSONSerialization.jsonObject(with: jsonData) as? [[String: Any]] {
+                    actions = parsed
+                    text = String(content[..<jsonStart.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+                }
             }
         }
 

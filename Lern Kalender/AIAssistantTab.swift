@@ -10,10 +10,32 @@ struct AIAssistantTab: View {
     var store: DataStore
 
     var body: some View {
-        if AIService.shared.hasAPIKey {
+        if !store.aiAllowed {
+            aiBlockedView
+        } else if AIService.shared.hasAPIKey {
             AIChatView(store: store)
         } else {
             AISetupView(store: store)
+        }
+    }
+
+    private var aiBlockedView: some View {
+        NavigationStack {
+            VStack(spacing: 16) {
+                Spacer()
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(.secondary)
+                Text("KI-Assistent gesperrt")
+                    .font(.title3.bold())
+                Text("Ein Elternteil hat den KI-Assistenten deaktiviert. Bitte frage deine Eltern, ob sie ihn in den Einstellungen aktivieren können.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+                Spacer()
+            }
+            .navigationTitle("KI-Assistent")
         }
     }
 }
@@ -25,6 +47,28 @@ struct ChatMessage: Identifiable, Codable {
     var role: String // "user" or "assistant"
     var text: String
     var date: Date = Date()
+    var quizId: UUID?
+    var flashcardSetId: UUID?
+    var actionResults: [ActionResult]?
+}
+
+struct ActionResult: Identifiable, Codable {
+    var id = UUID()
+    var icon: String
+    var color: String // "blue", "green", "pink", "orange", "purple"
+    var title: String
+    var detail: String
+    var destination: String // "calendar", "grades", "subjects", "studylog"
+
+    var swiftColor: Color {
+        switch color {
+        case "green": return .green
+        case "pink": return .pink
+        case "orange": return .orange
+        case "purple": return .purple
+        default: return .blue
+        }
+    }
 }
 
 struct ChatSession: Identifiable, Codable {
@@ -82,6 +126,9 @@ struct AIChatView: View {
     @State private var showingSettings = false
     @State private var showingContent = false
     @State private var isTemporary = false
+    @State private var quizToPlay: SavedQuiz?
+    @State private var flashcardsToPlay: SavedFlashcardSet?
+    @State private var navigateToTab: String?
     @FocusState private var inputFocused: Bool
     @State private var isRecording = false
     @State private var speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "de-DE"))
@@ -180,11 +227,11 @@ struct AIChatView: View {
                                 .font(.body.weight(.bold))
                                 .foregroundStyle(.primary)
                                 .frame(width: 36, height: 36)
-                                .background(Color(.systemGray5), in: Circle())
+                                .glassEffect(.regular.interactive())
                         }
 
                         HStack(spacing: 8) {
-                            TextField(isTemporary ? "Temporärer Chat" : "Lern-Assistent fragen", text: $inputText, axis: .vertical)
+                            TextField(isTemporary ? "Temporärer Chat" : "\(AIService.shared.assistantName) fragen", text: $inputText, axis: .vertical)
                                 .lineLimit(1...4)
                                 .focused($inputFocused)
 
@@ -231,7 +278,7 @@ struct AIChatView: View {
                                     LinearGradient(colors: [.pink, .purple], startPoint: .topLeading, endPoint: .bottomTrailing),
                                     in: RoundedRectangle(cornerRadius: 6)
                                 )
-                            Text("Lern-Assistent")
+                            Text(AIService.shared.assistantName)
                                 .font(.subheadline.bold())
                                 .foregroundStyle(.primary)
                             Text("1.0")
@@ -296,8 +343,42 @@ struct AIChatView: View {
                     selectedPhoto = nil
                 }
             }
+            .sheet(item: $quizToPlay) { quiz in
+                NavigationStack {
+                    QuizPlayView(quiz: quiz)
+                }
+            }
+            .sheet(item: $flashcardsToPlay) { set in
+                NavigationStack {
+                    FlashcardPlayView(cardSet: set)
+                }
+            }
             .onAppear {
                 restoreActiveChat()
+            }
+            .sheet(isPresented: Binding(
+                get: { navigateToTab != nil },
+                set: { if !$0 { navigateToTab = nil } }
+            )) {
+                NavigationStack {
+                    Group {
+                        switch navigateToTab {
+                        case "calendar":
+                            CalendarTab(store: store)
+                        case "studylog":
+                            StudyLogTab(store: store)
+                        case "subjects":
+                            SubjectsTab(store: store)
+                        default:
+                            StatisticsTab(store: store)
+                        }
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Fertig") { navigateToTab = nil }
+                        }
+                    }
+                }
             }
             .allowsHitTesting(!showingSidebar)
         }
@@ -337,7 +418,7 @@ struct AIChatView: View {
                             .frame(width: 50, height: 50)
                             .background(Color.pink.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Lern-Assistent")
+                            Text(AIService.shared.assistantName)
                                 .font(.headline)
                             Text("Version 1.0 — Powered by Groq")
                                 .font(.caption)
@@ -347,14 +428,58 @@ struct AIChatView: View {
                 }
 
                 Section("Modell") {
-                    Picker("KI-Modell", selection: Binding(
-                        get: { AIService.shared.selectedModel },
-                        set: { AIService.shared.selectedModel = $0 }
-                    )) {
+                    Picker("KI-Modell", selection: $settingsModel) {
                         Text("Llama 3.3 70B (Standard)").tag("llama-3.3-70b-versatile")
                         Text("Llama 3.1 8B (Schnell)").tag("llama-3.1-8b-instant")
                         Text("Mixtral 8x7B").tag("mixtral-8x7b-32768")
                         Text("Gemma 2 9B").tag("gemma2-9b-it")
+                    }
+                    .onChange(of: settingsModel) { _, val in AIService.shared.selectedModel = val }
+                }
+
+                Section("Sprache & Stil") {
+                    Picker("Antwort-Sprache", selection: $settingsLanguage) {
+                        ForEach(AIService.availableLanguages, id: \.self) { lang in
+                            Text(lang).tag(lang)
+                        }
+                    }
+                    .onChange(of: settingsLanguage) { _, val in AIService.shared.language = val }
+
+                    Picker("Antwort-Stil", selection: $settingsStyle) {
+                        ForEach(AIService.availableStyles, id: \.0) { style in
+                            Text(style.1).tag(style.0)
+                        }
+                    }
+                    .onChange(of: settingsStyle) { _, val in AIService.shared.responseStyle = val }
+                }
+
+                Section("Personalisierung") {
+                    HStack {
+                        Text("Name")
+                        Spacer()
+                        TextField("Lern-Assistent", text: $settingsName)
+                            .multilineTextAlignment(.trailing)
+                            .foregroundStyle(.secondary)
+                            .onChange(of: settingsName) { _, val in AIService.shared.assistantName = val }
+                    }
+
+                    Toggle("Vorschläge anzeigen", isOn: $settingsSuggestions)
+                        .onChange(of: settingsSuggestions) { _, val in AIService.shared.suggestionsEnabled = val }
+                }
+
+                Section("Verlauf") {
+                    Picker("Chat-Kontext", selection: $settingsHistoryLimit) {
+                        Text("5 Nachrichten").tag(5)
+                        Text("10 Nachrichten").tag(10)
+                        Text("20 Nachrichten (Standard)").tag(20)
+                        Text("50 Nachrichten").tag(50)
+                    }
+                    .onChange(of: settingsHistoryLimit) { _, val in AIService.shared.chatHistoryLimit = val }
+
+                    Button(role: .destructive) {
+                        showingDeleteHistory = true
+                    } label: {
+                        Label("Gesamten Verlauf löschen", systemImage: "trash")
                     }
                 }
 
@@ -391,13 +516,6 @@ struct AIChatView: View {
                     }
                 }
 
-                Section("Verlauf") {
-                    Button(role: .destructive) {
-                        showingDeleteHistory = true
-                    } label: {
-                        Label("Gesamten Verlauf löschen", systemImage: "trash")
-                    }
-                }
             }
             .navigationTitle("Einstellungen")
             .navigationBarTitleDisplayMode(.inline)
@@ -429,6 +547,12 @@ struct AIChatView: View {
 
     @State private var showingDeleteKey = false
     @State private var showingDeleteHistory = false
+    @State private var settingsModel = AIService.shared.selectedModel
+    @State private var settingsLanguage = AIService.shared.language
+    @State private var settingsStyle = AIService.shared.responseStyle
+    @State private var settingsName = AIService.shared.assistantName
+    @State private var settingsSuggestions = AIService.shared.suggestionsEnabled
+    @State private var settingsHistoryLimit = AIService.shared.chatHistoryLimit
 
     // MARK: - Plus Menu Sheet
 
@@ -507,8 +631,23 @@ struct AIChatView: View {
                         Image(systemName: "doc.plaintext").foregroundStyle(.green)
                     }
                 }
+
+                Button {
+                    showingPlusSheet = false
+                    inputText = "Erstelle einen Lernpfad zu "
+                    inputFocused = true
+                } label: {
+                    Label {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Lernpfad erstellen").font(.subheadline.bold()).foregroundStyle(.primary)
+                            Text("Interaktiver Lernpfad mit Lektionen").font(.caption).foregroundStyle(.secondary)
+                        }
+                    } icon: {
+                        Image(systemName: "map.fill").foregroundStyle(.green)
+                    }
+                }
             }
-            .navigationTitle("Lern-Assistent")
+            .navigationTitle(AIService.shared.assistantName)
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -528,7 +667,7 @@ struct AIChatView: View {
             // Header
             Section {
                 HStack {
-                    Text("Lern-Assistent")
+                    Text(AIService.shared.assistantName)
                         .font(.title2.bold())
                     Spacer()
                     Button {
@@ -631,18 +770,111 @@ struct AIChatView: View {
                     .padding(.top, 2)
             }
 
-            Text(message.text)
-                .font(.subheadline)
-                .textSelection(.enabled)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .foregroundStyle(message.role == "user" ? .white : .primary)
-                .background(
-                    message.role == "user"
-                        ? AnyShapeStyle(LinearGradient(colors: [.blue, .blue.opacity(0.8)], startPoint: .top, endPoint: .bottom))
-                        : AnyShapeStyle(Color(.systemGray6)),
-                    in: RoundedRectangle(cornerRadius: 18)
-                )
+            VStack(alignment: message.role == "user" ? .trailing : .leading, spacing: 6) {
+                if !message.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(message.text)
+                        .font(.subheadline)
+                        .textSelection(.enabled)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .foregroundStyle(message.role == "user" ? .white : .primary)
+                        .background(
+                            message.role == "user"
+                                ? AnyShapeStyle(LinearGradient(colors: [.blue, .blue.opacity(0.8)], startPoint: .top, endPoint: .bottom))
+                                : AnyShapeStyle(Color(.systemGray6)),
+                        in: RoundedRectangle(cornerRadius: 18)
+                    )
+                }
+
+                // Quiz-Link
+                if let quizId = message.quizId {
+                    Button {
+                        if let data = UserDefaults.standard.data(forKey: "savedQuizzes"),
+                           let quizzes = try? JSONDecoder().decode([SavedQuiz].self, from: data),
+                           let quiz = quizzes.first(where: { $0.id == quizId }) {
+                            quizToPlay = quiz
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "questionmark.circle.fill")
+                                .foregroundStyle(.white)
+                                .frame(width: 28, height: 28)
+                                .background(.pink.gradient, in: RoundedRectangle(cornerRadius: 6))
+                            Text("Quiz starten")
+                                .font(.subheadline.bold())
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(10)
+                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                // Karteikarten-Link
+                if let setId = message.flashcardSetId {
+                    Button {
+                        if let data = UserDefaults.standard.data(forKey: "savedFlashcardSets"),
+                           let sets = try? JSONDecoder().decode([SavedFlashcardSet].self, from: data),
+                           let set = sets.first(where: { $0.id == setId }) {
+                            flashcardsToPlay = set
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "rectangle.on.rectangle")
+                                .foregroundStyle(.white)
+                                .frame(width: 28, height: 28)
+                                .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 6))
+                            Text("Karteikarten öffnen")
+                                .font(.subheadline.bold())
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(10)
+                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                // Action Results
+                if let results = message.actionResults, !results.isEmpty {
+                    VStack(spacing: 8) {
+                        ForEach(results) { result in
+                            Button {
+                                navigateToTab = result.destination
+                            } label: {
+                                HStack(spacing: 10) {
+                                    Image(systemName: result.icon)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.white)
+                                        .frame(width: 32, height: 32)
+                                        .background(result.swiftColor.gradient, in: RoundedRectangle(cornerRadius: 8))
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(result.title)
+                                            .font(.subheadline.bold())
+                                            .foregroundStyle(.primary)
+                                        Text(result.detail)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    Text("Öffnen")
+                                        .font(.caption.bold())
+                                        .foregroundStyle(result.swiftColor)
+                                }
+                                .padding(12)
+                                .background(result.swiftColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
+                                .contentShape(RoundedRectangle(cornerRadius: 14))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
 
             if message.role == "assistant" { Spacer(minLength: 60) }
         }
@@ -652,6 +884,9 @@ struct AIChatView: View {
     // MARK: - Actions
 
     private func sendMessage() {
+        // Spracheingabe stoppen falls aktiv
+        if isRecording { stopRecording() }
+
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
@@ -746,12 +981,16 @@ struct AIChatView: View {
             if goal.weeklyMinutesGoal > 0 { parts.append("Wochenziel: \(goal.weeklyMinutesGoal) min") }
         }
 
+        // Lern-Profil
+        parts.append(LearningEngine.shared.learningContext())
+
         return parts.joined(separator: "\n")
     }
 
     private func executeActions(_ actions: [[String: Any]]) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
+        var results: [ActionResult] = []
 
         for action in actions {
             guard let type = action["action"] as? String else { continue }
@@ -764,6 +1003,7 @@ struct AIChatView: View {
                 let date = dateFormatter.date(from: dateStr) ?? Date()
                 if !subject.isEmpty {
                     store.addSession(StudySession(subject: subject, date: date, minutes: minutes))
+                    results.append(ActionResult(icon: "clock.fill", color: "blue", title: "Lernzeit eingetragen", detail: "\(minutes) min \(subject)", destination: "studylog"))
                 }
 
             case "add_entry":
@@ -774,6 +1014,7 @@ struct AIChatView: View {
                 let eventType: EventType = typeStr == "klassenarbeit" ? .klassenarbeit : typeStr == "erinnerung" ? .erinnerung : .lerntag
                 if !title.isEmpty {
                     store.addEntry(CalendarEntry(title: title, date: date, type: eventType))
+                    results.append(ActionResult(icon: eventType.icon, color: typeStr == "klassenarbeit" ? "pink" : "blue", title: "Kalendereintrag erstellt", detail: title, destination: "calendar"))
                 }
 
             case "add_grade":
@@ -783,11 +1024,96 @@ struct AIChatView: View {
                 let gradeType: GradeType = typeStr == "muendlich" ? .muendlich : .schriftlich
                 if !subject.isEmpty {
                     store.addGrade(Grade(subject: subject, grade: grade, date: Date(), type: gradeType))
+                    results.append(ActionResult(icon: "graduationcap.fill", color: "orange", title: "Note eingetragen", detail: "\(subject): \(String(format: "%.1f", grade))", destination: "grades"))
+                }
+
+            case "create_quiz":
+                let subject = action["subject"] as? String ?? ""
+                let topic = action["topic"] as? String ?? ""
+                if !subject.isEmpty && !topic.isEmpty {
+                    Task {
+                        if let questions = try? await AIService.shared.generateQuiz(subject: subject, topic: topic) {
+                            let quiz = SavedQuiz(title: "\(subject): \(topic)", subject: subject, questions: questions)
+                            // Speichern
+                            var quizzes: [SavedQuiz] = []
+                            if let data = UserDefaults.standard.data(forKey: "savedQuizzes"),
+                               let decoded = try? JSONDecoder().decode([SavedQuiz].self, from: data) {
+                                quizzes = decoded
+                            }
+                            quizzes.insert(quiz, at: 0)
+                            if let newData = try? JSONEncoder().encode(quizzes) {
+                                UserDefaults.standard.set(newData, forKey: "savedQuizzes")
+                            }
+                            // Link an letzte Nachricht anhängen
+                            await MainActor.run {
+                                if var last = messages.last, last.role == "assistant" {
+                                    messages.removeLast()
+                                    last.quizId = quiz.id
+                                    messages.append(last)
+                                } else {
+                                    var linkMsg = ChatMessage(role: "assistant", text: "Quiz erstellt!")
+                                    linkMsg.quizId = quiz.id
+                                    messages.append(linkMsg)
+                                }
+                                autoSaveChat()
+                            }
+                        }
+                    }
+                }
+
+            case "create_flashcards":
+                let subject = action["subject"] as? String ?? ""
+                let topic = action["topic"] as? String ?? ""
+                if !subject.isEmpty && !topic.isEmpty {
+                    Task {
+                        if let cards = try? await AIService.shared.generateFlashcards(subject: subject, topic: topic) {
+                            let set = SavedFlashcardSet(title: "\(subject): \(topic)", subject: subject, cards: cards)
+                            // Speichern
+                            var sets: [SavedFlashcardSet] = []
+                            if let data = UserDefaults.standard.data(forKey: "savedFlashcardSets"),
+                               let decoded = try? JSONDecoder().decode([SavedFlashcardSet].self, from: data) {
+                                sets = decoded
+                            }
+                            sets.insert(set, at: 0)
+                            if let newData = try? JSONEncoder().encode(sets) {
+                                UserDefaults.standard.set(newData, forKey: "savedFlashcardSets")
+                            }
+                            // Link an letzte Nachricht anhängen
+                            await MainActor.run {
+                                if var last = messages.last, last.role == "assistant" {
+                                    messages.removeLast()
+                                    last.flashcardSetId = set.id
+                                    messages.append(last)
+                                } else {
+                                    var linkMsg = ChatMessage(role: "assistant", text: "Karteikarten erstellt!")
+                                    linkMsg.flashcardSetId = set.id
+                                    messages.append(linkMsg)
+                                }
+                                autoSaveChat()
+                            }
+                        }
+                    }
+                }
+
+            case "add_subject":
+                let name = action["name"] as? String ?? ""
+                let icon = action["icon"] as? String ?? "book.fill"
+                let color = action["color"] as? String ?? "blue"
+                if !name.isEmpty && !store.subjects.contains(where: { $0.name.localizedCaseInsensitiveCompare(name) == .orderedSame }) {
+                    store.addSubject(Subject(name: name, icon: icon, colorName: color))
+                    results.append(ActionResult(icon: icon, color: color, title: "Fach erstellt", detail: name, destination: "subjects"))
                 }
 
             default:
                 break
             }
+        }
+
+        // Action Results an letzte Nachricht anhängen
+        if !results.isEmpty, var last = messages.last, last.role == "assistant" {
+            messages.removeLast()
+            last.actionResults = (last.actionResults ?? []) + results
+            messages.append(last)
         }
     }
 
@@ -816,36 +1142,52 @@ struct AIChatView: View {
 
     private func toggleRecording() {
         if isRecording {
-            audioEngine.stop()
-            audioEngine.inputNode.removeTap(onBus: 0)
-            recognitionTask?.cancel()
-            isRecording = false
+            stopRecording()
         } else {
-            SFSpeechRecognizer.requestAuthorization { status in
+            startRecording()
+        }
+    }
+
+    private func stopRecording() {
+        audioEngine.stop()
+        audioEngine.inputNode.removeTap(onBus: 0)
+        recognitionTask?.finish()
+        recognitionTask = nil
+        isRecording = false
+    }
+
+    private func startRecording() {
+        SFSpeechRecognizer.requestAuthorization { status in
+            DispatchQueue.main.async {
                 guard status == .authorized else { return }
-            }
 
-            let request = SFSpeechAudioBufferRecognitionRequest()
-            request.shouldReportPartialResults = true
+                let audioSession = AVAudioSession.sharedInstance()
+                try? audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+                try? audioSession.setActive(true, options: .notifyOthersOnDeactivation)
 
-            let inputNode = audioEngine.inputNode
-            let format = inputNode.outputFormat(forBus: 0)
-            inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
-                request.append(buffer)
-            }
+                let request = SFSpeechAudioBufferRecognitionRequest()
+                request.shouldReportPartialResults = true
+                request.addsPunctuation = true
 
-            audioEngine.prepare()
-            try? audioEngine.start()
-            isRecording = true
-
-            recognitionTask = speechRecognizer?.recognitionTask(with: request) { result, error in
-                if let result {
-                    inputText = result.bestTranscription.formattedString
+                let inputNode = self.audioEngine.inputNode
+                let format = inputNode.outputFormat(forBus: 0)
+                inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
+                    request.append(buffer)
                 }
-                if error != nil || (result?.isFinal ?? false) {
-                    audioEngine.stop()
-                    inputNode.removeTap(onBus: 0)
-                    isRecording = false
+
+                self.audioEngine.prepare()
+                try? self.audioEngine.start()
+                self.isRecording = true
+
+                self.recognitionTask = self.speechRecognizer?.recognitionTask(with: request) { result, error in
+                    DispatchQueue.main.async {
+                        if let result {
+                            self.inputText = result.bestTranscription.formattedString
+                        }
+                        if error != nil || (result?.isFinal ?? false) {
+                            self.stopRecording()
+                        }
+                    }
                 }
             }
         }
