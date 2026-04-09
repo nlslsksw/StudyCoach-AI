@@ -58,6 +58,13 @@ header {
     margin-bottom: 24px;
 }
 
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
 .brand {
     display: flex;
     align-items: center;
@@ -66,6 +73,7 @@ header {
     color: var(--text);
     font-weight: 600;
     font-size: 17px;
+    min-width: 0;
 }
 
 .brand-icon {
@@ -115,11 +123,9 @@ nav a.active {
 }
 
 .lang-switch {
-    margin-left: auto;
     display: flex;
     gap: 4px;
     flex-shrink: 0;
-    padding-left: 8px;
 }
 
 .lang-switch a {
