@@ -32,7 +32,7 @@ struct OnboardingView: View {
             subtitle: "Sag der KI 'trag 90 Minuten Englisch ein' — sie macht es. Frage Themen ab. Lass dir Lernpläne erstellen. (Beta)"
         ),
         OnboardingPage(
-            kind: .icon("brain.head.profile", colors: [.purple, .indigo]),
+            kind: .image("onboarding-hivemind"),
             accent: .purple,
             title: "Lern-Feed (Hivemind)",
             subtitle: "Scroll dich schlauer. Kurze Lektionen, Quiz, Karteikarten und Sprach-Übungen — wie ein Feed, nur lehrreich."
