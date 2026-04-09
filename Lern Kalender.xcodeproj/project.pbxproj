@@ -448,6 +448,7 @@
 				DEVELOPMENT_TEAM = 7826PAS33R;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Mikrofon wird für die Spracheingabe im KI-Assistenten benötigt.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Spracherkennung wird für die Spracheingabe im KI-Assistenten benötigt.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
@@ -484,6 +485,7 @@
 				DEVELOPMENT_TEAM = 7826PAS33R;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Mikrofon wird für die Spracheingabe im KI-Assistenten benötigt.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Spracherkennung wird für die Spracheingabe im KI-Assistenten benötigt.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;

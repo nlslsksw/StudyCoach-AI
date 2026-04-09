@@ -27,7 +27,7 @@ docs/legal/
    - **Folder:** `/docs`
 4. Click **Save**.
 5. After about a minute, GitHub publishes the site at:
-   `https://<your-github-username>.github.io/<repo-name>/legal/`
+   `https://nlslksw.github.io/StudyCoach-AI/legal/`
 6. Take that URL and put it into:
    - **App Store Connect → App Privacy → Privacy Policy URL** → use `privacy-en.html`
    - **App Store Connect → App Information → Marketing URL** (optional) → use `index-en.html`
@@ -37,13 +37,13 @@ docs/legal/
 
 After hosting, the canonical URLs are:
 
-- Landing (DE): `…/legal/index.html`
-- Landing (EN): `…/legal/index-en.html`
-- Privacy DE: `…/legal/privacy-de.html`
-- Privacy EN: `…/legal/privacy-en.html` ← **submit this one to App Store Connect**
-- Terms DE: `…/legal/terms-de.html`
-- Terms EN: `…/legal/terms-en.html`
-- Impressum: `…/legal/imprint.html`
+- Landing (DE): `https://nlslksw.github.io/StudyCoach-AI/legal/index.html`
+- Landing (EN): `https://nlslksw.github.io/StudyCoach-AI/legal/index-en.html`
+- Privacy DE: `https://nlslksw.github.io/StudyCoach-AI/legal/privacy-de.html`
+- Privacy EN: `https://nlslksw.github.io/StudyCoach-AI/legal/privacy-en.html` ← **submit this one to App Store Connect**
+- Terms DE: `https://nlslksw.github.io/StudyCoach-AI/legal/terms-de.html`
+- Terms EN: `https://nlslksw.github.io/StudyCoach-AI/legal/terms-en.html`
+- Impressum: `https://nlslksw.github.io/StudyCoach-AI/legal/imprint.html`
 
 ## Updating content
 
