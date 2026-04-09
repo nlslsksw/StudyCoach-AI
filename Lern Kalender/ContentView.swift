@@ -256,28 +256,6 @@ struct ParentSettingsTab: View {
                 }
 
                 Section {
-                    Toggle(isOn: Binding(
-                        get: { store.aiAllowed },
-                        set: { newValue in
-                            store.aiAllowed = newValue
-                            // Push to every linked child via CloudKit
-                            let codes = store.familyLinks.filter(\.isActive).map(\.pairingCode)
-                            Task {
-                                for code in codes {
-                                    try? await CloudKitService.shared.saveAIAllowed(newValue, pairingCode: code)
-                                }
-                            }
-                        }
-                    )) {
-                        Label("KI-Assistent erlauben", systemImage: "sparkles")
-                    }
-                } header: {
-                    Text("KI-Assistent")
-                } footer: {
-                    Text("Erlaubt dem Kind den KI-Lernassistenten zu nutzen. Die Einstellung wird an alle verbundenen Kinder gesendet. Standardmäßig aktiviert.")
-                }
-
-                Section {
                     Button(role: .destructive) {
                         showingLeaveAlert = true
                     } label: {
