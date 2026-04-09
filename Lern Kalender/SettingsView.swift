@@ -20,6 +20,19 @@ struct SettingsView: View {
     @State private var showingOnboarding = false
     @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
 
+    private var appVersion: String {
+        let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let b = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        return "\(v) (\(b))"
+    }
+
+    private func legalURL(_ page: String) -> String {
+        let base = "https://nlslsksw.github.io/StudyCoach-AI/legal"
+        let lang = Locale.current.language.languageCode?.identifier ?? "de"
+        let suffix = lang == "en" ? "en" : "de"
+        return "\(base)/\(page)-\(suffix).html"
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -212,6 +225,61 @@ struct SettingsView: View {
                     Text("Importieren")
                 } footer: {
                     Text("Achtung: Beim Import werden alle bestehenden Daten ersetzt.")
+                }
+
+                // Rechtliches
+                Section {
+                    Link(destination: URL(string: legalURL("privacy"))!) {
+                        HStack {
+                            Label("Datenschutz", systemImage: "lock.shield.fill")
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    Link(destination: URL(string: legalURL("terms"))!) {
+                        HStack {
+                            Label("Nutzungsbedingungen", systemImage: "doc.text.fill")
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    Link(destination: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/imprint.html")!) {
+                        HStack {
+                            Label("Impressum", systemImage: "info.circle.fill")
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                } header: {
+                    Text("Rechtliches")
+                } footer: {
+                    Text("Öffnet die rechtlichen Hinweise in deinem Browser.")
+                }
+
+                // App-Info
+                Section {
+                    HStack {
+                        Label("Version", systemImage: "info.circle")
+                        Spacer()
+                        Text(appVersion)
+                            .foregroundStyle(.secondary)
+                            .font(.subheadline.monospacedDigit())
+                    }
+                    HStack {
+                        Label("Copyright", systemImage: "c.circle")
+                        Spacer()
+                        Text("© 2026 Ralf Lohrmann")
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                    }
+                } header: {
+                    Text("Über die App")
                 }
             }
             .sheet(isPresented: $showingPINSetup) {
