@@ -138,17 +138,31 @@ struct OnboardingView: View {
 
     @ViewBuilder
     private func screenshotFrame(imageName: String, accent: Color) -> some View {
-        Image(imageName)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(maxHeight: 460)
-            .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
-                    .stroke(Color.primary.opacity(0.06), lineWidth: 1)
-            )
-            .shadow(color: accent.opacity(0.18), radius: 24, y: 12)
-            .padding(.horizontal, 32)
+        ZStack {
+            // Soft tinted background pad behind the screen
+            RoundedRectangle(cornerRadius: 36, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [accent.opacity(0.18), accent.opacity(0.04)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            // Inset screenshot styled as a phone display
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                )
+                .shadow(color: accent.opacity(0.25), radius: 20, y: 10)
+                .padding(20)
+        }
+        .frame(maxHeight: 460)
+        .padding(.horizontal, 28)
     }
 
     @ViewBuilder
