@@ -53,39 +53,48 @@ body {
 
 /* Header */
 header {
-    padding: 48px 0 32px;
+    padding: 24px 0 16px;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     text-decoration: none;
     color: var(--text);
     font-weight: 600;
-    font-size: 18px;
+    font-size: 17px;
 }
 
 .brand-icon {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     background: linear-gradient(135deg, #ec4899, #7c3aed);
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 20px;
+    font-size: 18px;
+    flex-shrink: 0;
 }
 
 nav {
-    margin-top: 24px;
+    margin-top: 14px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px 16px;
-    font-size: 15px;
+    flex-wrap: nowrap;
+    gap: 6px;
+    font-size: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    align-items: center;
+}
+
+nav::-webkit-scrollbar {
+    display: none;
 }
 
 nav a {
@@ -94,6 +103,8 @@ nav a {
     padding: 6px 12px;
     border-radius: 8px;
     transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 nav a:hover {
@@ -111,31 +122,33 @@ nav a.active {
     margin-left: auto;
     display: flex;
     gap: 4px;
+    flex-shrink: 0;
+    padding-left: 8px;
 }
 
 .lang-switch a {
     padding: 4px 10px;
-    font-size: 13px;
+    font-size: 12px;
     border: 1px solid var(--border);
 }
 
 /* Main */
 main {
-    padding-bottom: 64px;
+    padding-bottom: 48px;
 }
 
 h1 {
-    font-size: 40px;
+    font-size: 32px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    line-height: 1.2;
-    margin-bottom: 12px;
+    line-height: 1.15;
+    margin-bottom: 8px;
 }
 
 .subtitle {
     color: var(--text-secondary);
-    font-size: 18px;
-    margin-bottom: 32px;
+    font-size: 16px;
+    margin-bottom: 24px;
 }
 
 h2 {
@@ -189,14 +202,16 @@ code {
 .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-top: 32px;
+    gap: 10px;
+    margin-top: 16px;
 }
 
 .card {
-    display: block;
-    padding: 20px;
-    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 14px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
@@ -211,15 +226,20 @@ code {
     text-decoration: none;
 }
 
+.card-text {
+    flex: 1;
+    min-width: 0;
+}
+
 .card-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    margin-bottom: 12px;
+    font-size: 18px;
+    flex-shrink: 0;
 }
 
 .card-icon.privacy { background: #dbeafe; color: #2563eb; }
@@ -235,28 +255,30 @@ code {
 }
 
 .card h3 {
-    margin: 0 0 4px;
-    font-size: 17px;
+    margin: 0 0 2px;
+    font-size: 16px;
 }
 
 .card p {
     margin: 0;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 /* Hero on index */
 .hero {
-    padding: 32px 0 24px;
+    padding: 8px 0 16px;
     text-align: left;
 }
 
 .hero h1 {
-    font-size: 48px;
+    font-size: 36px;
 }
 
 .hero .subtitle {
-    font-size: 20px;
+    font-size: 16px;
+    margin-bottom: 0;
 }
 
 /* Footer */
@@ -275,10 +297,27 @@ footer p {
 /* Mobile */
 @media (max-width: 600px) {
     body { font-size: 16px; }
-    .container { padding: 0 18px; }
-    h1 { font-size: 32px; }
-    .hero h1 { font-size: 36px; }
-    h2 { font-size: 22px; }
-    nav { font-size: 14px; }
-    .lang-switch { margin-left: 0; width: 100%; margin-top: 8px; }
+    .container { padding: 0 16px; }
+    header { padding: 16px 0 12px; margin-bottom: 16px; }
+    h1 { font-size: 26px; }
+    .hero { padding: 4px 0 12px; }
+    .hero h1 { font-size: 30px; }
+    .subtitle { font-size: 15px; margin-bottom: 16px; }
+    h2 { font-size: 20px; margin: 28px 0 10px; }
+    h3 { font-size: 16px; }
+    nav {
+        font-size: 13px;
+        gap: 4px;
+        margin-top: 12px;
+        padding-bottom: 4px;
+    }
+    nav a { padding: 5px 10px; }
+    .lang-switch a { padding: 3px 8px; font-size: 11px; }
+    .card { padding: 12px; gap: 12px; }
+    .card-icon { width: 34px; height: 34px; font-size: 17px; }
+    .card h3 { font-size: 15px; }
+    .card p { font-size: 12px; }
+    .card-grid { gap: 8px; }
+    main { padding-bottom: 32px; }
+    footer { padding: 20px 0; margin-top: 24px; font-size: 13px; }
 }
