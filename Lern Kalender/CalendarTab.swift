@@ -45,12 +45,6 @@ struct CalendarTab: View {
                         } label: {
                             Label("Lernzeit eintragen", systemImage: "clock.badge.checkmark")
                         }
-                        Divider()
-                        Button {
-                            showingStudyPlan = true
-                        } label: {
-                            Label("Lernplan erstellen", systemImage: "sparkles")
-                        }
                     } label: {
                         Image(systemName: "plus")
                     }

@@ -71,7 +71,7 @@ struct StudyPlanView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
 
-            if !GeminiService.shared.hasAPIKey {
+            if !AIService.shared.hasAPIKey {
                 VStack(spacing: 8) {
                     Image(systemName: "key.fill")
                         .foregroundStyle(.orange)
@@ -296,7 +296,7 @@ struct StudyPlanView: View {
         step = .generating
         Task {
             do {
-                let days = try await GeminiService.shared.generateStudyPlan(
+                let days = try await AIService.shared.generateStudyPlan(
                     text: recognizedText,
                     subject: subject,
                     examDate: examDate
