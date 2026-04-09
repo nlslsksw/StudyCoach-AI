@@ -232,6 +232,91 @@ final class CloudKitService {
         return entries
     }
 
+    // MARK: - Hivemind Topics
+
+    /// Push the child's topics + progress to CloudKit so parents can view them.
+    /// No-op if no family link is active.
+    func pushTopics(_ topics: [Topic], progress: [UUID: TopicProgress]) async {
+        guard let pairingCode = currentPairingCode() else { return }
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+
+        do {
+            let record = try await findOrCreateTopicsRecord(pairingCode: pairingCode)
+            if let topicsData = try? encoder.encode(topics) {
+                record["topicsJSON"] = topicsData as CKRecordValue
+            }
+            if let progressData = try? encoder.encode(Array(progress.values)) {
+                record["progressJSON"] = progressData as CKRecordValue
+            }
+            record["lastUpdated"] = Date() as CKRecordValue
+            try await publicDB.save(record)
+        } catch {
+            // Silent fail — local state remains source of truth.
+        }
+    }
+
+    /// Fetch the child's topics + progress (parent side, or device-restore side).
+    func fetchTopics(pairingCode: String) async -> (topics: [Topic], progress: [TopicProgress]) {
+        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let query = CKQuery(recordType: "HivemindTopics", predicate: predicate)
+
+        guard let results = try? await publicDB.records(matching: query),
+              let matchResult = results.matchResults.first,
+              let record = try? matchResult.1.get() else {
+            return ([], [])
+        }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        var topics: [Topic] = []
+        var progress: [TopicProgress] = []
+        if let data = record["topicsJSON"] as? Data,
+           let decoded = try? decoder.decode([Topic].self, from: data) {
+            topics = decoded
+        }
+        if let data = record["progressJSON"] as? Data,
+           let decoded = try? decoder.decode([TopicProgress].self, from: data) {
+            progress = decoded
+        }
+        return (topics, progress)
+    }
+
+    /// Parents push an assigned topic to a child's record. Marks `assignedByParent = true`.
+    func assignTopicToChild(_ topic: Topic, pairingCode: String) async {
+        var assignedTopic = topic
+        assignedTopic.assignedByParent = true
+        assignedTopic.pairingCode = pairingCode
+
+        let (existing, existingProgress) = await fetchTopics(pairingCode: pairingCode)
+        var updated = existing
+        if !updated.contains(where: { $0.id == assignedTopic.id }) {
+            updated.append(assignedTopic)
+        }
+        await pushTopics(updated, progress: Dictionary(uniqueKeysWithValues: existingProgress.map { ($0.id, $0) }))
+    }
+
+    private func findOrCreateTopicsRecord(pairingCode: String) async throws -> CKRecord {
+        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let query = CKQuery(recordType: "HivemindTopics", predicate: predicate)
+        let results = try await publicDB.records(matching: query)
+        if let matchResult = results.matchResults.first,
+           let record = try? matchResult.1.get() {
+            return record
+        }
+        let new = CKRecord(recordType: "HivemindTopics")
+        new["pairingCode"] = pairingCode as CKRecordValue
+        return new
+    }
+
+    /// Returns the active pairing code from a UserDefaults bridge written by DataStore.
+    /// Used to avoid a circular dependency between CloudKitService and DataStore.
+    private func currentPairingCode() -> String? {
+        return UserDefaults.standard.string(forKey: "currentPairingCodeBridge")
+    }
+
     // MARK: - Motivation Messages (Eltern → Kind)
 
     func saveMotivationMessage(_ message: MotivationMessage) async throws {
@@ -315,6 +400,14 @@ final class CloudKitService {
             motivation["date"] = Date() as CKRecordValue
             let savedMM = try await publicDB.save(motivation)
 
+            // 7. HivemindTopics
+            let hivemind = CKRecord(recordType: "HivemindTopics")
+            hivemind["pairingCode"] = "__setup__" as CKRecordValue
+            hivemind["topicsJSON"] = Data() as CKRecordValue
+            hivemind["progressJSON"] = Data() as CKRecordValue
+            hivemind["lastUpdated"] = Date() as CKRecordValue
+            let savedHM = try await publicDB.save(hivemind)
+
             // Setup-Records wieder löschen
             try await publicDB.deleteRecord(withID: savedFL.recordID)
             try await publicDB.deleteRecord(withID: savedSD.recordID)
@@ -322,6 +415,7 @@ final class CloudKitService {
             try await publicDB.deleteRecord(withID: savedAN.recordID)
             try await publicDB.deleteRecord(withID: savedSE.recordID)
             try await publicDB.deleteRecord(withID: savedMM.recordID)
+            try await publicDB.deleteRecord(withID: savedHM.recordID)
 
             await MainActor.run {
                 schemaSetupComplete = true

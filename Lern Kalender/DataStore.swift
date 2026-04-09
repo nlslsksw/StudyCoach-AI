@@ -34,10 +34,19 @@ final class DataStore {
         didSet { saveAppMode() }
     }
     var familyLink: FamilyLink? = nil {
-        didSet { saveFamilyLink() }
+        didSet {
+            saveFamilyLink()
+            UserDefaults.standard.set(familyLink?.pairingCode, forKey: "currentPairingCodeBridge")
+        }
     }
     var familyLinks: [FamilyLink] = [] {
-        didSet { saveFamilyLinks() }
+        didSet {
+            saveFamilyLinks()
+            // Parent mode: bridge the FIRST active child code as the default.
+            if let first = familyLinks.first(where: { $0.isActive }) {
+                UserDefaults.standard.set(first.pairingCode, forKey: "currentPairingCodeBridge")
+            }
+        }
     }
     var studyGoal: StudyGoal? = nil {
         didSet { saveStudyGoal() }
@@ -53,6 +62,9 @@ final class DataStore {
     }
     var sharedCalendarEntries: [SharedCalendarEntry] = [] {
         didSet { saveSharedEntries() }
+    }
+    var aiAllowed: Bool = true {
+        didSet { store.set(aiAllowed, forKey: "aiAllowed") }
     }
 
     private let entriesKey = "calendarEntries"
@@ -191,6 +203,9 @@ final class DataStore {
            let decoded = try? JSONDecoder().decode([SharedCalendarEntry].self, from: data) {
             sharedCalendarEntries = decoded
         }
+        if store.object(forKey: "aiAllowed") != nil {
+            aiAllowed = store.bool(forKey: "aiAllowed")
+        }
     }
 
     private func saveEntries() {
@@ -294,6 +309,7 @@ final class DataStore {
     func addEntry(_ entry: CalendarEntry) {
         entries.append(entry)
         NotificationHelper.schedule(for: entry)
+        syncToCloudIfNeeded()
     }
 
     func updateEntry(_ entry: CalendarEntry) {
@@ -301,12 +317,14 @@ final class DataStore {
             NotificationHelper.remove(for: entries[idx])
             entries[idx] = entry
             NotificationHelper.schedule(for: entry)
+            syncToCloudIfNeeded()
         }
     }
 
     func deleteEntry(_ entry: CalendarEntry) {
         NotificationHelper.remove(for: entry)
         entries.removeAll { $0.id == entry.id }
+        syncToCloudIfNeeded()
     }
 
     func toggleCompleted(_ entry: CalendarEntry) {
@@ -360,7 +378,10 @@ final class DataStore {
         }
     }
 
-    func deleteGrade(_ grade: Grade) { grades.removeAll { $0.id == grade.id } }
+    func deleteGrade(_ grade: Grade) {
+        grades.removeAll { $0.id == grade.id }
+        syncToCloudIfNeeded()
+    }
 
     func uniqueGradeSubjects() -> [String] {
         var subjects = Set(grades.map { $0.subject })
@@ -480,6 +501,9 @@ final class DataStore {
         studySessions.append(session)
         syncToCloudIfNeeded()
         sendSessionNotification(session)
+        // XP vergeben und Challenges prüfen
+        LearningEngine.shared.earnXP(LearningEngine.shared.xpForStudyTime(minutes: session.minutes), subject: session.subject)
+        LearningEngine.shared.checkChallenges(store: self)
     }
 
     private func sendSessionNotification(_ session: StudySession) {
@@ -497,7 +521,10 @@ final class DataStore {
         if let idx = studySessions.firstIndex(where: { $0.id == session.id }) { studySessions[idx] = session }
     }
 
-    func deleteSession(_ session: StudySession) { studySessions.removeAll { $0.id == session.id } }
+    func deleteSession(_ session: StudySession) {
+        studySessions.removeAll { $0.id == session.id }
+        syncToCloudIfNeeded()
+    }
 
     func sessions(for date: Date) -> [StudySession] {
         let cal = Calendar.current
