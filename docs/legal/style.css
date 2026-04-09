@@ -69,16 +69,12 @@ header {
 }
 
 .brand-icon {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, #ec4899, #7c3aed);
+    width: 36px;
+    height: 36px;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 18px;
     flex-shrink: 0;
+    object-fit: cover;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
 nav {
