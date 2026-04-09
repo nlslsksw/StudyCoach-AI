@@ -17,6 +17,7 @@ struct SettingsView: View {
     @State private var sessionsCSVURL: URL?
     @State private var pdfURL: URL?
     @State private var showingPINSetup = false
+    @State private var showingOnboarding = false
     @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
 
     var body: some View {
@@ -38,6 +39,19 @@ struct SettingsView: View {
                     Text("Lern-Rückblick")
                 } footer: {
                     Text("Sieh dir deinen persönlichen Lern-Rückblick im Story-Format an.")
+                }
+
+                // Hilfe & Tutorial
+                Section {
+                    Button {
+                        showingOnboarding = true
+                    } label: {
+                        Label("Tutorial erneut anzeigen", systemImage: "play.rectangle.fill")
+                    }
+                } header: {
+                    Text("Hilfe")
+                } footer: {
+                    Text("Zeigt das Willkommens-Tutorial mit allen App-Funktionen noch einmal an.")
                 }
 
                 // Lern-Feed
@@ -240,6 +254,9 @@ struct SettingsView: View {
             }
             .fullScreenCover(isPresented: $showWrappedJahr) {
                 LernWrappedView(store: store, schoolYear: store.activeSchoolYear(), isHalbjahr: false)
+            }
+            .fullScreenCover(isPresented: $showingOnboarding) {
+                OnboardingView()
             }
         }
     }
