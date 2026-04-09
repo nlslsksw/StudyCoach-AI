@@ -29,10 +29,8 @@ struct HivemindTab: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .font(.body.bold())
-                            .foregroundStyle(.primary)
-                            .frame(width: 32, height: 32)
-                            .background(Color(.secondarySystemBackground), in: Circle())
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.purple)
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {
