@@ -498,6 +498,17 @@ final class DataStore {
     // MARK: StudySession helpers
 
     func addSession(_ session: StudySession) {
+        // Duplicate guard: skip if an identical session (same subject, same
+        // minutes, same calendar day) was already added in the last 60 seconds.
+        let cal = Calendar.current
+        let isDuplicate = studySessions.contains { existing in
+            existing.subject == session.subject &&
+            existing.minutes == session.minutes &&
+            cal.isDate(existing.date, inSameDayAs: session.date) &&
+            abs(existing.date.timeIntervalSinceNow) < 60
+        }
+        if isDuplicate { return }
+
         studySessions.append(session)
         syncToCloudIfNeeded()
         sendSessionNotification(session)
