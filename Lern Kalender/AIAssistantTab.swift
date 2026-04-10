@@ -10,12 +10,28 @@ struct AIAssistantTab: View {
     var store: DataStore
 
     var body: some View {
-        if !store.aiAllowed {
-            aiBlockedView
-        } else if AIService.shared.hasAPIKey {
-            AIChatView(store: store)
-        } else {
-            AISetupView(store: store)
+        Group {
+            if !store.aiAllowed {
+                aiBlockedView
+            } else if AIService.shared.hasAPIKey {
+                AIChatView(store: store)
+            } else {
+                AISetupView(store: store)
+            }
+        }
+        .onAppear {
+            // Refresh parental flag every time the KI tab is shown.
+            Self.refreshAIAllowed(store: store)
+        }
+    }
+
+    /// Refresh the parental AI-allowed flag from CloudKit.
+    static func refreshAIAllowed(store: DataStore) {
+        guard let link = store.familyLink, link.isActive else { return }
+        Task {
+            if let allowed = await CloudKitService.shared.fetchAIAllowed(pairingCode: link.pairingCode) {
+                await MainActor.run { store.aiAllowed = allowed }
+            }
         }
     }
 
@@ -287,16 +303,18 @@ struct AIChatView: View {
                             .foregroundStyle(.purple)
                     }
                     .accessibilityLabel("Beta-Info anzeigen")
-                    Button {
-                        showingHivemind = true
-                    } label: {
-                        Image(systemName: "brain.head.profile")
-                            .font(.body)
-                            .foregroundStyle(.white)
-                            .frame(width: 32, height: 32)
-                            .background(.purple.gradient, in: Circle())
+                    if store.aiAllowed {
+                        Button {
+                            showingHivemind = true
+                        } label: {
+                            Image(systemName: "brain.head.profile")
+                                .font(.body)
+                                .foregroundStyle(.white)
+                                .frame(width: 32, height: 32)
+                                .background(.purple.gradient, in: Circle())
+                        }
+                        .accessibilityLabel("Lernen-Feed öffnen")
                     }
-                    .accessibilityLabel("Lernen-Feed öffnen")
                 }
             }
             .fullScreenCover(isPresented: $showingHivemind) {
