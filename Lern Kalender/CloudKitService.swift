@@ -210,20 +210,33 @@ final class CloudKitService {
     // MARK: - Notifications (via CloudKit Subscriptions)
 
     func subscribeToStudentDataChanges(pairingCode: String) async {
-        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
-        let subscription = CKQuerySubscription(
+        // 1. Generic subscription on StudentData updates (backup / data sync).
+        let dataPredicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let dataSubscription = CKQuerySubscription(
             recordType: "StudentData",
-            predicate: predicate,
+            predicate: dataPredicate,
+            subscriptionID: "studentData-\(pairingCode)",
             options: [.firesOnRecordUpdate]
         )
+        let dataInfo = CKSubscription.NotificationInfo()
+        dataInfo.shouldSendContentAvailable = true  // silent — just sync data
+        dataSubscription.notificationInfo = dataInfo
+        try? await publicDB.save(dataSubscription)
 
-        let info = CKSubscription.NotificationInfo()
-        info.alertBody = "Neue Lernaktivität!"
-        info.shouldSendContentAvailable = true
-        info.soundName = "default"
-        subscription.notificationInfo = info
-
-        try? await publicDB.save(subscription)
+        // 2. Activity notification — visible push when the child logs a session.
+        let actPredicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let actSubscription = CKQuerySubscription(
+            recordType: "ActivityNotification",
+            predicate: actPredicate,
+            subscriptionID: "activity-\(pairingCode)",
+            options: [.firesOnRecordCreation]
+        )
+        let actInfo = CKSubscription.NotificationInfo()
+        actInfo.alertBody = "Dein Kind hat gelernt! Öffne die App für Details. 📚"
+        actInfo.soundName = "default"
+        actInfo.shouldSendContentAvailable = true
+        actSubscription.notificationInfo = actInfo
+        try? await publicDB.save(actSubscription)
     }
 
     func sendActivityNotification(type: String, message: String, pairingCode: String) async {
