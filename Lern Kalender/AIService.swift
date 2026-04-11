@@ -9,14 +9,20 @@ final class AIService {
     var error: String?
 
     private let keychainKey = "groqAPIKey"
+    private let backendURL = "https://tudycoach-api.nils-lohrmann11.workers.dev/"
+    private let groqDirectURL = "https://api.groq.com/openai/v1/chat/completions"
 
     private init() {
-        hasAPIKey = loadFromKeychain() != nil
+        hasAPIKey = true
     }
 
     // MARK: - API Key Management
 
-    var hasAPIKey: Bool = false
+    var hasAPIKey: Bool = true
+
+    var hasCustomKey: Bool {
+        loadFromKeychain() != nil
+    }
 
     var selectedModel: String {
         get { UserDefaults.standard.string(forKey: "aiModel") ?? "llama-3.3-70b-versatile" }
@@ -69,25 +75,41 @@ final class AIService {
         set {
             if let key = newValue, !key.isEmpty {
                 saveToKeychain(key)
-                hasAPIKey = true
             } else {
                 deleteFromKeychain()
-                hasAPIKey = false
             }
         }
     }
 
     private func refreshKeyStatus() {
-        hasAPIKey = loadFromKeychain() != nil
+        hasAPIKey = true
+    }
+
+    // MARK: - API Request Helper
+
+    private func makeAPIRequest(body: [String: Any]) throws -> URLRequest {
+        let url: URL
+        if let key = apiKey, !key.isEmpty {
+            url = URL(string: groqDirectURL)!
+        } else {
+            url = URL(string: backendURL)!
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        if let key = apiKey, !key.isEmpty {
+            request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        }
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        return request
     }
 
     // MARK: - Generate Study Plan
 
     func generateStudyPlan(text: String, subject: String, examDate: Date) async throws -> [StudyPlanDay] {
-        guard let key = apiKey, !key.isEmpty else {
-            throw AIError.noAPIKey
-        }
-
         isGenerating = true
         error = nil
         defer { isGenerating = false }
@@ -118,8 +140,6 @@ final class AIService {
         - Beginne ab morgen
         """
 
-        let url = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
-
         let body: [String: Any] = [
             "model": selectedModel,
             "messages": [
@@ -129,11 +149,7 @@ final class AIService {
             "temperature": 0.7
         ]
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let request = try makeAPIRequest(body: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -184,11 +200,6 @@ final class AIService {
     }
 
     func askWithActions(_ question: String, chatHistory: [ChatMessage] = [], context: String = "") async throws -> AIResponse {
-        guard let key = apiKey, !key.isEmpty else {
-            throw AIError.noAPIKey
-        }
-
-        let url = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
 
         let styleInstruction: String = {
             switch responseStyle {
@@ -251,11 +262,7 @@ final class AIService {
             "temperature": 0.7
         ]
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let request = try makeAPIRequest(body: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -336,8 +343,6 @@ final class AIService {
     // MARK: - Generate Quiz (strukturiert)
 
     func generateQuiz(subject: String, topic: String, questionCount: Int = 5) async throws -> [QuizQuestion] {
-        guard let key = apiKey, !key.isEmpty else { throw AIError.noAPIKey }
-
         let prompt = """
         Erstelle ein Quiz mit \(questionCount) Fragen zum Thema '\(topic)' im Fach \(subject).
         Antworte NUR mit JSON, ohne Erklärungen:
@@ -345,7 +350,6 @@ final class AIService {
         correctIndex ist 0-basiert (0=erste Option). Alle Fragen auf Deutsch.
         """
 
-        let url = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
         let body: [String: Any] = [
             "model": selectedModel,
             "messages": [
@@ -355,11 +359,7 @@ final class AIService {
             "temperature": 0.7
         ]
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let request = try makeAPIRequest(body: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else { throw AIError.networkError }
@@ -379,8 +379,6 @@ final class AIService {
     // MARK: - Generate Flashcards (Karteikarten)
 
     func generateFlashcards(subject: String, topic: String, count: Int = 10) async throws -> [Flashcard] {
-        guard let key = apiKey, !key.isEmpty else { throw AIError.noAPIKey }
-
         let prompt = """
         Erstelle \(count) Karteikarten zum Thema '\(topic)' im Fach \(subject).
         Antworte NUR mit JSON:
@@ -388,7 +386,6 @@ final class AIService {
         Auf Deutsch. Kurze, prägnante Inhalte.
         """
 
-        let url = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
         let body: [String: Any] = [
             "model": selectedModel,
             "messages": [
@@ -398,11 +395,7 @@ final class AIService {
             "temperature": 0.7
         ]
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let request = try makeAPIRequest(body: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else { throw AIError.networkError }
@@ -514,7 +507,7 @@ enum AIError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noAPIKey: return "Kein API-Key. Bitte in den Einstellungen eingeben."
+        case .noAPIKey: return "KI-Service nicht verfügbar. Bitte prüfe deine Internetverbindung."
         case .networkError: return "Netzwerkfehler. Bitte prüfe deine Internetverbindung."
         case .invalidKey: return "Ungültiger API-Key. Bitte überprüfe den Key in den Einstellungen."
         case .apiError(let msg): return "API-Fehler: \(msg)"

@@ -1,3855 +1,4104 @@
 {
-  "sourceLanguage": "de",
-  "strings": {
-    "": {},
-    "\"%@\" und alle generierten Posts werden gelöscht.": {},
-    "\"%@\" wirklich löschen?": {},
-    "%@": {},
-    "%@ - %@ speichern?": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$@ - %2$@ speichern?"
+  "sourceLanguage" : "de",
+  "strings" : {
+    "" : {
+
+    },
+    "\"%@\" und alle generierten Posts werden gelöscht." : {
+
+    },
+    "\"%@\" wirklich löschen?" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ - %@ speichern?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@ speichern?"
           }
         }
       }
     },
-    "%@ – %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$@ – %2$@"
+    "%@ – %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ – %2$@"
           }
         }
       }
     },
-    "%@ / %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$@ / %2$@"
+    "%@ / %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ / %2$@"
           }
         }
       }
+    },
+    "%@ fragen" : {
+
     },
-    "%@ fragen": {},
-    "%@ gelernt": {},
-    "%@%lld%%": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$@%2$lld%%"
+    "%@ gelernt" : {
+
+    },
+    "%@%lld%%" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@%2$lld%%"
           }
         }
       }
+    },
+    "%lld" : {
+
     },
-    "%lld": {},
-    "%lld angeschaut · %lld richtig": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld angeschaut · %2$lld richtig"
+    "%lld angeschaut · %lld richtig" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld angeschaut · %2$lld richtig"
           }
         }
       }
+    },
+    "%lld Einträge" : {
+
+    },
+    "%lld Fächer" : {
+
+    },
+    "%lld min" : {
+
+    },
+    "%lld min gelernt" : {
+
+    },
+    "%lld min vorher" : {
+
+    },
+    "%lld min/Note" : {
+
+    },
+    "%lld Minuten" : {
+
+    },
+    "%lld Noten" : {
+
     },
-    "%lld Einträge": {},
-    "%lld Fächer": {},
-    "%lld min": {},
-    "%lld min gelernt": {},
-    "%lld min vorher": {},
-    "%lld min/Note": {},
-    "%lld Minuten": {},
-    "%lld Noten": {},
-    "%lld Tage": {},
-    "%lld von %lld gewusst": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld von %2$lld gewusst"
+    "%lld Tage" : {
+
+    },
+    "%lld von %lld gewusst" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld von %2$lld gewusst"
           }
         }
       }
     },
-    "%lld von %lld richtig": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld von %2$lld richtig"
+    "%lld von %lld richtig" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld von %2$lld richtig"
           }
         }
       }
     },
-    "%lld XP": {},
-    "%lld XP bis Level %lld": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld XP bis Level %2$lld"
+    "%lld XP" : {
+
+    },
+    "%lld XP bis Level %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld XP bis Level %2$lld"
           }
         }
       }
     },
-    "%lld/%lld": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld/%2$lld"
+    "%lld/%lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld"
           }
         }
       }
+    },
+    "%lld%%" : {
+
+    },
+    "%lld%% gemeistert" : {
+
+    },
+    "%lld%% weniger gelernt" : {
+
+    },
+    "%lldm" : {
+
+    },
+    "•" : {
+
     },
-    "%lld%%": {},
-    "%lld%% gemeistert": {},
-    "%lld%% weniger gelernt": {},
-    "%lldm": {},
-    "•": {},
-    "••••••••": {},
-    "© 2026 Ralf Lohrmann": {},
-    "+%lld%% mehr gelernt": {},
-    "000000": {},
-    "1.0": {},
-    "5 Nachrichten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "5 messages"
+    "••••••••" : {
+
+    },
+    "© 2026 Ralf Lohrmann" : {
+
+    },
+    "+%lld%% mehr gelernt" : {
+
+    },
+    "000000" : {
+
+    },
+    "1.0" : {
+
+    },
+    "5 Nachrichten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 messages"
           }
         }
       }
     },
-    "10 Nachrichten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "10 messages"
+    "10 Nachrichten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 messages"
           }
         }
       }
     },
-    "20 Nachrichten (Standard)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "20 messages (default)"
+    "20 Nachrichten (Standard)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "20 messages (default)"
           }
         }
       }
     },
-    "50 Nachrichten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "50 messages"
+    "50 Nachrichten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 messages"
           }
         }
       }
     },
-    "Abbrechen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cancel"
+    "Abbrechen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
           }
         }
       }
     },
-    "Achtung: Beim Import werden alle bestehenden Daten ersetzt.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Warning: importing will replace all existing data."
+    "Achtung: Beim Import werden alle bestehenden Daten ersetzt." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warning: importing will replace all existing data."
           }
         }
       }
     },
-    "Aktiv": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Active"
+    "Aktiv" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active"
           }
         }
       }
+    },
+    "Aktivieren" : {
+
     },
-    "Aktivieren": {},
-    "Aktualisieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refresh"
+    "Aktualisieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh"
           }
         }
       }
     },
-    "Aktuelle": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Current"
+    "Aktuelle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current"
           }
         }
       }
     },
-    "Alle Einträge, Daueraufgaben und Lernzeiten werden unwiderruflich gelöscht.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All entries, recurring tasks and study sessions will be permanently deleted."
+    "Alle Einträge, Daueraufgaben und Lernzeiten werden unwiderruflich gelöscht." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All entries, recurring tasks and study sessions will be permanently deleted."
           }
         }
       }
     },
-    "Alle gespeicherten Chats werden unwiderruflich gelöscht.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All saved chats will be permanently deleted."
+    "Alle gespeicherten Chats werden unwiderruflich gelöscht." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All saved chats will be permanently deleted."
           }
         }
       }
     },
-    "Alle Lernzeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All study sessions"
+    "Alle Lernzeiten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All study sessions"
           }
         }
       }
     },
-    "Alle rechtlichen Hinweise online": {},
-    "Alles löschen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete all"
+    "Alle rechtlichen Hinweise online" : {
+
+    },
+    "Alles löschen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete all"
           }
         }
       }
     },
-    "Alles löschen?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete all?"
+    "Alles löschen?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete all?"
           }
         }
       }
+    },
+    "Anderes Foto" : {
+
     },
-    "Anderes Foto": {},
-    "Anmerkung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Note"
+    "Anmerkung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note"
           }
         }
       }
     },
-    "Ansicht": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "View"
+    "Ansicht" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View"
           }
         }
       }
     },
-    "Antwort": {},
-    "Antwort-Sprache": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Response language"
+    "Antwort" : {
+
+    },
+    "Antwort-Sprache" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Response language"
           }
         }
       }
     },
-    "Antwort-Stil": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Response style"
+    "Antwort-Stil" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Response style"
           }
         }
       }
     },
-    "API-Key": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "API Key"
+    "API-Key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Key"
           }
         }
       }
     },
-    "Archivieren": {},
-    "Archiviert": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Archived"
+    "Archivieren" : {
+
+    },
+    "Archiviert" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived"
           }
         }
       }
     },
-    "Art": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Type"
+    "Art" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type"
           }
         }
       }
     },
-    "Aufgaben fotografieren und analysieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photograph and analyze tasks"
+    "Aufgaben fotografieren und analysieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photograph and analyze tasks"
           }
         }
       }
+    },
+    "Aufnahme stoppen" : {
+
     },
-    "Aufnahme stoppen": {},
-    "Auswählen...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select..."
+    "Auswählen..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select..."
           }
         }
       }
     },
-    "Backup importieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import backup"
+    "Backup importieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import backup"
           }
         }
       }
     },
-    "Bearbeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Edit"
+    "Bearbeiten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
           }
         }
       }
     },
-    "Beste: %@": {},
-    "BETA": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BETA"
+    "Benachrichtigungen erneuern" : {
+
+    },
+    "Beste: %@" : {
+
+    },
+    "BETA" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BETA"
           }
         }
       }
+    },
+    "Beta-Info anzeigen" : {
+
+    },
+    "Bild ändern" : {
+
     },
-    "Beta-Info anzeigen": {},
-    "Bild ändern": {},
-    "Bild auswählen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose image"
+    "Bild auswählen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose image"
           }
         }
       }
     },
-    "Bild wählen": {},
-    "Bitte zuerst in den Einstellungen eingeben.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Please enter it in settings first."
+    "Bild wählen" : {
+
+    },
+    "Bitte zuerst in den Einstellungen eingeben." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter it in settings first."
           }
         }
       }
     },
-    "Bundesland": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "State"
+    "Bundesland" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "State"
           }
         }
       }
     },
-    "Chat-Kontext": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chat context"
+    "Chat-Kontext" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat context"
           }
         }
       }
     },
-    "Chats durchsuchen ...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Search chats ..."
+    "Chats durchsuchen ..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search chats ..."
           }
         }
       }
     },
-    "Code eingeben": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter code"
+    "Code eingeben" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter code"
           }
         }
       }
     },
-    "Code erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create code"
+    "Code erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create code"
           }
         }
       }
     },
-    "Code generieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Generate code"
+    "Code generieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generate code"
           }
         }
       }
     },
-    "Code teilen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share code"
+    "Code teilen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share code"
           }
         }
       }
+    },
+    "Code: %@" : {
+
     },
-    "Code: %@": {},
-    "Copyright": {},
-    "Das dauert nur einen Moment.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This will only take a moment."
+    "Copyright" : {
+
+    },
+    "Das dauert nur einen Moment." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This will only take a moment."
           }
         }
       }
     },
-    "Das kann einen Moment dauern.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This may take a moment."
+    "Das kann einen Moment dauern." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This may take a moment."
           }
         }
       }
     },
-    "Dashboard": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dashboard"
+    "Dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dashboard"
           }
         }
       }
+    },
+    "Daten werden geladen..." : {
+
     },
-    "Daten werden geladen...": {},
-    "Datenschutz": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Privacy"
+    "Datenschutz" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy"
           }
         }
       }
     },
-    "Datenschutz & Nutzung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Privacy & Usage"
+    "Datenschutz & Nutzung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy & Usage"
           }
         }
       }
+    },
+    "Datenschutz, Nutzungsbedingungen und Impressum direkt in der App." : {
+
+    },
+    "Datum" : {
+
+    },
+    "Datum & Uhrzeit" : {
+
+    },
+    "Dauer (Minuten)" : {
+
     },
-    "Datenschutz, Nutzungsbedingungen und Impressum direkt in der App.": {},
-    "Datum": {},
-    "Datum & Uhrzeit": {},
-    "Dauer (Minuten)": {},
-    "Daueraufgaben": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recurring tasks"
+    "Daueraufgaben" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recurring tasks"
           }
         }
       }
     },
-    "Dauerhaft": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Permanent"
+    "Dauerhaft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permanent"
           }
         }
       }
     },
-    "Dein Feed wird erstellt…": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Creating your feed…"
+    "Dein Feed wird erstellt…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating your feed…"
           }
         }
       }
     },
-    "Dein Pairing-Code:": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your pairing code:"
+    "Dein Kind darf die KI nutzen." : {
+
+    },
+    "Dein Pairing-Code:" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your pairing code:"
           }
         }
       }
     },
-    "Dein persönlicher Lernhelfer": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your personal study helper"
+    "Dein persönlicher Lernhelfer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your personal study helper"
           }
         }
       }
     },
-    "Deine Topics": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your topics"
+    "Deine Topics" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your topics"
           }
         }
       }
     },
-    "Der API-Key wird gelöscht. Du musst ihn erneut eingeben, um den KI-Assistenten zu nutzen.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The API key will be deleted. You'll have to enter it again to use the AI assistant."
+    "Der API-Key wird gelöscht. Du musst ihn erneut eingeben, um den KI-Assistenten zu nutzen." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The API key will be deleted. You'll have to enter it again to use the AI assistant."
           }
         }
       }
     },
-    "Details": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Details"
+    "Details" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
           }
         }
       }
+    },
+    "Diese Woche geübt: %@" : {
+
     },
-    "Diese Woche geübt: %@": {},
-    "Du hast alle Posts für heute durch!": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You're done with all posts for today!"
+    "Du hast alle Posts für heute durch!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're done with all posts for today!"
           }
         }
       }
     },
-    "Du hast alle Posts für heute durch.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You're done with all posts for today."
+    "Du hast alle Posts für heute durch." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're done with all posts for today."
           }
         }
       }
     },
-    "Du hast eine %lld-Tage-Serie": {},
-    "Du kannst jetzt die Lernfortschritte deines Kindes einsehen.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You can now view your child's study progress."
+    "Du hast eine %lld-Tage-Serie" : {
+
+    },
+    "Du kannst jetzt die Lernfortschritte deines Kindes einsehen." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can now view your child's study progress."
           }
         }
       }
     },
-    "Du wirst zur normalen Ansicht zurückgeleitet. Verbindungen bleiben bestehen.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You'll be returned to the regular view. Connections remain active."
+    "Du wirst zur normalen Ansicht zurückgeleitet. Verbindungen bleiben bestehen." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You'll be returned to the regular view. Connections remain active."
           }
         }
       }
     },
-    "Durchschnitte": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Averages"
+    "Durchschnitte" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Averages"
           }
         }
       }
     },
-    "Ein Elternteil hat den KI-Assistenten deaktiviert. Bitte frage deine Eltern, ob sie ihn in den Einstellungen aktivieren können.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A parent has disabled the AI assistant. Please ask your parents to enable it in settings."
+    "Ein Elternteil hat den KI-Assistenten deaktiviert. Bitte frage deine Eltern, ob sie ihn in den Einstellungen aktivieren können." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A parent has disabled the AI assistant. Please ask your parents to enable it in settings."
           }
         }
       }
     },
-    "Einstellungen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Settings"
+    "Einstellungen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
           }
         }
       }
     },
-    "Eintrag bearbeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Edit entry"
+    "Eintrag bearbeiten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit entry"
           }
         }
       }
     },
-    "Eintrag löschen?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete entry?"
+    "Eintrag löschen?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete entry?"
           }
         }
       }
     },
-    "Einträge": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Entries"
+    "Einträge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entries"
           }
         }
       }
+    },
+    "Eintragen" : {
+
     },
-    "Eintragen": {},
-    "Eltern-Code": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parent code"
+    "Eltern-Code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parent code"
           }
         }
       }
     },
-    "Eltern-Dashboard": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parent dashboard"
+    "Eltern-Dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parent dashboard"
           }
         }
       }
     },
-    "Eltern-PIN festlegen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Set parent PIN"
+    "Eltern-PIN festlegen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set parent PIN"
           }
         }
       }
     },
-    "Elternkontrolle": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parental controls"
+    "Elternkontrolle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parental controls"
           }
         }
       }
     },
-    "Elternmodus verlassen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Leave parent mode"
+    "Elternmodus verlassen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave parent mode"
           }
         }
       }
     },
-    "Elternmodus verlassen?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Leave parent mode?"
+    "Elternmodus verlassen?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave parent mode?"
           }
         }
       }
     },
-    "Empfohlen: 30-60 Minuten pro Tag": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recommended: 30–60 minutes per day"
+    "Empfohlen: 30-60 Minuten pro Tag" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommended: 30–60 minutes per day"
           }
         }
       }
     },
-    "Ende": {},
-    "Entdecken": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discover"
+    "Ende" : {
+
+    },
+    "Entdecken" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discover"
           }
         }
       }
     },
-    "Entfernen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remove"
+    "Entfernen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
           }
         }
       }
     },
-    "Erfolge": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Achievements"
+    "Erfolge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achievements"
           }
         }
       }
     },
-    "Erfolgreich verbunden!": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Successfully connected!"
+    "Erfolgreich verbunden!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successfully connected!"
           }
         }
       }
     },
-    "Erinnerung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reminder"
+    "Erinnerung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminder"
           }
         }
       }
     },
-    "Erinnerung aktivieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enable reminder"
+    "Erinnerung aktivieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable reminder"
           }
         }
       }
     },
-    "Erinnerung vor": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remind me"
+    "Erinnerung vor" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remind me"
           }
         }
       }
     },
-    "Erkannter Text": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recognized text"
+    "Erkannter Text" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recognized text"
           }
         }
       }
+    },
+    "Erkenne Text…" : {
+
     },
-    "Erkenne Text…": {},
-    "Erklärung aufnehmen": {},
-    "Erlaubt dem Kind den KI-Lernassistenten zu nutzen. Standardmäßig aktiviert.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Allows your child to use the AI study assistant. Enabled by default."
+    "Erklärung aufnehmen" : {
+
+    },
+    "Erlaubt dem Kind den KI-Lernassistenten zu nutzen. Standardmäßig aktiviert." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allows your child to use the AI study assistant. Enabled by default."
           }
         }
       }
     },
-    "Erstelle Backups oder Berichte deiner Daten.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create backups or reports of your data."
+    "Erstelle Backups oder Berichte deiner Daten." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create backups or reports of your data."
           }
         }
       }
     },
-    "Erstelle dein erstes Topic — z. B. mit einem Foto deines Hefts.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create your first topic — e.g. with a photo of your notebook."
+    "Erstelle dein erstes Topic — z. B. mit einem Foto deines Hefts." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create your first topic — e.g. with a photo of your notebook."
           }
         }
       }
     },
-    "Erstelle ein Schuljahr, um deine Fächer zu organisieren.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create a school year to organize your subjects."
+    "Erstelle ein Schuljahr, um deine Fächer zu organisieren." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a school year to organize your subjects."
           }
         }
       }
     },
-    "Erstelle einen 6-stelligen Code, den du deinen Eltern gibst.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create a 6-digit code to give to your parents."
+    "Erstelle einen 6-stelligen Code, den du deinen Eltern gibst." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a 6-digit code to give to your parents."
           }
         }
       }
     },
-    "Erstelle Quizze oder Karteikarten mit KI": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create quizzes or flashcards with AI"
+    "Erstelle Quizze oder Karteikarten mit KI" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create quizzes or flashcards with AI"
           }
         }
       }
     },
-    "Exportieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Export"
+    "Exportieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export"
           }
         }
       }
     },
-    "Fach": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subject"
+    "Fach" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subject"
           }
         }
       }
     },
-    "Fach (optional)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subject (optional)"
+    "Fach (optional)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subject (optional)"
           }
         }
       }
     },
-    "Fach (z.B. Mathe, Englisch...)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subject (e.g. Math, English...)"
+    "Fach (z.B. Mathe, Englisch...)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subject (e.g. Math, English...)"
           }
         }
       }
     },
-    "Fach eingeben": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter subject"
+    "Fach eingeben" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter subject"
           }
         }
       }
     },
-    "Fach eingeben...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter subject..."
+    "Fach eingeben..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter subject..."
           }
         }
       }
+    },
+    "Fach hinzufügen" : {
+
     },
-    "Fach hinzufügen": {},
-    "Fächer": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subjects"
+    "Fächer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subjects"
           }
         }
       }
     },
-    "Fächervergleich": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subject comparison"
+    "Fächervergleich" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subject comparison"
           }
         }
       }
     },
-    "Familie": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Family"
+    "Familie" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Family"
           }
         }
       }
     },
-    "Farbe": {},
-    "Fasse Notizen zusammen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Summarize notes"
+    "Farbe" : {
+
+    },
+    "Fasse Notizen zusammen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Summarize notes"
           }
         }
       }
     },
-    "Feed generieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Generate feed"
+    "Feed generieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generate feed"
           }
         }
       }
+    },
+    "Feed schließen" : {
+
     },
-    "Feed schließen": {},
-    "Feed schließen mit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Close feed with"
+    "Feed schließen mit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close feed with"
           }
         }
       }
     },
-    "Fehler": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error"
+    "Fehler" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
           }
         }
       }
     },
-    "Ferien im Kalender anzeigen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Show holidays in calendar"
+    "Ferien im Kalender anzeigen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show holidays in calendar"
           }
         }
       }
     },
-    "Fertig": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Done"
+    "Fertig" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
           }
         }
       }
     },
-    "Foto auswählen": {},
-    "Foto senden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Send photo"
+    "Foto auswählen" : {
+
+    },
+    "Foto senden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send photo"
           }
         }
       }
     },
-    "Foto von Aufgaben -> Lernplan": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo of tasks → study plan"
+    "Foto von Aufgaben -> Lernplan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo of tasks → study plan"
           }
         }
       }
     },
-    "Foto von Schulaufgaben": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo of school tasks"
+    "Foto von Schulaufgaben" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo of school tasks"
           }
         }
       }
     },
-    "Foto von Vokabeln": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo of vocabulary"
+    "Foto von Vokabeln" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo of vocabulary"
           }
         }
       }
     },
-    "Foto-Vokabeln": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo vocabulary"
+    "Foto-Vokabeln" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo vocabulary"
           }
         }
       }
+    },
+    "Frage" : {
+
     },
-    "Frage": {},
-    "Füge deine Schulfächer hinzu, um Noten und Lernzeit zu verwalten.": {},
-    "Geh zur KI-Tab → Schlüssel-Symbol": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Go to AI tab → key symbol"
+    "Füge deine Schulfächer hinzu, um Noten und Lernzeit zu verwalten." : {
+
+    },
+    "Geh zur KI-Tab → Schlüssel-Symbol" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to AI tab → key symbol"
           }
         }
       }
     },
-    "Gemma 2 9B": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gemma 2 9B"
+    "Gemma 2 9B" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemma 2 9B"
           }
         }
       }
     },
-    "Gesamten Verlauf löschen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete entire history"
+    "Gesamten Verlauf löschen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete entire history"
           }
         }
       }
     },
-    "Gesamtlernzeit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Total study time"
+    "Gesamtlernzeit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total study time"
           }
         }
       }
     },
-    "Gesamtschnitt": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Overall average"
+    "Gesamtschnitt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overall average"
           }
         }
       }
     },
-    "Geschafft!": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Done!"
+    "Geschafft!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done!"
           }
         }
       }
     },
-    "Gespeichert ✓": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saved ✓"
+    "Gespeichert ✓" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved ✓"
           }
         }
       }
     },
-    "Gewusst": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Knew it"
+    "Gewusst" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knew it"
           }
         }
       }
     },
-    "Gib den 6-stelligen Code ein, den dir dein Kind gegeben hat.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter the 6-digit code your child gave you."
+    "Gib den 6-stelligen Code ein, den dir dein Kind gegeben hat." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the 6-digit code your child gave you."
           }
         }
       }
+    },
+    "Gleich viel gelernt" : {
+
+    },
+    "Gleichgeblieben" : {
+
+    },
+    "Groq API-Key einfügen" : {
+
     },
-    "Gleich viel gelernt": {},
-    "Gleichgeblieben": {},
-    "Groq API-Key einfügen": {},
-    "Groq speichert keine Daten (Free Tier)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Groq does not store data (free tier)"
+    "Groq speichert keine Daten (Free Tier)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groq does not store data (free tier)"
           }
         }
       }
     },
-    "Halbjahres-Rückblick": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Semester recap"
+    "Halbjahres-Rückblick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semester recap"
           }
         }
       }
     },
-    "HALBJAHRES-RÜCKBLICK": {},
-    "Heute": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Today"
+    "HALBJAHRES-RÜCKBLICK" : {
+
+    },
+    "Heute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
           }
         }
       }
     },
-    "Heute gelernt": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Studied today"
+    "Heute gelernt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Studied today"
           }
         }
       }
     },
-    "Hilfe": {},
-    "Hinzufügen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add"
+    "Hilfe" : {
+
+    },
+    "Hinzufügen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
           }
         }
       }
     },
-    "Hol dir kostenlos einen Key bei console.groq.com": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Get a free key at console.groq.com"
+    "Hol dir kostenlos einen Key bei console.groq.com" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get a free key at console.groq.com"
           }
         }
       }
     },
-    "https://…": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "https://…"
+    "https://…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://…"
           }
         }
       }
     },
-    "Ich bin dein persönlicher Lern-Assistent. Stelle mir Fragen, lass dir Themen erklären oder erstelle einen Lernplan.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "I'm your personal study assistant. Ask me questions, get topics explained, or create a study plan."
+    "Ich bin dein persönlicher Lern-Assistent. Stelle mir Fragen, lass dir Themen erklären oder erstelle einen Lernplan." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'm your personal study assistant. Ask me questions, get topics explained, or create a study plan."
           }
         }
       }
     },
-    "Ich stimme den Datenschutzhinweisen zu": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "I agree to the privacy policy"
+    "Ich stimme den Datenschutzhinweisen zu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I agree to the privacy policy"
           }
         }
       }
     },
-    "Im Kalender speichern": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save to calendar"
+    "Im Kalender speichern" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save to calendar"
           }
         }
       }
+    },
+    "Import erfolgreich" : {
+
     },
-    "Import erfolgreich": {},
-    "Import fehlgeschlagen": {},
-    "Importieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import"
+    "Import fehlgeschlagen" : {
+
+    },
+    "Importieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import"
           }
         }
       }
+    },
+    "Impressum" : {
+
     },
-    "Impressum": {},
-    "Inhalte": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Content"
+    "Inhalte" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Content"
           }
         }
       }
     },
-    "Interaktiver Lernpfad mit Lektionen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Interactive learning path with lessons"
+    "Interaktiver Lernpfad mit Lektionen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interactive learning path with lessons"
           }
         }
       }
     },
-    "JSON-Backup erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create JSON backup"
+    "JSON-Backup erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create JSON backup"
           }
         }
       }
     },
-    "JSON-Backup teilen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share JSON backup"
+    "JSON-Backup teilen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share JSON backup"
           }
         }
       }
     },
-    "Kalender": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Calendar"
+    "Kalender" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar"
           }
         }
       }
     },
-    "Kalendereinträge": {},
-    "Karteikarten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flashcards"
+    "Kalendereinträge" : {
+
+    },
+    "Karteikarten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flashcards"
           }
         }
       }
     },
-    "Karteikarten erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create flashcards"
+    "Karteikarten erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create flashcards"
           }
         }
       }
     },
-    "Karteikarten generieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Generate flashcards"
+    "Karteikarten generieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generate flashcards"
           }
         }
       }
     },
-    "Karteikarten öffnen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open flashcards"
+    "Karteikarten öffnen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open flashcards"
           }
         }
       }
     },
-    "Karten werden erstellt...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Creating cards..."
+    "Karten werden erstellt..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating cards..."
           }
         }
       }
     },
-    "Kein Gemini API-Key": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No Gemini API key"
+    "Kein Gemini API-Key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Gemini API key"
           }
         }
       }
     },
-    "Kein KI-Schlüssel": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No AI key"
+    "Kein KI-Schlüssel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No AI key"
           }
         }
       }
     },
-    "Keine anstehenden Klassenarbeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No upcoming exams"
+    "Keine anstehenden Klassenarbeiten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No upcoming exams"
           }
         }
       }
     },
-    "Keine Einträge": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No entries"
+    "Keine Einträge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No entries"
           }
         }
       }
+    },
+    "Keine Fächer in diesem Schuljahr" : {
+
     },
-    "Keine Fächer in diesem Schuljahr": {},
-    "Keine Kinder verbunden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No children connected"
+    "Keine Kinder verbunden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No children connected"
           }
         }
       }
     },
-    "Keine persönlichen Daten übertragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No personal data transmitted"
+    "Keine persönlichen Daten übertragen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No personal data transmitted"
           }
         }
       }
     },
-    "Keine Posts": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No posts"
+    "Keine Posts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No posts"
           }
         }
       }
     },
-    "Keines": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "None"
+    "Keines" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None"
           }
         }
       }
     },
-    "Key aktiv": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Key active"
+    "Key aktiv" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Key active"
           }
         }
       }
     },
-    "Key entfernen & abmelden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remove key & sign out"
+    "Key entfernen & abmelden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove key & sign out"
           }
         }
       }
     },
-    "Key entfernen?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remove key?"
+    "Key entfernen?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove key?"
           }
         }
       }
     },
-    "KI": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI"
+    "KI" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI"
           }
         }
       }
     },
-    "KI kann Fehler machen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI can make mistakes"
+    "KI ist für dein Kind gesperrt." : {
+
+    },
+    "KI kann Fehler machen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI can make mistakes"
           }
         }
       }
     },
-    "KI-Assistent": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI assistant"
+    "KI-Assistent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI assistant"
           }
         }
       }
     },
-    "KI-Assistent erlauben": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Allow AI assistant"
+    "KI-Assistent erlauben" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow AI assistant"
           }
         }
       }
     },
-    "KI-Assistent gesperrt": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI assistant locked"
+    "KI-Assistent gesperrt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI assistant locked"
           }
         }
       }
     },
-    "KI-Beta": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI beta"
+    "KI-Beta" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI beta"
           }
         }
       }
     },
-    "KI-Eingaben gehen an Groq als externen Anbieter — speicher dort keine sensiblen Daten. Lerndaten bleiben in der App und werden nur über iCloud mit deinen Geräten und Eltern geteilt.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI inputs go to Groq as an external provider — don't store sensitive data there. Study data stays in the app and is only shared via iCloud with your devices and parents."
+    "KI-Eingaben gehen an Groq als externen Anbieter — speicher dort keine sensiblen Daten. Lerndaten bleiben in der App und werden nur über iCloud mit deinen Geräten und Eltern geteilt." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI inputs go to Groq as an external provider — don't store sensitive data there. Study data stays in the app and is only shared via iCloud with your devices and parents."
           }
         }
       }
     },
-    "KI-Funktionen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI features"
+    "KI-Funktionen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI features"
           }
         }
       }
     },
-    "KI-Lernassistent": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI study assistant"
+    "KI-Lernassistent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI study assistant"
           }
         }
       }
     },
-    "KI-Modell": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI model"
+    "KI-Modell" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI model"
           }
         }
       }
     },
-    "Kind": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Child"
+    "Kind" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Child"
           }
         }
       }
     },
-    "Kind hinzufügen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add child"
+    "Kind hinzufügen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add child"
           }
         }
       }
     },
-    "Klassenarbeit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Exam"
+    "Klassenarbeit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam"
           }
         }
       }
     },
-    "Klassenarbeit am": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Exam on"
+    "Klassenarbeit am" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam on"
           }
         }
       }
     },
-    "Klassenarbeit eintragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add exam"
+    "Klassenarbeit eintragen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add exam"
           }
         }
       }
     },
-    "Klassenarbeit-Countdown": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Exam countdown"
+    "Klassenarbeit-Countdown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam countdown"
           }
         }
       }
     },
-    "Klassenarbeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Exams"
+    "Klassenarbeiten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exams"
           }
         }
       }
     },
-    "Komm morgen wieder für neuen Stoff.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Come back tomorrow for new content."
+    "Komm morgen wieder für neuen Stoff." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Come back tomorrow for new content."
           }
         }
       }
     },
-    "Komplett kostenlos!": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Completely free!"
+    "Komplett kostenlos!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completely free!"
           }
         }
       }
     },
-    "Lass dir etwas verständlich erklären": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Get something explained clearly"
+    "Lass dir etwas verständlich erklären" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get something explained clearly"
           }
         }
       }
     },
-    "Lern Kalender": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lern Kalender"
+    "Lern Kalender" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lern Kalender"
           }
         }
       }
     },
-    "Lern-Assistent": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study assistant"
+    "Lern-Assistent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study assistant"
           }
         }
       }
     },
-    "Lern-Feed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study feed"
+    "Lern-Feed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study feed"
           }
         }
       }
     },
-    "Lern-Rückblick": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study recap"
+    "Lern-Rückblick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study recap"
           }
         }
       }
     },
-    "Lernen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Learn"
+    "Lernen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Learn"
           }
         }
       }
+    },
+    "Lernen-Feed öffnen" : {
+
     },
-    "Lernen-Feed öffnen": {},
-    "Lernkalender": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study calendar"
+    "Lernkalender" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study calendar"
           }
         }
       }
     },
-    "Lernpfad erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create learning path"
+    "Lernpfad erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create learning path"
           }
         }
       }
     },
-    "Lernplan erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create study plan"
+    "Lernplan erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create study plan"
           }
         }
       }
     },
-    "Lernplan für %@": {},
-    "Lernplan wird erstellt...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Creating study plan..."
+    "Lernplan für %@" : {
+
+    },
+    "Lernplan wird erstellt..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating study plan..."
           }
         }
       }
     },
-    "Lerntimer": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study timer"
+    "Lerntimer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study timer"
           }
         }
       }
     },
-    "Lernzeit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study time"
+    "Lernzeit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study time"
           }
         }
       }
     },
-    "Lernzeit bearbeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Edit study time"
+    "Lernzeit bearbeiten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit study time"
           }
         }
       }
     },
-    "Lernzeit eintragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Log study time"
+    "Lernzeit eintragen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log study time"
           }
         }
       }
+    },
+    "Lernzeit für %@" : {
+
     },
-    "Lernzeit für %@": {},
-    "Lernzeit speichern?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save study time?"
+    "Lernzeit speichern?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save study time?"
           }
         }
       }
     },
-    "Lernzeit-Verteilung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study time distribution"
+    "Lernzeit-Verteilung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study time distribution"
           }
         }
       }
     },
-    "Lernzeiten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study sessions"
+    "Lernzeiten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study sessions"
           }
         }
       }
     },
-    "Lernzeiten als CSV exportieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Export study sessions as CSV"
+    "Lernzeiten als CSV exportieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export study sessions as CSV"
           }
         }
       }
     },
-    "Lernzeiten-CSV teilen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share study sessions CSV"
+    "Lernzeiten-CSV teilen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share study sessions CSV"
           }
         }
       }
     },
-    "Lernziele": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Study goals"
+    "Lernziele" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study goals"
           }
         }
       }
     },
-    "Lernziele setzen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Set study goals"
+    "Lernziele setzen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set study goals"
           }
         }
       }
     },
-    "Lese PDF…": {},
-    "Llama 3.1 8B (Schnell)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Llama 3.1 8B (Fast)"
+    "Lese PDF…" : {
+
+    },
+    "Llama 3.1 8B (Schnell)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llama 3.1 8B (Fast)"
           }
         }
       }
     },
-    "Llama 3.3 70B (Standard)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Llama 3.3 70B (Default)"
+    "Llama 3.3 70B (Standard)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llama 3.3 70B (Default)"
           }
         }
       }
     },
-    "Los geht's": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Get started"
+    "Los geht's" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get started"
           }
         }
       }
     },
-    "Löschen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete"
+    "Löschen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
           }
         }
       }
+    },
+    "Loslegen" : {
+
     },
-    "Loslegen": {},
-    "Lv.%lld": {},
-    "Mache ein Foto von deinen Aufgaben oder wähle ein Bild aus der Galerie.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Take a photo of your tasks or pick an image from the gallery."
+    "Lv.%lld" : {
+
+    },
+    "Mache ein Foto von deinen Aufgaben oder wähle ein Bild aus der Galerie." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take a photo of your tasks or pick an image from the gallery."
           }
         }
       }
     },
-    "Manuell eintragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter manually"
+    "Manuell eintragen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter manually"
           }
         }
       }
     },
-    "Mehr": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "More"
+    "Mehr" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More"
           }
         }
       }
     },
-    "Minderjährige: Nur mit Eltern-Zustimmung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Minors: only with parental consent"
+    "Minderjährige: Nur mit Eltern-Zustimmung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minors: only with parental consent"
           }
         }
       }
     },
-    "Minuten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Minutes"
+    "Minuten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minutes"
           }
         }
       }
     },
-    "Mixtral 8x7B": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mixtral 8x7B"
+    "Mixtral 8x7B" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mixtral 8x7B"
           }
         }
       }
     },
-    "Möchtest du den Elternmodus wirklich verlassen? Alle Verbindungen werden getrennt.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Do you really want to leave parent mode? All connections will be disconnected."
+    "Möchtest du den Elternmodus wirklich verlassen? Alle Verbindungen werden getrennt." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you really want to leave parent mode? All connections will be disconnected."
           }
         }
       }
     },
-    "Modell": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Model"
+    "Modell" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model"
           }
         }
       }
     },
-    "Mündlich: Ø %@ (%lldx)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "Mündlich: Ø %1$@ (%2$lldx)"
+    "Mündlich: Ø %@ (%lldx)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mündlich: Ø %1$@ (%2$lldx)"
           }
         }
       }
     },
-    "Nach Fach": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "By subject"
+    "Nach Fach" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By subject"
           }
         }
       }
     },
-    "Name": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Name"
+    "Name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
           }
         }
       }
     },
-    "Name des Kindes": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Child's name"
+    "Name des Kindes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Child's name"
           }
         }
       }
     },
-    "Neu": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New"
+    "Neu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New"
           }
         }
       }
     },
-    "Neu und noch in Entwicklung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New and still in development"
+    "Neu und noch in Entwicklung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New and still in development"
           }
         }
       }
     },
-    "Neue Karteikarten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New flashcards"
+    "Neue Karteikarten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New flashcards"
           }
         }
       }
     },
-    "Neue Noten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New grades"
+    "Neue Noten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New grades"
           }
         }
       }
     },
-    "Neuer Chat": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New chat"
+    "Neuer Chat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New chat"
           }
         }
       }
     },
-    "Neuer Eintrag": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New entry"
+    "Neuer Eintrag" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New entry"
           }
         }
       }
     },
-    "Neues Quiz": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New quiz"
+    "Neues Quiz" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New quiz"
           }
         }
       }
+    },
+    "Neues Topic" : {
+
     },
-    "Neues Topic": {},
-    "Nicht ausgewählt": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Not selected"
+    "Nicht ausgewählt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not selected"
           }
         }
       }
     },
-    "Nicht ganz.": {},
-    "Nicht zugeordnet": {},
-    "Noch keine Daten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No data yet"
+    "Nicht ganz." : {
+
+    },
+    "Nicht zugeordnet" : {
+
+    },
+    "Noch keine Daten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No data yet"
           }
         }
       }
     },
-    "Noch keine Daten vorhanden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No data available yet"
+    "Noch keine Daten vorhanden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No data available yet"
           }
         }
       }
     },
-    "Noch keine Fächer": {},
-    "Noch keine Inhalte": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No content yet"
+    "Noch keine Fächer" : {
+
+    },
+    "Noch keine Inhalte" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No content yet"
           }
         }
       }
+    },
+    "Noch keine Lernzeit eingetragen" : {
+
     },
-    "Noch keine Lernzeit eingetragen": {},
-    "Noch keine Lernzeit heute": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No study time today"
+    "Noch keine Lernzeit heute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No study time today"
           }
         }
       }
     },
-    "Noch keine Lernzeiten eingetragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No study sessions logged yet"
+    "Noch keine Lernzeiten eingetragen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No study sessions logged yet"
           }
         }
       }
     },
-    "Noch keine Noten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No grades yet"
+    "Noch keine Noten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No grades yet"
           }
         }
       }
     },
-    "Noch keine Noten vorhanden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No grades available yet"
+    "Noch keine Noten vorhanden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No grades available yet"
           }
         }
       }
     },
-    "Noch keine Schuljahre": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No school years yet"
+    "Noch keine Schuljahre" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No school years yet"
           }
         }
       }
     },
-    "Noch keine Topics": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No topics yet"
+    "Noch keine Topics" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No topics yet"
           }
         }
       }
     },
-    "Noch nichts eingetragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing logged yet"
+    "Noch nichts eingetragen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing logged yet"
           }
         }
       }
     },
-    "Nochmal": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Again"
+    "Nochmal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Again"
           }
         }
       }
     },
-    "Nochmal generieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Generate again"
+    "Nochmal generieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generate again"
           }
         }
       }
     },
-    "Note": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grade"
+    "Note" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grade"
           }
         }
       }
     },
-    "Note eingeben": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter grade"
+    "Note eingeben" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter grade"
           }
         }
       }
     },
-    "Note eintragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add grade"
+    "Note eintragen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add grade"
           }
         }
       }
     },
-    "Note für %@": {},
-    "Note hinzufügen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add grade"
+    "Note für %@" : {
+
+    },
+    "Note hinzufügen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add grade"
           }
         }
       }
     },
-    "Note:": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grade:"
+    "Note:" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grade:"
           }
         }
       }
+    },
+    "Note: %@" : {
+
     },
-    "Note: %@": {},
-    "Noten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grades"
+    "Noten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grades"
           }
         }
       }
     },
-    "Noten als CSV exportieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Export grades as CSV"
+    "Noten als CSV exportieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export grades as CSV"
           }
         }
       }
     },
-    "Noten-CSV teilen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share grades CSV"
+    "Noten-CSV teilen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share grades CSV"
           }
         }
       }
     },
-    "Notenentwicklung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grade trend"
+    "Notenentwicklung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grade trend"
           }
         }
       }
     },
-    "Notentyp": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grade type"
+    "Notentyp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grade type"
           }
         }
       }
     },
-    "Notizen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Notes"
+    "Notizen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes"
           }
         }
       }
     },
-    "Nur ein Elternteil kann die Verbindung trennen.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Only a parent can disconnect."
+    "Nur ein Elternteil kann die Verbindung trennen." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only a parent can disconnect."
           }
         }
       }
+    },
+    "Nutzungsbedingungen" : {
+
+    },
+    "Ø %@" : {
+
     },
-    "Nutzungsbedingungen": {},
-    "Ø %@": {},
-    "oder wische nach links/rechts": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "or swipe left/right"
+    "oder wische nach links/rechts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "or swipe left/right"
           }
         }
       }
     },
-    "Öffnen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open"
+    "Öffnen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open"
           }
         }
       }
     },
-    "Ohne Lernzeit abhaken": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark as done without study time"
+    "Ohne Lernzeit abhaken" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark as done without study time"
           }
         }
       }
     },
-    "Ohne Note abhaken": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark as done without grade"
+    "Ohne Note abhaken" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark as done without grade"
           }
         }
       }
     },
-    "OK": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "OK"
+    "OK" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
           }
         }
       }
     },
-    "Optional": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Optional"
+    "Optional" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional"
           }
         }
       }
     },
-    "PDF-Bericht erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create PDF report"
+    "PDF-Bericht erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create PDF report"
           }
         }
       }
     },
-    "PDF-Bericht teilen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share PDF report"
+    "PDF-Bericht teilen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share PDF report"
           }
         }
       }
     },
-    "Personalisierung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Personalization"
+    "Personalisierung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalization"
           }
         }
       }
     },
-    "PIN aktiv": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PIN active"
+    "PIN aktiv" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PIN active"
           }
         }
       }
     },
-    "PIN ändern": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Change PIN"
+    "PIN ändern" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change PIN"
           }
         }
       }
     },
-    "Podcast-Import kommt bald.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Podcast import coming soon."
+    "Podcast-Import kommt bald." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podcast import coming soon."
           }
         }
       }
     },
-    "Pro Fach": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Per subject"
+    "Pro Fach" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per subject"
           }
         }
       }
     },
-    "Profil": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Profile"
+    "Profil" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profile"
           }
         }
       }
     },
-    "Profil öffnen": {},
-    "Quelle": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Source"
+    "Profil öffnen" : {
+
+    },
+    "Quelle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source"
           }
         }
       }
     },
-    "Quiz beendet!": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quiz finished!"
+    "Quiz beendet!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quiz finished!"
           }
         }
       }
     },
-    "Quiz erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create quiz"
+    "Quiz erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create quiz"
           }
         }
       }
     },
-    "Quiz generieren": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Generate quiz"
+    "Quiz generieren" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generate quiz"
           }
         }
       }
     },
-    "Quiz starten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start quiz"
+    "Quiz starten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start quiz"
           }
         }
       }
     },
-    "Quiz wird erstellt...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Creating quiz..."
+    "Quiz wird erstellt..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating quiz..."
           }
         }
       }
     },
-    "Quizze": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quizzes"
+    "Quizze" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quizzes"
           }
         }
       }
+    },
+    "Rechtliches" : {
+
     },
-    "Rechtliches": {},
-    "Richtig!": {},
-    "Schließe diese Ansicht": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Close this view"
+    "Richtig!" : {
+
+    },
+    "Schließe diese Ansicht" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close this view"
           }
         }
       }
     },
-    "Schließen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Close"
+    "Schließen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
           }
         }
       }
     },
-    "Schriftlich: Ø %@ (%lldx)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "new",
-            "value": "Schriftlich: Ø %1$@ (%2$lldx)"
+    "Schriftlich: Ø %@ (%lldx)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Schriftlich: Ø %1$@ (%2$lldx)"
           }
         }
       }
     },
-    "Schüler-Code": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Student code"
+    "Schüler-Code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Student code"
           }
         }
       }
+    },
+    "Schulfächer" : {
+
     },
-    "Schulfächer": {},
-    "Schulferien": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "School holidays"
+    "Schulferien" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "School holidays"
           }
         }
       }
     },
-    "Schuljahr": {},
-    "Schuljahr hinzufügen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add school year"
+    "Schuljahr" : {
+
+    },
+    "Schuljahr hinzufügen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add school year"
           }
         }
       }
+    },
+    "Schuljahr zuordnen" : {
+
     },
-    "Schuljahr zuordnen": {},
-    "Schuljahre": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "School years"
+    "Schuljahre" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "School years"
           }
         }
       }
     },
-    "Schuljahre verwalten": {},
-    "Schuljahres-Rückblick": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "School year recap"
+    "Schuljahre verwalten" : {
+
+    },
+    "Schuljahres-Rückblick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "School year recap"
           }
         }
       }
+    },
+    "SCHULJAHRES-RÜCKBLICK" : {
+
     },
-    "SCHULJAHRES-RÜCKBLICK": {},
-    "Schützt die Einstellungen mit einem 4-stelligen PIN.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protect settings with a 4-digit PIN."
+    "Schützt die Einstellungen mit einem 4-stelligen PIN." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protect settings with a 4-digit PIN."
           }
         }
       }
     },
-    "Score: %lld/100": {},
-    "Serie": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Streak"
+    "Score: %lld/100" : {
+
+    },
+    "Serie" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Streak"
           }
         }
       }
     },
-    "Sicherheit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Security"
+    "Sicherheit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Security"
           }
         }
       }
     },
-    "Sieh dir deinen persönlichen Lern-Rückblick im Story-Format an.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "View your personal study recap in story format."
+    "Sieh dir deinen persönlichen Lern-Rückblick im Story-Format an." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View your personal study recap in story format."
           }
         }
       }
     },
-    "Speichern": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save"
+    "Speichern" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
           }
         }
       }
     },
-    "Sprache": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Language"
+    "Sprache" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language"
           }
         }
       }
     },
-    "Sprache & Stil": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Language & style"
+    "Sprache & Stil" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language & style"
           }
         }
       }
     },
-    "Start": {},
-    "Starten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start"
+    "Start" : {
+
+    },
+    "Starten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
           }
         }
       }
     },
-    "Statistik": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Statistics"
+    "Statistik" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statistics"
           }
         }
       }
     },
-    "Streak halten 🎯": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keep your streak 🎯"
+    "Streak halten 🎯" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your streak 🎯"
           }
         }
       }
+    },
+    "Symbol" : {
+
     },
-    "Symbol": {},
-    "Tag": {},
-    "Tage": {},
-    "Tagesplan": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Daily plan"
+    "Tag" : {
+
+    },
+    "Tage" : {
+
+    },
+    "Tagesplan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily plan"
           }
         }
       }
     },
-    "Täglich: %lld min": {},
-    "Tägliches Lernziel": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Daily study goal"
+    "Täglich: %lld min" : {
+
+    },
+    "Tägliches Lernziel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily study goal"
           }
         }
       }
+    },
+    "Tägliches Ziel: %lld min" : {
+
     },
-    "Tägliches Ziel: %lld min": {},
-    "Teile diesen Code mit deinen Eltern.\nSie geben ihn auf ihrem Gerät ein.": {},
-    "Teile diesen Code mit deinen Eltern.\\nSie geben ihn auf ihrem Gerät ein.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share this code with your parents.\nThey enter it on their device."
+    "Teile diesen Code mit deinen Eltern.\nSie geben ihn auf ihrem Gerät ein." : {
+
+    },
+    "Teile diesen Code mit deinen Eltern.\\nSie geben ihn auf ihrem Gerät ein." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share this code with your parents.\nThey enter it on their device."
           }
         }
       }
     },
-    "Teste dein Wissen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Test your knowledge"
+    "Teste dein Wissen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test your knowledge"
           }
         }
       }
+    },
+    "Text wird erkannt..." : {
+
     },
-    "Text wird erkannt...": {},
-    "Texte werden an Groq (groq.com) gesendet": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Text is sent to Groq (groq.com)"
+    "Texte werden an Groq (groq.com) gesendet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text is sent to Groq (groq.com)"
           }
         }
       }
     },
-    "Thema": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Topic"
+    "Thema" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Topic"
           }
         }
       }
     },
-    "Thema (z.B. Bruchrechnung)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Topic (e.g. fractions)"
+    "Thema (z.B. Bruchrechnung)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Topic (e.g. fractions)"
           }
         }
       }
     },
-    "Thema erklären": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Explain topic"
+    "Thema erklären" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explain topic"
           }
         }
       }
     },
-    "Timer": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Timer"
+    "Timer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timer"
           }
         }
       }
     },
-    "Timer starten": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start timer"
+    "Timer starten" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start timer"
           }
         }
       }
     },
-    "Tippe zum Umdrehen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap to flip"
+    "Tippe zum Umdrehen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to flip"
           }
         }
       }
     },
-    "Titel (z.B. Mathe-Test Kapitel 5)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Title (e.g. Math test chapter 5)"
+    "Titel (z.B. Mathe-Test Kapitel 5)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title (e.g. Math test chapter 5)"
           }
         }
       }
     },
-    "Topic dem Kind zuweisen": {},
-    "Topic erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create topic"
+    "Topic dem Kind zuweisen" : {
+
+    },
+    "Topic erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create topic"
           }
         }
       }
+    },
+    "Topic für Kind" : {
+
     },
-    "Topic für Kind": {},
-    "Topic löschen?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete topic?"
+    "Topic löschen?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete topic?"
           }
         }
       }
     },
-    "Topic wird erstellt…": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Creating topic…"
+    "Topic wird erstellt…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating topic…"
           }
         }
       }
     },
-    "Topic-Titel": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Topic title"
+    "Topic-Titel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Topic title"
           }
         }
       }
     },
-    "Trage im \"Lernzeit\"-Tab ein, wann du gelernt hast.": {},
-    "Tutorial erneut anzeigen": {},
-    "Typ": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Type"
+    "Trage im \"Lernzeit\"-Tab ein, wann du gelernt hast." : {
+
+    },
+    "Tutorial erneut anzeigen" : {
+
+    },
+    "Typ" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type"
           }
         }
       }
     },
-    "Über die App": {},
-    "Überspringen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Skip"
+    "Über die App" : {
+
+    },
+    "Überspringen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
           }
         }
       }
     },
-    "Um Lern-Feeds zu generieren, brauchst du einen kostenlosen API-Schlüssel von Groq.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "To generate study feeds you need a free Groq API key."
+    "Um Lern-Feeds zu generieren, brauchst du einen kostenlosen API-Schlüssel von Groq." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To generate study feeds you need a free Groq API key."
           }
         }
       }
+    },
+    "und %lld weitere Einträge" : {
+
     },
-    "und %lld weitere Einträge": {},
-    "Verbessert um %@": {},
-    "Verbinde das Gerät eines Elternteils mit dieser App, um Lernfortschritte zu teilen.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connect a parent's device to this app to share study progress."
+    "Verbessert um %@" : {
+
+    },
+    "Verbinde das Gerät eines Elternteils mit dieser App, um Lernfortschritte zu teilen." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect a parent's device to this app to share study progress."
           }
         }
       }
     },
-    "Verbinde dich mit dem Gerät deines Kindes, um Lernfortschritte zu sehen.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connect to your child's device to see study progress."
+    "Verbinde dich mit dem Gerät deines Kindes, um Lernfortschritte zu sehen." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect to your child's device to see study progress."
           }
         }
       }
     },
-    "Verbinde diese App mit dem Gerät eines Elternteils über iCloud.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connect this app to a parent's device via iCloud."
+    "Verbinde diese App mit dem Gerät eines Elternteils über iCloud." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect this app to a parent's device via iCloud."
           }
         }
       }
     },
-    "Verbinden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connect"
+    "Verbinden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect"
           }
         }
       }
     },
-    "Verbunden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connected"
+    "Verbunden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected"
           }
         }
       }
     },
-    "Verbundene Kinder": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connected children"
+    "Verbundene Kinder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected children"
           }
         }
       }
     },
-    "Verlassen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Leave"
+    "Verlassen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave"
           }
         }
       }
     },
-    "Verlauf": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "History"
+    "Verlauf" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
           }
         }
       }
     },
-    "Verlauf löschen?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete history?"
+    "Verlauf löschen?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete history?"
           }
         }
       }
+    },
+    "Verschlechtert um %@" : {
+
     },
-    "Verschlechtert um %@": {},
-    "Version": {},
-    "Version 1.0 — Powered by Groq": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Version 1.0 — Powered by Groq"
+    "Version" : {
+
+    },
+    "Version 1.0 — Powered by Groq" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version 1.0 — Powered by Groq"
           }
         }
       }
     },
-    "Verstanden": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Got it"
+    "Verstanden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Got it"
           }
         }
       }
     },
-    "Verwerfen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discard"
+    "Verwerfen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discard"
           }
         }
       }
     },
-    "Vokabelkarten erstellen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create vocabulary cards"
+    "Vokabelkarten erstellen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create vocabulary cards"
           }
         }
       }
     },
-    "Vokabelkarten werden erstellt...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Creating vocabulary cards..."
+    "Vokabelkarten werden erstellt..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creating vocabulary cards..."
           }
         }
       }
     },
-    "Von deinen Eltern": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "From your parents"
+    "Von deinen Eltern" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From your parents"
           }
         }
       }
     },
-    "Von Eltern eingetragen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Added by parents"
+    "Von Eltern eingetragen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Added by parents"
           }
         }
       }
+    },
+    "Vorschau" : {
+
     },
-    "Vorschau": {},
-    "Vorschlag: %@": {},
-    "Vorschläge anzeigen": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Show suggestions"
+    "Vorschlag: %@" : {
+
+    },
+    "Vorschläge anzeigen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show suggestions"
           }
         }
       }
     },
-    "Vs. letzte Woche": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vs. last week"
+    "Vs. letzte Woche" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vs. last week"
           }
         }
       }
     },
-    "Wähle dein Bundesland, um Schulferien im Kalender hervorzuheben.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose your state to highlight school holidays in the calendar."
+    "Wähle dein Bundesland, um Schulferien im Kalender hervorzuheben." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose your state to highlight school holidays in the calendar."
           }
         }
       }
+    },
+    "Wähle, wie du den Topic-Feed schließen möchtest. Bei \"Doppel-Tap oben\" tippst du oben auf den Bildschirm zweimal kurz hintereinander." : {
+
     },
-    "Wähle, wie du den Topic-Feed schließen möchtest. Bei \"Doppel-Tap oben\" tippst du oben auf den Bildschirm zweimal kurz hintereinander.": {},
-    "Wann?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "When?"
+    "Wann?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When?"
           }
         }
       }
     },
-    "Was hast du gelernt?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "What did you study?"
+    "Was hast du gelernt?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What did you study?"
           }
         }
       }
     },
-    "Was möchtest du lernen?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "What do you want to learn?"
+    "Was möchtest du lernen?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What do you want to learn?"
           }
         }
       }
     },
-    "Was?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "What?"
+    "Was?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What?"
           }
         }
       }
+    },
+    "Weiter" : {
+
+    },
+    "Welche Note hast du für \"%@\" bekommen? (1-6)" : {
+
     },
-    "Weiter": {},
-    "Welche Note hast du für \"%@\" bekommen? (1-6)": {},
-    "Welcome back!": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Welcome back!"
+    "Welcome back!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome back!"
           }
         }
       }
     },
-    "Wie lange hast du gelernt?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "How long did you study?"
+    "Wie lange hast du gelernt?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How long did you study?"
           }
         }
       }
     },
-    "Wie lange?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "How long?"
+    "Wie lange?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How long?"
           }
         }
       }
     },
-    "Wie viele Minuten hast du für \"%@\" gelernt?": {},
-    "Willkommen im\nEltern-Dashboard": {},
-    "Willkommen im\\nEltern-Dashboard": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Welcome to the\nparent dashboard"
+    "Wie viele Minuten hast du für \"%@\" gelernt?" : {
+
+    },
+    "Willkommen bei StudiCoach AI" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to StudiCoach AI"
           }
         }
       }
+    },
+    "Willkommen im\nEltern-Dashboard" : {
+
     },
-    "Willkommen!": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Welcome!"
+    "Willkommen im\\nEltern-Dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to the\nparent dashboard"
           }
         }
       }
     },
-    "Wo bekomme ich einen Key?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Where do I get a key?"
+    "Willkommen!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome!"
           }
         }
       }
     },
-    "Woche": {},
-    "Wochenbericht": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weekly report"
+    "Wo bekomme ich einen Key?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Where do I get a key?"
           }
         }
       }
     },
-    "Wöchentlich: %lld min": {},
-    "Wöchentliches Lernziel": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weekly study goal"
+    "Woche" : {
+
+    },
+    "Wochenbericht" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly report"
           }
         }
       }
+    },
+    "Wöchentlich: %lld min" : {
+
     },
-    "Wöchentliches Ziel: %lld min": {},
-    "Wochenübersicht": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Week overview"
+    "Wöchentliches Lernziel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly study goal"
           }
         }
       }
     },
-    "Wochenvergleich": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weekly comparison"
+    "Wöchentliches Ziel: %lld min" : {
+
+    },
+    "Wochenübersicht" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week overview"
           }
         }
       }
     },
-    "Wochenziel": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weekly goal"
+    "Wochenvergleich" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly comparison"
           }
         }
       }
     },
-    "Wusste ich": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Knew it"
+    "Wochenziel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly goal"
           }
         }
       }
     },
-    "Wusste ich nicht": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Didn't know"
+    "Wusste ich" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knew it"
           }
         }
       }
     },
-    "z.B. 2, 1.5, 3+": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "e.g. 2, 1.5, 3+"
+    "Wusste ich nicht" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Didn't know"
           }
         }
       }
     },
-    "z.B. 2025/2026": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "e.g. 2025/2026"
+    "z.B. 2, 1.5, 3+" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e.g. 2, 1.5, 3+"
           }
         }
       }
     },
-    "z.B. Englisch": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "e.g. English"
+    "z.B. 2025/2026" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e.g. 2025/2026"
           }
         }
       }
     },
-    "z.B. Mathe, Englisch...": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "e.g. Math, English..."
+    "z.B. Englisch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e.g. English"
           }
         }
       }
     },
-    "z.B. Mathematik, Deutsch...": {},
-    "Zeigt das Willkommens-Tutorial mit allen App-Funktionen noch einmal an.": {},
-    "Zeitraum": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Period"
+    "z.B. Mathe, Englisch..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e.g. Math, English..."
           }
         }
       }
+    },
+    "z.B. Mathematik, Deutsch..." : {
+
     },
-    "Ziel speichern": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save goal"
+    "Zeigt das Willkommens-Tutorial mit allen App-Funktionen noch einmal an." : {
+
+    },
+    "Zeitraum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period"
           }
         }
       }
     },
-    "Zu viele Versuche. Bitte warte 30 Sekunden.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Too many attempts. Please wait 30 seconds."
+    "Ziel speichern" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save goal"
           }
         }
       }
     },
-    "Zuordnung entfernen": {},
-    "Zusammenfassung": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Summary"
+    "Zu viele Versuche. Bitte warte 30 Sekunden." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Too many attempts. Please wait 30 seconds."
           }
         }
       }
+    },
+    "Zuordnung entfernen" : {
+
     },
-    "Willkommen bei StudiCoach AI": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Welcome to StudiCoach AI"
+    "Zusammenfassung" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Summary"
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }
