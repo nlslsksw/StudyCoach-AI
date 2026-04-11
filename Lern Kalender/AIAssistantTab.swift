@@ -294,16 +294,19 @@ struct AIChatView: View {
                         }
                     }
                 }
-                ToolbarItemGroup(placement: .primaryAction) {
+                ToolbarItem(placement: .primaryAction) {
                     Button {
-                        showingBetaInfo = true
+                        saveCurrentChat()
+                        messages = []
+                        UserDefaults.standard.removeObject(forKey: "activeChat")
                     } label: {
-                        Image(systemName: "info.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(.purple)
+                        Image(systemName: "square.and.pencil")
+                            .font(.body)
                     }
-                    .accessibilityLabel("Beta-Info anzeigen")
-                    if store.aiAllowed {
+                    .accessibilityLabel("Neuer Chat")
+                }
+                if store.aiAllowed {
+                    ToolbarItem(placement: .primaryAction) {
                         Button {
                             showingHivemind = true
                         } label: {
@@ -437,20 +440,41 @@ struct AIChatView: View {
         NavigationStack {
             List {
                 Section {
-                    HStack(spacing: 12) {
-                        Image(systemName: "cpu.fill")
-                            .font(.title)
-                            .foregroundStyle(.pink)
-                            .frame(width: 50, height: 50)
-                            .background(Color.pink.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(AIService.shared.assistantName)
-                                .font(.headline)
-                            Text("Version 1.0 — Powered by Groq")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                    Button {
+                        showingSettings = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            showingBetaInfo = true
                         }
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "cpu.fill")
+                                .font(.title)
+                                .foregroundStyle(.pink)
+                                .frame(width: 50, height: 50)
+                                .background(Color.pink.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack(spacing: 6) {
+                                    Text(AIService.shared.assistantName)
+                                        .font(.headline)
+                                    Text("BETA")
+                                        .font(.caption2.bold())
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(.purple, in: Capsule())
+                                }
+                                Text("Version 1.0 — Powered by \(settingsProvider.displayName)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                 }
 
                 Section("KI-Anbieter") {
@@ -564,6 +588,7 @@ struct AIChatView: View {
                     Label("Minderjährige: Nur mit Eltern-Zustimmung", systemImage: "person.2")
                         .font(.caption)
                 }
+
 
             }
             .navigationTitle("Einstellungen")
