@@ -112,11 +112,11 @@ struct PrivacyPolicyView: View {
                     ]
                 ),
                 LegalSection(
-                    title: "2.4 KI-Funktionen (Beta)",
+                    title: "2.4 KI-Funktionen",
                     paragraphs: [
-                        "Die KI-Funktionen der App verwenden den externen Anbieter Groq, Inc. (groq.com). Wenn du die KI nutzt, werden Eingabetexte, OCR-Text aus Fotos (das Bild selbst bleibt auf deinem Gerät) und optionale Anweisungen an Groq übertragen.",
-                        "Groq verarbeitet diese Daten gemäß seiner eigenen Datenschutzbestimmungen.",
-                        "Wichtig: Speichere oder sende keine sensiblen persönlichen Daten über die KI-Funktionen. Die KI-Funktion ist optional und erfordert einen eigenen API-Schlüssel."
+                        "Die KI-Funktionen der App verwenden externe KI-Anbieter. Standardmäßig wird Groq, Inc. über unseren Backend-Server verwendet. Optional kannst du in den Einstellungen einen eigenen API-Key für Groq, OpenAI, Google Gemini oder Anthropic Claude hinterlegen.",
+                        "Wenn du die KI nutzt, werden Eingabetexte, OCR-Text aus Fotos (das Bild selbst bleibt auf deinem Gerät) und optionale Anweisungen an den gewählten Anbieter übertragen. Der jeweilige Anbieter verarbeitet diese Daten gemäß seiner eigenen Datenschutzbestimmungen.",
+                        "Wichtig: Speichere oder sende keine sensiblen persönlichen Daten über die KI-Funktionen."
                     ]
                 ),
                 LegalSection(
@@ -146,7 +146,7 @@ struct PrivacyPolicyView: View {
                         "Lokale Daten bleiben, bis du sie löschst oder die App deinstallierst.",
                         "iCloud-Daten bleiben in deinem iCloud-Account.",
                         "CloudKit-Daten der Familien-Funktion werden beim Trennen gelöscht.",
-                        "KI-Eingaben bei Groq unterliegen den Richtlinien von Groq."
+                        "KI-Eingaben unterliegen den Datenschutzrichtlinien des gewählten Anbieters (Groq, OpenAI, Google oder Anthropic)."
                     ]
                 ),
                 LegalSection(
@@ -213,17 +213,17 @@ struct TermsView: View {
                         "Keine sensiblen oder gesetzlich geschützten persönlichen Daten an die KI senden.",
                         "Die App nicht missbräuchlich verwenden, um andere zu schädigen.",
                         "Du bist allein verantwortlich für die Inhalte, die du in die App eingibst.",
-                        "Du bist für die Sicherheit deines API-Schlüssels (Groq) selbst verantwortlich."
+                        "Du bist für die Sicherheit deiner API-Schlüssel selbst verantwortlich."
                     ]
                 ),
                 LegalSection(
-                    title: "5. KI-Funktionen (Beta)",
-                    paragraphs: ["Die KI-Funktionen der App befinden sich in der Beta-Phase. Folgendes ist zu beachten:"],
+                    title: "5. KI-Funktionen",
+                    paragraphs: ["Folgendes ist bei der Nutzung der KI-Funktionen zu beachten:"],
                     bullets: [
                         "KI-Antworten können fehlerhaft, unvollständig oder irreführend sein.",
                         "KI-Antworten dürfen nicht ungeprüft in Hausaufgaben oder Klassenarbeiten übernommen werden.",
                         "Der Anbieter übernimmt keine Verantwortung für die Richtigkeit der KI-Inhalte.",
-                        "Die KI-Funktionen erfordern einen eigenen API-Schlüssel von Groq, Inc."
+                        "Die App unterstützt verschiedene KI-Anbieter: Groq, OpenAI, Google Gemini und Anthropic Claude."
                     ]
                 ),
                 LegalSection(

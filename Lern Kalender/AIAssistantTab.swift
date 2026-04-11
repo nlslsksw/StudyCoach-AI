@@ -453,12 +453,57 @@ struct AIChatView: View {
                     }
                 }
 
-                Section("Modell") {
+                Section("KI-Anbieter") {
+                    Picker("Anbieter", selection: $settingsProvider) {
+                        ForEach(AIProvider.allCases) { provider in
+                            Text(provider.displayName).tag(provider)
+                        }
+                    }
+                    .onChange(of: settingsProvider) { _, val in
+                        AIService.shared.selectedProvider = val
+                        settingsModel = AIService.shared.selectedModel
+                    }
+
+                    if settingsProvider != .backend {
+                        HStack {
+                            Image(systemName: "key.fill").foregroundStyle(.orange)
+                            SecureField(settingsProvider.keyPlaceholder, text: $providerKeyInput)
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
+                        }
+
+                        if AIService.shared.apiKey(for: settingsProvider) != nil {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                                Text("API-Key gespeichert")
+                                Spacer()
+                                Button("Entfernen") {
+                                    AIService.shared.setApiKey(nil, for: settingsProvider)
+                                }
+                                .foregroundStyle(.red)
+                                .font(.caption)
+                            }
+                        } else {
+                            Button {
+                                let trimmed = providerKeyInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                                if !trimmed.isEmpty {
+                                    AIService.shared.setApiKey(trimmed, for: settingsProvider)
+                                    providerKeyInput = ""
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "checkmark")
+                                    Text("Key speichern")
+                                }
+                            }
+                            .disabled(providerKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }
+
                     Picker("KI-Modell", selection: $settingsModel) {
-                        Text("Llama 3.3 70B (Standard)").tag("llama-3.3-70b-versatile")
-                        Text("Llama 3.1 8B (Schnell)").tag("llama-3.1-8b-instant")
-                        Text("Mixtral 8x7B").tag("mixtral-8x7b-32768")
-                        Text("Gemma 2 9B").tag("gemma2-9b-it")
+                        ForEach(settingsProvider.models, id: \.id) { model in
+                            Text(model.name).tag(model.id)
+                        }
                     }
                     .onChange(of: settingsModel) { _, val in AIService.shared.selectedModel = val }
                 }
@@ -510,36 +555,14 @@ struct AIChatView: View {
                 }
 
                 Section("Datenschutz") {
-                    Label("Texte werden an Groq (groq.com) gesendet", systemImage: "arrow.up.right.circle")
+                    Label("Texte werden an den KI-Anbieter (\(settingsProvider.displayName)) gesendet", systemImage: "arrow.up.right.circle")
                         .font(.caption)
                     Label("Keine persönlichen Daten übertragen", systemImage: "shield.checkered")
-                        .font(.caption)
-                    Label("Groq speichert keine Daten (Free Tier)", systemImage: "trash.slash")
                         .font(.caption)
                     Label("KI kann Fehler machen", systemImage: "exclamationmark.triangle")
                         .font(.caption)
                     Label("Minderjährige: Nur mit Eltern-Zustimmung", systemImage: "person.2")
                         .font(.caption)
-                }
-
-                Section("API-Key") {
-                    if AIService.shared.hasAPIKey {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
-                            Text("Key aktiv")
-                                .font(.subheadline)
-                            Spacer()
-                            Text("••••••••")
-                                .font(.caption.monospaced())
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    Button(role: .destructive) {
-                        showingDeleteKey = true
-                    } label: {
-                        Label("Key entfernen & abmelden", systemImage: "xmark.circle")
-                    }
                 }
 
             }
@@ -553,7 +576,9 @@ struct AIChatView: View {
             .alert("Key entfernen?", isPresented: $showingDeleteKey) {
                 Button("Abbrechen", role: .cancel) { }
                 Button("Entfernen", role: .destructive) {
-                    AIService.shared.apiKey = nil
+                    AIService.shared.setApiKey(nil, for: settingsProvider)
+                    settingsProvider = .backend
+                    AIService.shared.selectedProvider = .backend
                     showingSettings = false
                 }
             } message: {
@@ -573,12 +598,14 @@ struct AIChatView: View {
 
     @State private var showingDeleteKey = false
     @State private var showingDeleteHistory = false
+    @State private var settingsProvider = AIService.shared.selectedProvider
     @State private var settingsModel = AIService.shared.selectedModel
     @State private var settingsLanguage = AIService.shared.language
     @State private var settingsStyle = AIService.shared.responseStyle
     @State private var settingsName = AIService.shared.assistantName
     @State private var settingsSuggestions = AIService.shared.suggestionsEnabled
     @State private var settingsHistoryLimit = AIService.shared.chatHistoryLimit
+    @State private var providerKeyInput = ""
 
     // MARK: - Plus Menu Sheet
 

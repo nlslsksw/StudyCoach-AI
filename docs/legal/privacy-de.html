@@ -70,16 +70,21 @@
         </ul>
         <p>Du kannst die Familien-Verbindung jederzeit in den Einstellungen wieder trennen.</p>
 
-        <h3>2.4 KI-Funktionen (Beta)</h3>
-        <p>Die KI-Funktionen der App (KI-Assistent, Lern-Feed-Generierung, Quiz-/Karteikarten-Erstellung, Lernplan aus Foto) verwenden den externen Anbieter <strong>Groq, Inc.</strong> (<a href="https://groq.com">https://groq.com</a>). Wenn du die KI nutzt, werden die folgenden Daten an Groq übertragen:</p>
+        <h3>2.4 KI-Funktionen</h3>
+        <p>Die KI-Funktionen der App (KI-Assistent, Lern-Feed-Generierung, Quiz-/Karteikarten-Erstellung, Lernplan aus Foto) verwenden externe KI-Anbieter. Standardmäßig wird <strong>Groq, Inc.</strong> (<a href="https://groq.com">https://groq.com</a>) über unseren Backend-Server verwendet. Optional kannst du in den Einstellungen einen eigenen API-Key für einen der folgenden Anbieter hinterlegen:</p>
+        <ul>
+            <li><strong>Groq, Inc.</strong> — <a href="https://groq.com/privacy-policy/">Datenschutzbestimmungen</a></li>
+            <li><strong>OpenAI, Inc.</strong> — <a href="https://openai.com/privacy/">Datenschutzbestimmungen</a></li>
+            <li><strong>Google (Gemini)</strong> — <a href="https://ai.google.dev/terms">Nutzungsbedingungen</a></li>
+            <li><strong>Anthropic, PBC (Claude)</strong> — <a href="https://www.anthropic.com/privacy">Datenschutzbestimmungen</a></li>
+        </ul>
+        <p>Wenn du die KI nutzt, werden die folgenden Daten an den gewählten Anbieter übertragen:</p>
         <ul>
             <li>Deine <strong>Eingabetexte</strong> (Frage, Topic-Name, OCR-Text)</li>
             <li>Bei Foto-Lernplänen: der per Vision-Framework <strong>erkannte Text</strong> (das Bild selbst verlässt dein Gerät nicht)</li>
             <li>Optional: Anweisungen wie Sprache, Antwort-Stil</li>
         </ul>
-        <p>Groq verarbeitet diese Daten gemäß seiner eigenen Datenschutzbestimmungen (<a href="https://groq.com/privacy-policy/">https://groq.com/privacy-policy/</a>).</p>
         <p><strong>Wichtig:</strong> Speichere oder sende <strong>keine sensiblen persönlichen Daten</strong> über die KI-Funktionen.</p>
-        <p>Die KI-Funktion ist optional und erfordert einen eigenen API-Schlüssel, den du in den Einstellungen hinterlegst.</p>
 
         <h3>2.5 Spracheingabe</h3>
         <p>Wenn du die Spracheingabe nutzt (im KI-Assistenten oder im Feynman-Modus), wird das <strong>Apple Speech Recognition Framework</strong> verwendet. Apple verarbeitet die Spracheingabe gemäß seinen Datenschutzbestimmungen.</p>

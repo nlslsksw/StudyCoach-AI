@@ -70,16 +70,21 @@
         </ul>
         <p>You can disconnect the family link at any time in settings.</p>
 
-        <h3>2.4 AI features (beta)</h3>
-        <p>The AI features of the app (AI assistant, study feed generation, quiz/flashcard creation, photo-based study plan) use the external provider <strong>Groq, Inc.</strong> (<a href="https://groq.com">https://groq.com</a>). When you use the AI, the following data is transmitted to Groq:</p>
+        <h3>2.4 AI features</h3>
+        <p>The AI features of the app (AI assistant, study feed generation, quiz/flashcard creation, photo-based study plan) use external AI providers. By default, <strong>Groq, Inc.</strong> (<a href="https://groq.com">https://groq.com</a>) is used via our backend server. You can optionally configure your own API key for one of the following providers in settings:</p>
+        <ul>
+            <li><strong>Groq, Inc.</strong> — <a href="https://groq.com/privacy-policy/">Privacy Policy</a></li>
+            <li><strong>OpenAI, Inc.</strong> — <a href="https://openai.com/privacy/">Privacy Policy</a></li>
+            <li><strong>Google (Gemini)</strong> — <a href="https://ai.google.dev/terms">Terms of Service</a></li>
+            <li><strong>Anthropic, PBC (Claude)</strong> — <a href="https://www.anthropic.com/privacy">Privacy Policy</a></li>
+        </ul>
+        <p>When you use the AI, the following data is transmitted to the selected provider:</p>
         <ul>
             <li>Your <strong>input texts</strong> (question, topic name, OCR text)</li>
             <li>For photo study plans: the <strong>text recognized</strong> by the Vision framework (the image itself never leaves your device)</li>
             <li>Optionally: instructions such as language, response style</li>
         </ul>
-        <p>Groq processes this data according to its own privacy policy (<a href="https://groq.com/privacy-policy/">https://groq.com/privacy-policy/</a>).</p>
         <p><strong>Important:</strong> Do <strong>not</strong> store or send any sensitive personal data through the AI features.</p>
-        <p>The AI feature is optional and requires your own API key, which you store in settings.</p>
 
         <h3>2.5 Voice input</h3>
         <p>When you use voice input (in the AI assistant or Feynman mode), the <strong>Apple Speech Recognition Framework</strong> is used. Apple processes voice input according to its own privacy policy.</p>

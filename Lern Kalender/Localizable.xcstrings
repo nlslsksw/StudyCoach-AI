@@ -157,9 +157,6 @@
     "•" : {
 
     },
-    "••••••••" : {
-
-    },
     "© 2026 Ralf Lohrmann" : {
 
     },
@@ -332,6 +329,9 @@
         }
       }
     },
+    "Anbieter" : {
+
+    },
     "Anderes Foto" : {
 
     },
@@ -392,6 +392,9 @@
           }
         }
       }
+    },
+    "API-Key gespeichert" : {
+
     },
     "Archivieren" : {
 
@@ -1835,6 +1838,9 @@
         }
       }
     },
+    "Key speichern" : {
+
+    },
     "KI" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1859,6 +1865,9 @@
           }
         }
       }
+    },
+    "KI-Anbieter" : {
+
     },
     "KI-Assistent" : {
       "extractionState" : "manual",
@@ -3371,6 +3380,9 @@
       }
     },
     "Text wird erkannt..." : {
+
+    },
+    "Texte werden an den KI-Anbieter (%@) gesendet" : {
 
     },
     "Texte werden an Groq (groq.com) gesendet" : {

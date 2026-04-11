@@ -1,16 +1,104 @@
 import Foundation
 import Security
 
+// MARK: - AI Provider
+
+enum AIProvider: String, CaseIterable, Identifiable {
+    case backend = "backend"
+    case groq = "groq"
+    case openai = "openai"
+    case gemini = "gemini"
+    case claude = "claude"
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .backend: return "StudyCoach (Standard)"
+        case .groq: return "Groq"
+        case .openai: return "OpenAI"
+        case .gemini: return "Google Gemini"
+        case .claude: return "Anthropic Claude"
+        }
+    }
+
+    var apiURL: String {
+        switch self {
+        case .backend: return "https://tudycoach-api.nils-lohrmann11.workers.dev/"
+        case .groq: return "https://api.groq.com/openai/v1/chat/completions"
+        case .openai: return "https://api.openai.com/v1/chat/completions"
+        case .gemini: return "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+        case .claude: return "https://api.anthropic.com/v1/messages"
+        }
+    }
+
+    var keychainKey: String {
+        switch self {
+        case .backend: return ""
+        case .groq: return "groqAPIKey"
+        case .openai: return "openaiAPIKey"
+        case .gemini: return "geminiAPIKey"
+        case .claude: return "claudeAPIKey"
+        }
+    }
+
+    var models: [(id: String, name: String)] {
+        switch self {
+        case .backend:
+            return [
+                ("llama-3.3-70b-versatile", "Llama 3.3 70B (Standard)"),
+                ("llama-3.1-8b-instant", "Llama 3.1 8B (Schnell)"),
+                ("mixtral-8x7b-32768", "Mixtral 8x7B"),
+                ("gemma2-9b-it", "Gemma 2 9B")
+            ]
+        case .groq:
+            return [
+                ("llama-3.3-70b-versatile", "Llama 3.3 70B"),
+                ("llama-3.1-8b-instant", "Llama 3.1 8B (Schnell)"),
+                ("mixtral-8x7b-32768", "Mixtral 8x7B"),
+                ("gemma2-9b-it", "Gemma 2 9B")
+            ]
+        case .openai:
+            return [
+                ("gpt-4o", "GPT-4o"),
+                ("gpt-4o-mini", "GPT-4o Mini (Günstig)"),
+                ("gpt-4.1", "GPT-4.1")
+            ]
+        case .gemini:
+            return [
+                ("gemini-2.5-flash", "Gemini 2.5 Flash"),
+                ("gemini-2.0-flash", "Gemini 2.0 Flash"),
+                ("gemini-1.5-pro", "Gemini 1.5 Pro")
+            ]
+        case .claude:
+            return [
+                ("claude-sonnet-4-5-20250514", "Claude Sonnet 4.5"),
+                ("claude-haiku-3-5-20241022", "Claude Haiku 3.5 (Schnell)")
+            ]
+        }
+    }
+
+    var keyPlaceholder: String {
+        switch self {
+        case .backend: return ""
+        case .groq: return "gsk_..."
+        case .openai: return "sk-..."
+        case .gemini: return "AIza..."
+        case .claude: return "sk-ant-..."
+        }
+    }
+
+    var isOpenAICompatible: Bool {
+        self != .claude
+    }
+}
+
 @Observable
 final class AIService {
     static let shared = AIService()
 
     var isGenerating = false
     var error: String?
-
-    private let keychainKey = "groqAPIKey"
-    private let backendURL = "https://tudycoach-api.nils-lohrmann11.workers.dev/"
-    private let groqDirectURL = "https://api.groq.com/openai/v1/chat/completions"
 
     private init() {
         hasAPIKey = true
@@ -20,12 +108,22 @@ final class AIService {
 
     var hasAPIKey: Bool = true
 
+    var selectedProvider: AIProvider {
+        get { AIProvider(rawValue: UserDefaults.standard.string(forKey: "aiProvider") ?? "backend") ?? .backend }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: "aiProvider")
+            // Reset model to provider's default when switching
+            selectedModel = newValue.models.first?.id ?? "llama-3.3-70b-versatile"
+        }
+    }
+
     var hasCustomKey: Bool {
-        loadFromKeychain() != nil
+        guard selectedProvider != .backend else { return false }
+        return loadFromKeychain(forKey: selectedProvider.keychainKey) != nil
     }
 
     var selectedModel: String {
-        get { UserDefaults.standard.string(forKey: "aiModel") ?? "llama-3.3-70b-versatile" }
+        get { UserDefaults.standard.string(forKey: "aiModel") ?? selectedProvider.models.first?.id ?? "llama-3.3-70b-versatile" }
         set { UserDefaults.standard.set(newValue, forKey: "aiModel") }
     }
 
@@ -71,40 +169,109 @@ final class AIService {
     ]
 
     var apiKey: String? {
-        get { loadFromKeychain() }
+        get {
+            if selectedProvider == .backend { return nil }
+            return loadFromKeychain(forKey: selectedProvider.keychainKey)
+        }
         set {
+            guard selectedProvider != .backend else { return }
             if let key = newValue, !key.isEmpty {
-                saveToKeychain(key)
+                saveToKeychain(key, forKey: selectedProvider.keychainKey)
             } else {
-                deleteFromKeychain()
+                deleteFromKeychain(forKey: selectedProvider.keychainKey)
             }
         }
     }
 
-    private func refreshKeyStatus() {
-        hasAPIKey = true
+    func apiKey(for provider: AIProvider) -> String? {
+        guard provider != .backend else { return nil }
+        return loadFromKeychain(forKey: provider.keychainKey)
+    }
+
+    func setApiKey(_ key: String?, for provider: AIProvider) {
+        guard provider != .backend else { return }
+        if let key = key, !key.isEmpty {
+            saveToKeychain(key, forKey: provider.keychainKey)
+        } else {
+            deleteFromKeychain(forKey: provider.keychainKey)
+        }
     }
 
     // MARK: - API Request Helper
 
     private func makeAPIRequest(body: [String: Any]) throws -> URLRequest {
+        let provider = selectedProvider
         let url: URL
-        if let key = apiKey, !key.isEmpty {
-            url = URL(string: groqDirectURL)!
+
+        if provider == .backend {
+            url = URL(string: provider.apiURL)!
+        } else if let key = apiKey, !key.isEmpty {
+            url = URL(string: provider.apiURL)!
         } else {
-            url = URL(string: backendURL)!
+            // Fallback to backend if no custom key
+            url = URL(string: AIProvider.backend.apiURL)!
+        }
+
+        var finalBody = body
+
+        // Claude needs special handling
+        if provider == .claude, let key = apiKey, !key.isEmpty {
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(key, forHTTPHeaderField: "x-api-key")
+            request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+
+            // Extract system messages and convert to Claude format
+            if var messages = finalBody["messages"] as? [[String: String]] {
+                let systemMessages = messages.filter { $0["role"] == "system" }
+                messages = messages.filter { $0["role"] != "system" }
+                let systemText = systemMessages.compactMap { $0["content"] }.joined(separator: "\n\n")
+
+                finalBody["messages"] = messages
+                if !systemText.isEmpty {
+                    finalBody["system"] = systemText
+                }
+                finalBody["max_tokens"] = 4096
+            }
+
+            request.httpBody = try JSONSerialization.data(withJSONObject: finalBody)
+            return request
         }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        if let key = apiKey, !key.isEmpty {
+        // Add auth for non-backend providers
+        if provider != .backend, let key = apiKey, !key.isEmpty {
             request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
         }
 
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        request.httpBody = try JSONSerialization.data(withJSONObject: finalBody)
         return request
+    }
+
+    /// Extracts the response text from either OpenAI or Claude format
+    func extractContent(from data: Data) throws -> String {
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw AIError.parseError
+        }
+
+        // OpenAI format (Groq, OpenAI, Gemini, Backend)
+        if let choices = json["choices"] as? [[String: Any]],
+           let message = choices.first?["message"] as? [String: Any],
+           let content = message["content"] as? String {
+            return content
+        }
+
+        // Claude format
+        if let content = json["content"] as? [[String: Any]],
+           let text = content.first?["text"] as? String {
+            return text
+        }
+
+        throw AIError.parseError
     }
 
     // MARK: - Generate Study Plan
@@ -165,13 +332,8 @@ final class AIService {
             throw AIError.apiError("Status \(httpResponse.statusCode): \(errorBody)")
         }
 
-        // Parse OpenAI-compatible response
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let choices = json["choices"] as? [[String: Any]],
-              let message = choices.first?["message"] as? [String: Any],
-              let responseText = message["content"] as? String else {
-            throw AIError.parseError
-        }
+        // Parse response (works with OpenAI, Groq, Gemini, and Claude format)
+        let responseText = try extractContent(from: data)
 
         // Clean response text (remove markdown code blocks if present)
         let cleanText = responseText
@@ -278,12 +440,7 @@ final class AIService {
             throw AIError.apiError("Status \(httpResponse.statusCode): \(errorBody)")
         }
 
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let choices = json["choices"] as? [[String: Any]],
-              let message = choices.first?["message"] as? [String: Any],
-              let content = message["content"] as? String else {
-            throw AIError.parseError
-        }
+        let content = try extractContent(from: data)
 
         // Parse actions from response
         var text = content
@@ -364,12 +521,9 @@ final class AIService {
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else { throw AIError.networkError }
 
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let choices = json["choices"] as? [[String: Any]],
-              let message = choices.first?["message"] as? [String: Any],
-              let content = message["content"] as? String else { throw AIError.parseError }
+        let quizContent = try extractContent(from: data)
 
-        let clean = content.replacingOccurrences(of: "```json", with: "").replacingOccurrences(of: "```", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let clean = quizContent.replacingOccurrences(of: "```json", with: "").replacingOccurrences(of: "```", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         guard let jsonData = clean.data(using: .utf8),
               let questions = try? JSONDecoder().decode([QuizQuestion].self, from: jsonData) else { throw AIError.parseError }
 
@@ -400,12 +554,9 @@ final class AIService {
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else { throw AIError.networkError }
 
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let choices = json["choices"] as? [[String: Any]],
-              let message = choices.first?["message"] as? [String: Any],
-              let content = message["content"] as? String else { throw AIError.parseError }
+        let cardContent = try extractContent(from: data)
 
-        let clean = content.replacingOccurrences(of: "```json", with: "").replacingOccurrences(of: "```", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let clean = cardContent.replacingOccurrences(of: "```json", with: "").replacingOccurrences(of: "```", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         guard let jsonData = clean.data(using: .utf8),
               let cards = try? JSONDecoder().decode([Flashcard].self, from: jsonData) else { throw AIError.parseError }
 
@@ -423,21 +574,21 @@ final class AIService {
 
     // MARK: - Keychain
 
-    private func saveToKeychain(_ value: String) {
-        deleteFromKeychain()
+    private func saveToKeychain(_ value: String, forKey key: String) {
+        deleteFromKeychain(forKey: key)
         let data = value.data(using: .utf8)!
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: keychainKey,
+            kSecAttrAccount as String: key,
             kSecValueData as String: data
         ]
         SecItemAdd(query as CFDictionary, nil)
     }
 
-    private func loadFromKeychain() -> String? {
+    private func loadFromKeychain(forKey key: String) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: keychainKey,
+            kSecAttrAccount as String: key,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
@@ -447,10 +598,10 @@ final class AIService {
         return String(data: data, encoding: .utf8)
     }
 
-    private func deleteFromKeychain() {
+    private func deleteFromKeychain(forKey key: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: keychainKey
+            kSecAttrAccount as String: key
         ]
         SecItemDelete(query as CFDictionary)
     }
