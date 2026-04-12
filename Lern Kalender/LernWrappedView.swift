@@ -451,32 +451,38 @@ private struct WrappedPage {
 
 struct WrappedTrigger {
 
-    // Halbjahreszeugnisse 2025/2026 pro Bundesland
-    private static let halbjahresEnde: [Bundesland: (Int, Int, Int)] = [
-        .badenWuerttemberg:       (30, 1, 2026),
-        .bayern:                  (13, 2, 2026),
-        .berlin:                  (30, 1, 2026),
-        .brandenburg:             (30, 1, 2026),
-        .bremen:                  (30, 1, 2026),
-        .hamburg:                 (29, 1, 2026),
-        .hessen:                  (30, 1, 2026),
-        .mecklenburgVorpommern:   ( 6, 2, 2026),
-        .niedersachsen:           (30, 1, 2026),
-        .nordrheinWestfalen:      ( 6, 2, 2026),
-        .rheinlandPfalz:          (30, 1, 2026),
-        .saarland:                (13, 2, 2026),
-        .sachsen:                 ( 6, 2, 2026),
-        .sachsenAnhalt:           (30, 1, 2026),
-        .schleswigHolstein:       (30, 1, 2026),
-        .thueringen:              (13, 2, 2026),
+    // Halbjahreszeugnisse pro Bundesland pro Schuljahr: [(day, month, year)]
+    private static let halbjahresEnde: [Bundesland: [(Int, Int, Int)]] = [
+        // 2025/2026
+        .badenWuerttemberg:       [(30, 1, 2026), (29, 1, 2027)],
+        .bayern:                  [(13, 2, 2026), (12, 2, 2027)],
+        .berlin:                  [(30, 1, 2026), (29, 1, 2027)],
+        .brandenburg:             [(30, 1, 2026), (29, 1, 2027)],
+        .bremen:                  [(30, 1, 2026), (29, 1, 2027)],
+        .hamburg:                 [(29, 1, 2026), (28, 1, 2027)],
+        .hessen:                  [(30, 1, 2026), (29, 1, 2027)],
+        .mecklenburgVorpommern:   [( 6, 2, 2026), ( 5, 2, 2027)],
+        .niedersachsen:           [(30, 1, 2026), (29, 1, 2027)],
+        .nordrheinWestfalen:      [( 6, 2, 2026), ( 5, 2, 2027)],
+        .rheinlandPfalz:          [(30, 1, 2026), (29, 1, 2027)],
+        .saarland:                [(13, 2, 2026), (12, 2, 2027)],
+        .sachsen:                 [( 6, 2, 2026), ( 5, 2, 2027)],
+        .sachsenAnhalt:           [(30, 1, 2026), (29, 1, 2027)],
+        .schleswigHolstein:       [(30, 1, 2026), (29, 1, 2027)],
+        .thueringen:              [(13, 2, 2026), (12, 2, 2027)],
+        // USA: semester ends in December
+        .unitedStates:            [(19, 12, 2025), (18, 12, 2026)],
     ]
 
-    // Letzter Schultag 2026 = Tag vor Sommerferien-Start (aus SchoolHolidayData)
-    private static func schuljahresEnde(bundesland: Bundesland) -> Date? {
+    /// Returns all Sommerferien-Start dates across both school years as
+    /// potential Schuljahres-Ende triggers (one day before summer break).
+    private static func schuljahresEndeDates(bundesland: Bundesland) -> [Date] {
         let cal = Calendar.current
-        let holidays = SchoolHolidayData.holidays(for: bundesland)
-        guard let sommerferien = holidays.first(where: { $0.name == "Sommerferien" }) else { return nil }
-        return cal.date(byAdding: .day, value: -1, to: sommerferien.start)
+        let allHolidays = SchoolHolidayData.holidays(for: bundesland)
+            + SchoolHolidayData.holidays2027(for: bundesland)
+        return allHolidays
+            .filter { $0.name == "Sommerferien" }
+            .compactMap { cal.date(byAdding: .day, value: -1, to: $0.start) }
     }
 
     private static func makeDate(_ day: Int, _ month: Int, _ year: Int) -> Date {
@@ -492,19 +498,21 @@ struct WrappedTrigger {
         let shown = UserDefaults.standard.string(forKey: "lastWrappedShown") ?? ""
         let windowDays = 7 // 7 Tage Fenster nach dem Datum
 
-        // Halbjahr-Check
-        if let hj = halbjahresEnde[bundesland] {
-            let hjDate = makeDate(hj.0, hj.1, hj.2)
-            let hjEnd = cal.date(byAdding: .day, value: windowDays, to: hjDate) ?? hjDate
-            let hjKey = "hj_\(bundesland.rawValue)_\(hj.2)"
-            if now >= hjDate && now <= hjEnd && !shown.contains(hjKey) {
-                let sy = store.activeSchoolYear()
-                return (true, true, sy)
+        // Halbjahr-Check (all dates for this region — 2025/26 + 2026/27)
+        if let dates = halbjahresEnde[bundesland] {
+            for hj in dates {
+                let hjDate = makeDate(hj.0, hj.1, hj.2)
+                let hjEnd = cal.date(byAdding: .day, value: windowDays, to: hjDate) ?? hjDate
+                let hjKey = "hj_\(bundesland.rawValue)_\(hj.2)"
+                if now >= hjDate && now <= hjEnd && !shown.contains(hjKey) {
+                    let sy = store.activeSchoolYear()
+                    return (true, true, sy)
+                }
             }
         }
 
-        // Schuljahres-Ende-Check
-        if let sjDate = schuljahresEnde(bundesland: bundesland) {
+        // Schuljahres-Ende-Check (all Sommerferien starts across both years)
+        for sjDate in schuljahresEndeDates(bundesland: bundesland) {
             let sjEnd = cal.date(byAdding: .day, value: windowDays, to: sjDate) ?? sjDate
             let sjKey = "sj_\(bundesland.rawValue)_\(cal.component(.year, from: sjDate))"
             if now >= sjDate && now <= sjEnd && !shown.contains(sjKey) {

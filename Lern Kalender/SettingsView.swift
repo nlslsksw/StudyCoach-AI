@@ -7,8 +7,6 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     var store: DataStore
 
-    @State private var showWrappedHalbjahr = false
-    @State private var showWrappedJahr = false
     @State private var showingImporter = false
     @State private var importResult: (success: Bool, message: String)?
     @State private var showingImportAlert = false
@@ -30,24 +28,6 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // Lern-Rückblick
-                Section {
-                    Button {
-                        showWrappedHalbjahr = true
-                    } label: {
-                        Label("Halbjahres-Rückblick", systemImage: "sparkles")
-                    }
-                    Button {
-                        showWrappedJahr = true
-                    } label: {
-                        Label("Schuljahres-Rückblick", systemImage: "star.fill")
-                    }
-                } header: {
-                    Text("Lern-Rückblick")
-                } footer: {
-                    Text("Sieh dir deinen persönlichen Lern-Rückblick im Story-Format an.")
-                }
-
                 // Hilfe & Tutorial
                 Section {
                     Button {
@@ -307,12 +287,6 @@ struct SettingsView: View {
                 Button("OK") { }
             } message: {
                 Text(importResult?.message ?? "")
-            }
-            .fullScreenCover(isPresented: $showWrappedHalbjahr) {
-                LernWrappedView(store: store, schoolYear: store.activeSchoolYear(), isHalbjahr: true)
-            }
-            .fullScreenCover(isPresented: $showWrappedJahr) {
-                LernWrappedView(store: store, schoolYear: store.activeSchoolYear(), isHalbjahr: false)
             }
             .fullScreenCover(isPresented: $showingOnboarding) {
                 OnboardingView()
