@@ -37,15 +37,20 @@ struct SettingsView: View {
                     } label: {
                         Label("Tutorial erneut anzeigen", systemImage: "play.rectangle.fill")
                     }
-                    Button {
-                        showingWrappedHalbjahr = true
-                    } label: {
-                        Label("Halbjahres-Rückblick", systemImage: "sparkles")
+                    let available = WrappedTrigger.availableWrapped(store: store)
+                    if available.halbjahr {
+                        Button {
+                            showingWrappedHalbjahr = true
+                        } label: {
+                            Label("Halbjahres-Rückblick", systemImage: "sparkles")
+                        }
                     }
-                    Button {
-                        showingWrappedJahr = true
-                    } label: {
-                        Label("Schuljahres-Rückblick", systemImage: "star.fill")
+                    if available.jahr {
+                        Button {
+                            showingWrappedJahr = true
+                        } label: {
+                            Label("Schuljahres-Rückblick", systemImage: "star.fill")
+                        }
                     }
                 } header: {
                     Text("Hilfe & Rückblick")

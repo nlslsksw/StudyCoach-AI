@@ -458,29 +458,36 @@ struct ParentDashboardView: View {
                             goalSettingSection(pairingCode: child.pairingCode)
                             parentalControlsSection(pairingCode: child.pairingCode)
 
-                            // Rückblick
-                            VStack(alignment: .leading, spacing: 10) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "sparkles")
-                                        .foregroundStyle(.white)
-                                        .frame(width: 28, height: 28)
-                                        .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 7))
-                                    Text("Lern-Rückblick").font(.headline)
+                            // Rückblick (nur im 30-Tage-Fenster sichtbar)
+                            let available = WrappedTrigger.availableWrapped(store: store)
+                            if available.halbjahr || available.jahr {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "sparkles")
+                                            .foregroundStyle(.white)
+                                            .frame(width: 28, height: 28)
+                                            .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 7))
+                                        Text("Lern-Rückblick").font(.headline)
+                                    }
+                                    if available.halbjahr {
+                                        Button {
+                                            showingWrappedHalbjahr = true
+                                        } label: {
+                                            Label("Halbjahres-Rückblick", systemImage: "play.fill")
+                                        }
+                                    }
+                                    if available.jahr {
+                                        Button {
+                                            showingWrappedJahr = true
+                                        } label: {
+                                            Label("Schuljahres-Rückblick", systemImage: "play.fill")
+                                        }
+                                    }
                                 }
-                                Button {
-                                    showingWrappedHalbjahr = true
-                                } label: {
-                                    Label("Halbjahres-Rückblick", systemImage: "play.fill")
-                                }
-                                Button {
-                                    showingWrappedJahr = true
-                                } label: {
-                                    Label("Schuljahres-Rückblick", systemImage: "play.fill")
-                                }
+                                .padding()
+                                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                                .padding(.horizontal)
                             }
-                            .padding()
-                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
-                            .padding(.horizontal)
 
                             // TEMP: remove before release — re-subscribes push notifications
                             Button {

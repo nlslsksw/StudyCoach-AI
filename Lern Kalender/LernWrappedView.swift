@@ -524,6 +524,32 @@ struct WrappedTrigger {
         return nil
     }
 
+    /// Returns which Wrapped types are currently in their 30-day window
+    /// (regardless of whether they have already been auto-shown).
+    static func availableWrapped(store: DataStore) -> (halbjahr: Bool, jahr: Bool) {
+        guard let bundesland = store.selectedBundesland else { return (false, false) }
+        let cal = Calendar.current
+        let now = Date()
+        let windowDays = 30
+
+        var hjAvailable = false
+        if let dates = halbjahresEnde[bundesland] {
+            for hj in dates {
+                let hjDate = makeDate(hj.0, hj.1, hj.2)
+                let hjEnd = cal.date(byAdding: .day, value: windowDays, to: hjDate) ?? hjDate
+                if now >= hjDate && now <= hjEnd { hjAvailable = true; break }
+            }
+        }
+
+        var sjAvailable = false
+        for sjDate in schuljahresEndeDates(bundesland: bundesland) {
+            let sjEnd = cal.date(byAdding: .day, value: windowDays, to: sjDate) ?? sjDate
+            if now >= sjDate && now <= sjEnd { sjAvailable = true; break }
+        }
+
+        return (hjAvailable, sjAvailable)
+    }
+
     static func markAsShown(store: DataStore, isHalbjahr: Bool) {
         guard let bundesland = store.selectedBundesland else { return }
         let cal = Calendar.current
