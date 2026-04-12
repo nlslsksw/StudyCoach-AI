@@ -346,6 +346,8 @@ struct ParentDashboardView: View {
     @State private var showingOnboarding = false
     @State private var sentEmoji: String?
     @State private var aiAllowedPerChild: [String: Bool] = [:]
+    @State private var showingWrappedHalbjahr = false
+    @State private var showingWrappedJahr = false
 
     private static let onboardingShownKey = "parentDashboardOnboardingShown"
 
@@ -456,6 +458,30 @@ struct ParentDashboardView: View {
                             goalSettingSection(pairingCode: child.pairingCode)
                             parentalControlsSection(pairingCode: child.pairingCode)
 
+                            // Rückblick
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "sparkles")
+                                        .foregroundStyle(.white)
+                                        .frame(width: 28, height: 28)
+                                        .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 7))
+                                    Text("Lern-Rückblick").font(.headline)
+                                }
+                                Button {
+                                    showingWrappedHalbjahr = true
+                                } label: {
+                                    Label("Halbjahres-Rückblick", systemImage: "play.fill")
+                                }
+                                Button {
+                                    showingWrappedJahr = true
+                                } label: {
+                                    Label("Schuljahres-Rückblick", systemImage: "play.fill")
+                                }
+                            }
+                            .padding()
+                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                            .padding(.horizontal)
+
                             // TEMP: remove before release — re-subscribes push notifications
                             Button {
                                 Task {
@@ -509,6 +535,12 @@ struct ParentDashboardView: View {
                 if let child = selectedChild {
                     CreateTopicView(store: store, parentMode: true, pairingCode: child.pairingCode)
                 }
+            }
+            .fullScreenCover(isPresented: $showingWrappedHalbjahr) {
+                LernWrappedView(store: store, schoolYear: store.activeSchoolYear(), isHalbjahr: true)
+            }
+            .fullScreenCover(isPresented: $showingWrappedJahr) {
+                LernWrappedView(store: store, schoolYear: store.activeSchoolYear(), isHalbjahr: false)
             }
             .sheet(isPresented: $showingAddChild, onDismiss: {
                 // Nach Hinzufügen: neues Kind auswählen und Daten laden
