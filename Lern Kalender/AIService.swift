@@ -14,7 +14,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .backend: return "StudyCoach (Standard)"
+        case .backend: return "StudyCoach (Groq)"
         case .groq: return "Groq"
         case .openai: return "OpenAI"
         case .gemini: return "Google Gemini"

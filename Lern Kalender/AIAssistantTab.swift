@@ -266,7 +266,7 @@ struct AIChatView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .navigation) {
+                ToolbarItemGroup(placement: .topBarLeading) {
                     Button {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) { showingSidebar = true }
                     } label: {
@@ -294,7 +294,7 @@ struct AIChatView: View {
                         }
                     }
                 }
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
                     Button {
                         saveCurrentChat()
                         messages = []
@@ -477,7 +477,7 @@ struct AIChatView: View {
                     .buttonStyle(.plain)
                 }
 
-                Section("KI-Anbieter") {
+                Section {
                     Picker("Anbieter", selection: $settingsProvider) {
                         ForEach(AIProvider.allCases) { provider in
                             Text(provider.displayName).tag(provider)
@@ -487,8 +487,18 @@ struct AIChatView: View {
                         AIService.shared.selectedProvider = val
                         settingsModel = AIService.shared.selectedModel
                     }
+                } header: {
+                    Text("KI-Anbieter")
+                } footer: {
+                    if settingsProvider == .backend {
+                        Text("Kostenlos — kein eigener API-Key nötig. Powered by Groq.")
+                    } else {
+                        Text("Eigener API-Key von \(settingsProvider.displayName) erforderlich.")
+                    }
+                }
 
-                    if settingsProvider != .backend {
+                if settingsProvider != .backend {
+                    Section("API-Key") {
                         HStack {
                             Image(systemName: "key.fill").foregroundStyle(.orange)
                             SecureField(settingsProvider.keyPlaceholder, text: $providerKeyInput)
@@ -523,7 +533,9 @@ struct AIChatView: View {
                             .disabled(providerKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         }
                     }
+                }
 
+                Section("Modell") {
                     Picker("KI-Modell", selection: $settingsModel) {
                         ForEach(settingsProvider.models, id: \.id) { model in
                             Text(model.name).tag(model.id)
