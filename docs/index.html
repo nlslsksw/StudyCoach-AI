@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="StudyCoach AI — Your personal AI-powered study companion. Smart study plans, instant homework help, quizzes, flashcards, and a school calendar. Free for iOS.">
+<meta name="keywords" content="study app, AI tutor, school planner, homework help, flashcards, quiz, iOS app">
+<meta property="og:title" content="StudyCoach AI — Your Smart Study Companion">
+<meta property="og:description" content="AI-powered study plans, instant homework help, smart quizzes, and a beautiful school calendar. Free on the App Store.">
+<meta property="og:image" content="app-icon.png">
+<title>StudyCoach AI — Your Smart Study Companion</title>
+<link rel="icon" type="image/png" href="app-icon.png">
+<style>
+:root {
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f7;
+    --bg-card: #ffffff;
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --accent: #e84393;
+    --accent-secondary: #a855f7;
+    --gradient-start: #e84393;
+    --gradient-end: #a855f7;
+    --border: #e5e5ea;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #000000;
+        --bg-secondary: #1c1c1e;
+        --bg-card: #1c1c1e;
+        --text: #f5f5f7;
+        --text-secondary: #98989d;
+        --accent: #f472b6;
+        --accent-secondary: #c084fc;
+        --gradient-start: #f472b6;
+        --gradient-end: #c084fc;
+        --border: #38383a;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 17px;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Hero */
+.hero {
+    text-align: center;
+    padding: 80px 0 60px;
+}
+
+.hero-icon {
+    width: 120px;
+    height: 120px;
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+}
+
+.hero h1 {
+    font-size: 52px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+}
+
+.hero h1 .gradient {
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero .subtitle {
+    font-size: 20px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto 32px;
+    line-height: 1.5;
+}
+
+.hero-badges {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+}
+
+.store-button {
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.store-button img {
+    height: 52px;
+}
+
+/* Features */
+.features {
+    padding: 40px 0 60px;
+}
+
+.features h2 {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 40px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.feature-card {
+    padding: 28px 24px;
+    border-radius: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.feature-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.fi-pink { background: linear-gradient(135deg, #fce4ec, #f8bbd0); color: #c2185b; }
+.fi-purple { background: linear-gradient(135deg, #ede7f6, #d1c4e9); color: #7b1fa2; }
+.fi-blue { background: linear-gradient(135deg, #e3f2fd, #bbdefb); color: #1565c0; }
+.fi-green { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); color: #2e7d32; }
+.fi-orange { background: linear-gradient(135deg, #fff3e0, #ffe0b2); color: #e65100; }
+.fi-teal { background: linear-gradient(135deg, #e0f2f1, #b2dfdb); color: #00695c; }
+
+@media (prefers-color-scheme: dark) {
+    .fi-pink { background: linear-gradient(135deg, #4a1942, #6a1b4d); color: #f48fb1; }
+    .fi-purple { background: linear-gradient(135deg, #2d1b69, #3c1f7b); color: #ce93d8; }
+    .fi-blue { background: linear-gradient(135deg, #0d2137, #102a43); color: #64b5f6; }
+    .fi-green { background: linear-gradient(135deg, #1b3a1b, #1e4620); color: #81c784; }
+    .fi-orange { background: linear-gradient(135deg, #3e2723, #4e342e); color: #ffb74d; }
+    .fi-teal { background: linear-gradient(135deg, #1a3a3a, #1e4040); color: #80cbc4; }
+}
+
+/* Providers */
+.providers {
+    padding: 40px 0;
+    text-align: center;
+}
+
+.providers h2 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+}
+
+.providers .subtitle {
+    color: var(--text-secondary);
+    font-size: 18px;
+    margin-bottom: 32px;
+}
+
+.provider-logos {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.provider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.provider-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+/* Privacy banner */
+.privacy-banner {
+    padding: 40px 0 20px;
+    text-align: center;
+}
+
+.privacy-grid {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.privacy-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+
+.privacy-check {
+    color: #22c55e;
+    font-size: 18px;
+}
+
+/* CTA */
+.cta {
+    text-align: center;
+    padding: 60px 0;
+    margin: 40px 0;
+    border-radius: 24px;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+}
+
+.cta h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.cta p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 18px;
+    margin-bottom: 24px;
+}
+
+/* Footer */
+footer {
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+footer a {
+    color: var(--accent);
+    text-decoration: none;
+    margin: 0 8px;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .hero { padding: 48px 0 40px; }
+    .hero-icon { width: 88px; height: 88px; border-radius: 22px; }
+    .hero h1 { font-size: 34px; }
+    .hero .subtitle { font-size: 17px; }
+    .feature-grid { grid-template-columns: 1fr; gap: 14px; }
+    .feature-card { padding: 22px 20px; }
+    .features h2, .providers h2 { font-size: 28px; }
+    .cta { padding: 40px 24px; border-radius: 18px; }
+    .cta h2 { font-size: 26px; }
+    .provider-logos { gap: 12px; }
+    .provider { padding: 10px 16px; font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+    .container { padding: 0 16px; }
+    .hero h1 { font-size: 28px; }
+    .feature-grid { gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="container">
+        <img src="app-icon.png" alt="StudyCoach AI" class="hero-icon">
+        <h1>Meet <span class="gradient">StudyCoach AI</span></h1>
+        <p class="subtitle">Your personal AI-powered study companion. Plan smarter, learn faster, and ace every exam.</p>
+        <div class="hero-badges">
+            <span class="badge">Free</span>
+            <span class="badge">No Ads</span>
+            <span class="badge">Privacy First</span>
+            <span class="badge">iOS 17+</span>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+    <div class="container">
+        <h2>Everything you need to study smarter</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon fi-pink">&#x1F916;</div>
+                <h3>AI Study Assistant</h3>
+                <p>Ask any question about any subject. Get clear, step-by-step explanations tailored to your level.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-purple">&#x1F4CB;</div>
+                <h3>Smart Study Planner</h3>
+                <p>Let AI build a personalized study plan based on your schedule, upcoming tests, and subjects.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-blue">&#x1F4DD;</div>
+                <h3>Quizzes &amp; Flashcards</h3>
+                <p>Auto-generate quizzes and flashcards from any topic. Practice actively and track your progress.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-green">&#x1F4C5;</div>
+                <h3>School Calendar</h3>
+                <p>Track tests, homework, and deadlines. Includes official school holidays for all 16 German states.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-orange">&#x23F1;</div>
+                <h3>Study Timer</h3>
+                <p>Focus with a Pomodoro timer. See your progress on your Lock Screen and Dynamic Island.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-teal">&#x1F469;&#x200D;&#x1F469;&#x200D;&#x1F466;</div>
+                <h3>Parental Controls</h3>
+                <p>Parents can pair via secure PIN to track progress, assign topics, and support learning remotely.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI Providers -->
+<section class="providers">
+    <div class="container">
+        <h2>Powered by the best AI models</h2>
+        <p class="subtitle">Choose the AI provider that works best for you.</p>
+        <div class="provider-logos">
+            <div class="provider">
+                <div class="provider-dot" style="background: #f97316;"></div>
+                Groq (Free)
+            </div>
+            <div class="provider">
+                <div class="provider-dot" style="background: #10b981;"></div>
+                OpenAI
+            </div>
+            <div class="provider">
+                <div class="provider-dot" style="background: #3b82f6;"></div>
+                Google Gemini
+            </div>
+            <div class="provider">
+                <div class="provider-dot" style="background: #d97706;"></div>
+                Anthropic Claude
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Privacy -->
+<section class="privacy-banner">
+    <div class="container">
+        <h2>Privacy is not optional</h2>
+        <div class="privacy-grid">
+            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> No ads, ever</div>
+            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> No tracking</div>
+            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> No account required</div>
+            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> iCloud sync only</div>
+            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> Open source friendly</div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section>
+    <div class="container">
+        <div class="cta">
+            <h2>Start learning smarter today</h2>
+            <p>Free to download. No account needed. Just open and go.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <p>
+            &copy; 2026 Ralf Lohrmann
+            &nbsp;&middot;&nbsp;
+            <a href="legal/privacy-en.html">Privacy Policy</a>
+            <a href="legal/terms-en.html">Terms</a>
+            <a href="legal/imprint.html">Imprint</a>
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>
