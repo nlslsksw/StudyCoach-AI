@@ -10,408 +10,656 @@
 <meta property="og:image" content="app-icon.png">
 <title>StudyCoach AI — Your Smart Study Companion</title>
 <link rel="icon" type="image/png" href="app-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg: #ffffff;
-    --bg-secondary: #f5f5f7;
+    --bg: #fafaf9;
+    --bg-deep: #ffffff;
     --bg-card: #ffffff;
-    --text: #1d1d1f;
-    --text-secondary: #6e6e73;
-    --accent: #e84393;
-    --accent-secondary: #a855f7;
-    --gradient-start: #e84393;
-    --gradient-end: #a855f7;
-    --border: #e5e5ea;
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.08);
+    --text: #1a1a19;
+    --text-mid: #52524e;
+    --text-muted: #9c9c97;
+    --rose: #f43f5e;
+    --violet: #8b5cf6;
+    --amber: #f59e0b;
+    --emerald: #10b981;
+    --sky: #0ea5e9;
+    --coral: #fb7185;
+    --border: rgba(0,0,0,0.06);
+    --glass: rgba(255,255,255,0.72);
+    --glass-border: rgba(255,255,255,0.3);
+    --grain-opacity: 0.03;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg: #000000;
-        --bg-secondary: #1c1c1e;
-        --bg-card: #1c1c1e;
-        --text: #f5f5f7;
-        --text-secondary: #98989d;
-        --accent: #f472b6;
-        --accent-secondary: #c084fc;
-        --gradient-start: #f472b6;
-        --gradient-end: #c084fc;
-        --border: #38383a;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.4);
+        --bg: #0c0c0c;
+        --bg-deep: #000000;
+        --bg-card: #161616;
+        --text: #ececec;
+        --text-mid: #a0a09b;
+        --text-muted: #6b6b66;
+        --border: rgba(255,255,255,0.07);
+        --glass: rgba(22,22,22,0.78);
+        --glass-border: rgba(255,255,255,0.06);
+        --grain-opacity: 0.04;
     }
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html {
-    -webkit-font-smoothing: antialiased;
-    scroll-behavior: smooth;
-}
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
-    font-size: 17px;
+    overflow-x: hidden;
 }
 
-.container {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 24px;
+/* --- Grain overlay --- */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: var(--grain-opacity);
+    pointer-events: none;
+    z-index: 9999;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 180px;
 }
 
-/* Hero */
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+/* ============================
+   NAV
+   ============================ */
+nav {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid var(--glass-border);
+    border-radius: 100px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    animation: navSlide 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.3s;
+}
+
+@keyframes navSlide {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+nav img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+}
+
+nav .nav-name {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 8px;
+    letter-spacing: -0.01em;
+}
+
+nav a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-mid);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 100px;
+    transition: all 0.2s;
+}
+
+nav a:hover {
+    background: var(--border);
+    color: var(--text);
+}
+
+/* ============================
+   HERO
+   ============================ */
 .hero {
+    padding: 160px 0 100px;
     text-align: center;
-    padding: 80px 0 60px;
+    position: relative;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244,63,94,0.12) 0%, rgba(139,92,246,0.08) 40%, transparent 70%);
+    pointer-events: none;
+    animation: heroPulse 6s ease-in-out infinite alternate;
+}
+
+@media (prefers-color-scheme: dark) {
+    .hero::before {
+        background: radial-gradient(circle, rgba(244,63,94,0.15) 0%, rgba(139,92,246,0.1) 40%, transparent 70%);
+    }
+}
+
+@keyframes heroPulse {
+    0% { transform: translateX(-50%) scale(1); opacity: 0.7; }
+    100% { transform: translateX(-50%) scale(1.15); opacity: 1; }
 }
 
 .hero-icon {
-    width: 120px;
-    height: 120px;
-    border-radius: 28px;
-    box-shadow: var(--shadow);
-    margin-bottom: 24px;
+    width: 96px;
+    height: 96px;
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(244,63,94,0.2), 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 32px;
+    position: relative;
+    animation: iconFloat 4s ease-in-out infinite alternate;
+}
+
+@keyframes iconFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 20px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    border: 1px solid rgba(244,63,94,0.2);
+    background: rgba(244,63,94,0.06);
+    animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.1s;
+}
+
+.hero-eyebrow .pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--rose);
+    animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
 }
 
 .hero h1 {
-    font-size: 52px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin-bottom: 16px;
+    font-size: clamp(40px, 7vw, 72px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin-bottom: 20px;
+    animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.2s;
 }
 
-.hero h1 .gradient {
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+.hero h1 .em {
+    background: linear-gradient(135deg, var(--rose) 0%, var(--violet) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-.hero .subtitle {
-    font-size: 20px;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto 32px;
-    line-height: 1.5;
+.hero-sub {
+    font-size: clamp(17px, 2.2vw, 21px);
+    color: var(--text-mid);
+    max-width: 520px;
+    margin: 0 auto 36px;
+    font-weight: 300;
+    line-height: 1.55;
+    animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.35s;
 }
 
-.hero-badges {
+.hero-pills {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.5s;
+}
+
+.pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--bg-card);
+    letter-spacing: 0.02em;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================
+   FEATURES
+   ============================ */
+.features {
+    padding: 60px 0 80px;
+}
+
+.section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.features h2 {
+    text-align: center;
+    font-size: clamp(28px, 4.5vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 48px;
+    line-height: 1.15;
+}
+
+.feat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.feat {
+    position: relative;
+    padding: 32px 28px 28px;
+    border-radius: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+    overflow: hidden;
+}
+
+.feat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 20px 20px 0 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.feat:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+}
+
+.feat:hover::before { opacity: 1; }
+
+.feat:nth-child(1)::before { background: linear-gradient(90deg, var(--rose), var(--coral)); }
+.feat:nth-child(2)::before { background: linear-gradient(90deg, var(--violet), #a78bfa); }
+.feat:nth-child(3)::before { background: linear-gradient(90deg, var(--sky), #38bdf8); }
+.feat:nth-child(4)::before { background: linear-gradient(90deg, var(--emerald), #34d399); }
+.feat:nth-child(5)::before { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+.feat:nth-child(6)::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
+
+.feat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    letter-spacing: 0.06em;
+}
+
+.feat h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+}
+
+.feat p {
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+/* ============================
+   PROVIDERS
+   ============================ */
+.providers {
+    padding: 60px 0;
+    text-align: center;
+}
+
+.providers h2 {
+    font-size: clamp(28px, 4.5vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+}
+
+.providers-sub {
+    color: var(--text-mid);
+    font-size: 17px;
+    margin-bottom: 36px;
+    font-weight: 300;
+}
+
+.prov-row {
     display: flex;
     gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
 }
 
-.badge {
-    display: inline-flex;
+.prov-chip {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    background: var(--bg-secondary);
-}
-
-.store-button {
-    display: inline-block;
-    margin-top: 8px;
-}
-
-.store-button img {
-    height: 52px;
-}
-
-/* Features */
-.features {
-    padding: 40px 0 60px;
-}
-
-.features h2 {
-    text-align: center;
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 40px;
-}
-
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.feature-card {
-    padding: 28px 24px;
-    border-radius: 20px;
+    gap: 10px;
+    padding: 14px 22px;
+    border-radius: 14px;
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    transition: transform 0.2s;
-}
-
-.feature-card:hover {
-    transform: translateY(-4px);
-}
-
-.feature-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 16px;
-}
-
-.feature-card h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.feature-card p {
-    font-size: 15px;
-    color: var(--text-secondary);
-    line-height: 1.5;
-}
-
-.fi-pink { background: linear-gradient(135deg, #fce4ec, #f8bbd0); color: #c2185b; }
-.fi-purple { background: linear-gradient(135deg, #ede7f6, #d1c4e9); color: #7b1fa2; }
-.fi-blue { background: linear-gradient(135deg, #e3f2fd, #bbdefb); color: #1565c0; }
-.fi-green { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); color: #2e7d32; }
-.fi-orange { background: linear-gradient(135deg, #fff3e0, #ffe0b2); color: #e65100; }
-.fi-teal { background: linear-gradient(135deg, #e0f2f1, #b2dfdb); color: #00695c; }
-
-@media (prefers-color-scheme: dark) {
-    .fi-pink { background: linear-gradient(135deg, #4a1942, #6a1b4d); color: #f48fb1; }
-    .fi-purple { background: linear-gradient(135deg, #2d1b69, #3c1f7b); color: #ce93d8; }
-    .fi-blue { background: linear-gradient(135deg, #0d2137, #102a43); color: #64b5f6; }
-    .fi-green { background: linear-gradient(135deg, #1b3a1b, #1e4620); color: #81c784; }
-    .fi-orange { background: linear-gradient(135deg, #3e2723, #4e342e); color: #ffb74d; }
-    .fi-teal { background: linear-gradient(135deg, #1a3a3a, #1e4040); color: #80cbc4; }
-}
-
-/* Providers */
-.providers {
-    padding: 40px 0;
-    text-align: center;
-}
-
-.providers h2 {
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 12px;
-}
-
-.providers .subtitle {
-    color: var(--text-secondary);
-    font-size: 18px;
-    margin-bottom: 32px;
-}
-
-.provider-logos {
-    display: flex;
-    gap: 32px;
-    justify-content: center;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.provider {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: 14px;
-    background: var(--bg-secondary);
     border: 1px solid var(--border);
     font-size: 15px;
     font-weight: 500;
     color: var(--text);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
 }
 
-.provider-dot {
+.prov-chip:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.prov-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    flex-shrink: 0;
 }
 
-/* Privacy banner */
-.privacy-banner {
-    padding: 40px 0 20px;
+.prov-free {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--emerald);
+    background: rgba(16,185,129,0.1);
+    padding: 2px 8px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+}
+
+/* ============================
+   PRIVACY
+   ============================ */
+.privacy {
+    padding: 60px 0 40px;
     text-align: center;
 }
 
-.privacy-grid {
-    display: flex;
-    gap: 24px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 20px;
+.privacy h2 {
+    font-size: clamp(28px, 4.5vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
 }
 
-.privacy-item {
+.priv-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.priv-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 15px;
-    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-mid);
 }
 
-.privacy-check {
-    color: #22c55e;
-    font-size: 18px;
+.priv-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(16,185,129,0.1);
+    color: var(--emerald);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
 }
 
-/* CTA */
-.cta {
+/* ============================
+   CTA
+   ============================ */
+.cta-wrap {
+    padding: 40px 0;
+}
+
+.cta-card {
+    position: relative;
     text-align: center;
-    padding: 60px 0;
-    margin: 40px 0;
-    border-radius: 24px;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    padding: 72px 40px;
+    border-radius: 28px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+    isolation: isolate;
 }
 
-.cta h2 {
-    font-size: 32px;
+.cta-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 600px 400px at 20% 50%, rgba(244,63,94,0.25), transparent),
+        radial-gradient(ellipse 500px 350px at 80% 40%, rgba(139,92,246,0.2), transparent),
+        radial-gradient(ellipse 300px 300px at 60% 80%, rgba(14,165,233,0.12), transparent);
+    z-index: 0;
+    animation: ctaGlow 8s ease-in-out infinite alternate;
+}
+
+@keyframes ctaGlow {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(20deg); }
+}
+
+.cta-card > * { position: relative; z-index: 1; }
+
+.cta-card h2 {
+    font-size: clamp(26px, 4vw, 38px);
     font-weight: 700;
     color: #fff;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
 }
 
-.cta p {
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 18px;
-    margin-bottom: 24px;
+.cta-card p {
+    color: rgba(255,255,255,0.6);
+    font-size: 17px;
+    font-weight: 300;
 }
 
-/* Footer */
+/* ============================
+   FOOTER
+   ============================ */
 footer {
-    padding: 32px 0;
-    border-top: 1px solid var(--border);
+    padding: 40px 0;
     text-align: center;
-    color: var(--text-secondary);
-    font-size: 14px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
     margin-top: 20px;
 }
 
+footer .links {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
 footer a {
-    color: var(--accent);
+    color: var(--text-mid);
     text-decoration: none;
-    margin: 0 8px;
+    font-weight: 400;
+    transition: color 0.15s;
 }
 
-footer a:hover {
-    text-decoration: underline;
-}
+footer a:hover { color: var(--text); }
 
-/* Mobile */
+/* ============================
+   MOBILE
+   ============================ */
 @media (max-width: 768px) {
-    .hero { padding: 48px 0 40px; }
-    .hero-icon { width: 88px; height: 88px; border-radius: 22px; }
-    .hero h1 { font-size: 34px; }
-    .hero .subtitle { font-size: 17px; }
-    .feature-grid { grid-template-columns: 1fr; gap: 14px; }
-    .feature-card { padding: 22px 20px; }
-    .features h2, .providers h2 { font-size: 28px; }
-    .cta { padding: 40px 24px; border-radius: 18px; }
-    .cta h2 { font-size: 26px; }
-    .provider-logos { gap: 12px; }
-    .provider { padding: 10px 16px; font-size: 14px; }
+    .hero { padding: 120px 0 60px; }
+    .hero-icon { width: 72px; height: 72px; border-radius: 18px; }
+    .feat-grid { grid-template-columns: 1fr; gap: 12px; }
+    .feat { padding: 24px 22px 22px; }
+    .prov-row { gap: 8px; }
+    .prov-chip { padding: 10px 16px; font-size: 14px; }
+    .priv-row { gap: 12px; }
+    .cta-card { padding: 48px 24px; border-radius: 22px; }
+    nav { padding: 6px 8px; gap: 2px; }
+    nav .nav-name { font-size: 13px; padding: 0 4px; }
+    nav a { font-size: 12px; padding: 5px 10px; }
 }
 
 @media (max-width: 480px) {
-    .container { padding: 0 16px; }
-    .hero h1 { font-size: 28px; }
-    .feature-grid { gap: 12px; }
+    .wrap { padding: 0 18px; }
+    .feat-grid { gap: 10px; }
+    .priv-row { flex-direction: column; align-items: center; gap: 10px; }
+    nav a.hide-mobile { display: none; }
 }
 </style>
 </head>
 <body>
 
+<!-- Nav -->
+<nav>
+    <img src="app-icon.png" alt="StudyCoach AI">
+    <span class="nav-name">StudyCoach AI</span>
+    <a href="#features">Features</a>
+    <a href="#providers">AI Models</a>
+    <a href="legal/privacy-en.html" class="hide-mobile">Privacy</a>
+</nav>
+
 <!-- Hero -->
-<section class="hero">
-    <div class="container">
+<section class="hero" id="top">
+    <div class="wrap">
         <img src="app-icon.png" alt="StudyCoach AI" class="hero-icon">
-        <h1>Meet <span class="gradient">StudyCoach AI</span></h1>
-        <p class="subtitle">Your personal AI-powered study companion. Plan smarter, learn faster, and ace every exam.</p>
-        <div class="hero-badges">
-            <span class="badge">Free</span>
-            <span class="badge">No Ads</span>
-            <span class="badge">Privacy First</span>
-            <span class="badge">iOS 17+</span>
+        <div class="hero-eyebrow"><span class="pulse"></span> Free on the App Store</div>
+        <h1>Study smarter<br>with <span class="em">AI</span></h1>
+        <p class="hero-sub">Your personal study companion that plans, explains, quizzes, and keeps you on track. Powered by the AI model you choose.</p>
+        <div class="hero-pills">
+            <span class="pill">Free forever</span>
+            <span class="pill">No ads</span>
+            <span class="pill">No tracking</span>
+            <span class="pill">iOS 17+</span>
         </div>
     </div>
 </section>
 
 <!-- Features -->
-<section class="features">
-    <div class="container">
-        <h2>Everything you need to study smarter</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon fi-pink">&#x1F916;</div>
+<section class="features" id="features">
+    <div class="wrap">
+        <p class="section-label">What&rsquo;s inside</p>
+        <h2>Everything you need,<br>nothing you don&rsquo;t</h2>
+        <div class="feat-grid">
+            <div class="feat">
+                <div class="feat-num">01</div>
                 <h3>AI Study Assistant</h3>
-                <p>Ask any question about any subject. Get clear, step-by-step explanations tailored to your level.</p>
+                <p>Ask anything about any subject. Get clear, step-by-step explanations tailored to your level &mdash; like a tutor in your pocket.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon fi-purple">&#x1F4CB;</div>
+            <div class="feat">
+                <div class="feat-num">02</div>
                 <h3>Smart Study Planner</h3>
-                <p>Let AI build a personalized study plan based on your schedule, upcoming tests, and subjects.</p>
+                <p>AI builds a personalized study plan from your schedule, upcoming exams, and subjects. Never guess what to study next.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon fi-blue">&#x1F4DD;</div>
+            <div class="feat">
+                <div class="feat-num">03</div>
                 <h3>Quizzes &amp; Flashcards</h3>
-                <p>Auto-generate quizzes and flashcards from any topic. Practice actively and track your progress.</p>
+                <p>Auto-generate practice quizzes and flashcards from any topic. Active recall, spaced repetition, real results.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon fi-green">&#x1F4C5;</div>
+            <div class="feat">
+                <div class="feat-num">04</div>
                 <h3>School Calendar</h3>
-                <p>Track tests, homework, and deadlines. Includes official school holidays for all 16 German states.</p>
+                <p>Track exams, homework, and deadlines in one view. Official school holidays for all 16 German states built in.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon fi-orange">&#x23F1;</div>
-                <h3>Study Timer</h3>
-                <p>Focus with a Pomodoro timer. See your progress on your Lock Screen and Dynamic Island.</p>
+            <div class="feat">
+                <div class="feat-num">05</div>
+                <h3>Focus Timer</h3>
+                <p>Pomodoro-style sessions with Live Activities. See your timer on the Lock Screen and Dynamic Island.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon fi-teal">&#x1F469;&#x200D;&#x1F469;&#x200D;&#x1F466;</div>
+            <div class="feat">
+                <div class="feat-num">06</div>
                 <h3>Parental Controls</h3>
-                <p>Parents can pair via secure PIN to track progress, assign topics, and support learning remotely.</p>
+                <p>Parents pair via secure PIN to monitor progress, assign topics, and support learning &mdash; all privacy-preserving.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- AI Providers -->
-<section class="providers">
-    <div class="container">
-        <h2>Powered by the best AI models</h2>
-        <p class="subtitle">Choose the AI provider that works best for you.</p>
-        <div class="provider-logos">
-            <div class="provider">
-                <div class="provider-dot" style="background: #f97316;"></div>
-                Groq (Free)
+<!-- Providers -->
+<section class="providers" id="providers">
+    <div class="wrap">
+        <p class="section-label">Choose your engine</p>
+        <h2>Powered by the best AI</h2>
+        <p class="providers-sub">Use the free default or bring your own API key.</p>
+        <div class="prov-row">
+            <div class="prov-chip">
+                <div class="prov-dot" style="background:#f97316"></div>
+                Groq
+                <span class="prov-free">FREE</span>
             </div>
-            <div class="provider">
-                <div class="provider-dot" style="background: #10b981;"></div>
+            <div class="prov-chip">
+                <div class="prov-dot" style="background:#10b981"></div>
                 OpenAI
             </div>
-            <div class="provider">
-                <div class="provider-dot" style="background: #3b82f6;"></div>
+            <div class="prov-chip">
+                <div class="prov-dot" style="background:#4285f4"></div>
                 Google Gemini
             </div>
-            <div class="provider">
-                <div class="provider-dot" style="background: #d97706;"></div>
+            <div class="prov-chip">
+                <div class="prov-dot" style="background:#d97706"></div>
                 Anthropic Claude
             </div>
         </div>
@@ -419,23 +667,23 @@ footer a:hover {
 </section>
 
 <!-- Privacy -->
-<section class="privacy-banner">
-    <div class="container">
+<section class="privacy">
+    <div class="wrap">
+        <p class="section-label">Built different</p>
         <h2>Privacy is not optional</h2>
-        <div class="privacy-grid">
-            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> No ads, ever</div>
-            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> No tracking</div>
-            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> No account required</div>
-            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> iCloud sync only</div>
-            <div class="privacy-item"><span class="privacy-check">&#x2713;</span> Open source friendly</div>
+        <div class="priv-row">
+            <div class="priv-item"><span class="priv-check">&#x2713;</span> No ads, ever</div>
+            <div class="priv-item"><span class="priv-check">&#x2713;</span> No tracking</div>
+            <div class="priv-item"><span class="priv-check">&#x2713;</span> No account required</div>
+            <div class="priv-item"><span class="priv-check">&#x2713;</span> iCloud sync only</div>
         </div>
     </div>
 </section>
 
 <!-- CTA -->
-<section>
-    <div class="container">
-        <div class="cta">
+<section class="cta-wrap">
+    <div class="wrap">
+        <div class="cta-card">
             <h2>Start learning smarter today</h2>
             <p>Free to download. No account needed. Just open and go.</p>
         </div>
@@ -444,14 +692,13 @@ footer a:hover {
 
 <!-- Footer -->
 <footer>
-    <div class="container">
-        <p>
-            &copy; 2026 Ralf Lohrmann
-            &nbsp;&middot;&nbsp;
+    <div class="wrap">
+        <div class="links">
             <a href="legal/privacy-en.html">Privacy Policy</a>
-            <a href="legal/terms-en.html">Terms</a>
+            <a href="legal/terms-en.html">Terms of Use</a>
             <a href="legal/imprint.html">Imprint</a>
-        </p>
+        </div>
+        <p>&copy; 2026 Ralf Lohrmann</p>
     </div>
 </footer>
 
