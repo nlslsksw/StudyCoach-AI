@@ -16,6 +16,8 @@ struct SettingsView: View {
     @State private var pdfURL: URL?
     @State private var showingPINSetup = false
     @State private var showingOnboarding = false
+    @State private var showingWrappedHalbjahr = false
+    @State private var showingWrappedJahr = false
     @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
 
     private var appVersion: String {
@@ -28,17 +30,27 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // Hilfe & Tutorial
+                // Hilfe & Rückblick
                 Section {
                     Button {
                         showingOnboarding = true
                     } label: {
                         Label("Tutorial erneut anzeigen", systemImage: "play.rectangle.fill")
                     }
+                    Button {
+                        showingWrappedHalbjahr = true
+                    } label: {
+                        Label("Halbjahres-Rückblick", systemImage: "sparkles")
+                    }
+                    Button {
+                        showingWrappedJahr = true
+                    } label: {
+                        Label("Schuljahres-Rückblick", systemImage: "star.fill")
+                    }
                 } header: {
-                    Text("Hilfe")
+                    Text("Hilfe & Rückblick")
                 } footer: {
-                    Text("Zeigt das Willkommens-Tutorial mit allen App-Funktionen noch einmal an.")
+                    Text("Tutorial oder deinen persönlichen Lern-Rückblick im Story-Format noch einmal ansehen.")
                 }
 
                 // Lern-Feed
@@ -290,6 +302,12 @@ struct SettingsView: View {
             }
             .fullScreenCover(isPresented: $showingOnboarding) {
                 OnboardingView()
+            }
+            .fullScreenCover(isPresented: $showingWrappedHalbjahr) {
+                LernWrappedView(store: store, schoolYear: store.activeSchoolYear(), isHalbjahr: true)
+            }
+            .fullScreenCover(isPresented: $showingWrappedJahr) {
+                LernWrappedView(store: store, schoolYear: store.activeSchoolYear(), isHalbjahr: false)
             }
         }
     }

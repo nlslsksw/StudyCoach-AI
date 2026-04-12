@@ -496,7 +496,7 @@ struct WrappedTrigger {
         let cal = Calendar.current
         let now = Date()
         let shown = UserDefaults.standard.string(forKey: "lastWrappedShown") ?? ""
-        let windowDays = 7 // 7 Tage Fenster nach dem Datum
+        let windowDays = 30 // 30 Tage Fenster nach dem Datum
 
         // Halbjahr-Check (all dates for this region — 2025/26 + 2026/27)
         if let dates = halbjahresEnde[bundesland] {
