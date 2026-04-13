@@ -546,6 +546,7 @@ struct AddStudySessionView: View {
     @Environment(\.dismiss) private var dismiss
     var store: DataStore
 
+    @State private var showValidation = false
     @State private var subject = ""
     @State private var date: Date
     @State private var minutes = 30
@@ -624,13 +625,20 @@ struct AddStudySessionView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Speichern") {
                         let trimmed = subject.trimmingCharacters(in: .whitespacesAndNewlines)
-                        guard !trimmed.isEmpty else { return }
+                        if trimmed.isEmpty {
+                            showValidation = true
+                            return
+                        }
                         let session = StudySession(subject: trimmed, date: date, minutes: minutes)
                         store.addSession(session)
                         dismiss()
                     }
-                    .disabled(subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
+            }
+            .alert("Fehlende Angaben", isPresented: $showValidation) {
+                Button("OK") { }
+            } message: {
+                Text("Bitte wähle ein Fach aus.")
             }
         }
     }
@@ -643,6 +651,7 @@ struct EditStudySessionView: View {
     var store: DataStore
     let session: StudySession
 
+    @State private var showValidation = false
     @State private var subject: String
     @State private var date: Date
     @State private var minutes: Int
@@ -709,7 +718,10 @@ struct EditStudySessionView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Speichern") {
                         let trimmed = subject.trimmingCharacters(in: .whitespacesAndNewlines)
-                        guard !trimmed.isEmpty else { return }
+                        if trimmed.isEmpty {
+                            showValidation = true
+                            return
+                        }
                         var updated = session
                         updated.subject = trimmed
                         updated.date = date
@@ -717,8 +729,12 @@ struct EditStudySessionView: View {
                         store.updateSession(updated)
                         dismiss()
                     }
-                    .disabled(subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
+            }
+            .alert("Fehlende Angaben", isPresented: $showValidation) {
+                Button("OK") { }
+            } message: {
+                Text("Bitte wähle ein Fach aus.")
             }
         }
     }

@@ -40,6 +40,7 @@ struct CreateTopicView: View {
     @State private var showPDFPicker = false
     @State private var error: String?
     @State private var isCreating = false
+    @State private var showValidation = false
 
     var body: some View {
         NavigationStack {
@@ -149,7 +150,11 @@ struct CreateTopicView: View {
     private var actionSection: some View {
         Section {
             Button {
-                Task { await createTopic() }
+                if !canSubmit {
+                    showValidation = true
+                } else {
+                    Task { await createTopic() }
+                }
             } label: {
                 HStack {
                     Spacer()
@@ -164,7 +169,16 @@ struct CreateTopicView: View {
                     Spacer()
                 }
             }
-            .disabled(!canSubmit || isCreating || mode == .podcast)
+            .disabled(isCreating || mode == .podcast)
+            .alert("Fehlende Angaben", isPresented: $showValidation) {
+                Button("OK") { }
+            } message: {
+                if titleField.trimmingCharacters(in: .whitespaces).isEmpty {
+                    Text("Bitte gib einen Topic-Titel ein.")
+                } else {
+                    Text("Bitte fülle die Quelle aus (Thema, Foto, PDF oder Link).")
+                }
+            }
         }
     }
 

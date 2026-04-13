@@ -213,7 +213,8 @@ struct AIChatView: View {
                         }
                         .padding(.vertical, 12)
                     }
-                    .scrollDismissesKeyboard(.interactively)
+                    .scrollDismissesKeyboard(.immediately)
+                    .onTapGesture { inputFocused = false }
                     .onChange(of: messages.count) { _, _ in
                         if let lastId = messages.last?.id {
                             withAnimation { proxy.scrollTo(lastId, anchor: .bottom) }

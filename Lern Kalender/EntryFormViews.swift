@@ -6,6 +6,7 @@ struct EditEntryView: View {
     @Environment(\.dismiss) private var dismiss
     var store: DataStore
 
+    @State private var showValidation = false
     @State private var title: String
     @State private var date: Date
     @State private var type: EventType
@@ -111,7 +112,10 @@ struct EditEntryView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Speichern") {
                         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                        guard !trimmed.isEmpty else { return }
+                        if trimmed.isEmpty {
+                            showValidation = true
+                            return
+                        }
                         var updated = CalendarEntry(
                             title: trimmed,
                             date: date,
@@ -125,8 +129,12 @@ struct EditEntryView: View {
                         store.updateEntry(updated)
                         dismiss()
                     }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
+            }
+            .alert("Fehlende Angaben", isPresented: $showValidation) {
+                Button("OK") { }
+            } message: {
+                Text("Bitte gib einen Titel ein.")
             }
         }
     }
@@ -138,6 +146,7 @@ struct AddEntryView: View {
     @Environment(\.dismiss) private var dismiss
     var store: DataStore
 
+    @State private var showValidation = false
     @State private var title = ""
     @State private var date: Date
     @State private var type: EventType = .lerntag
@@ -214,7 +223,10 @@ struct AddEntryView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Hinzufügen") {
                         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                        guard !trimmed.isEmpty else { return }
+                        if trimmed.isEmpty {
+                            showValidation = true
+                            return
+                        }
                         let entry = CalendarEntry(
                             title: trimmed,
                             date: date,
@@ -226,8 +238,12 @@ struct AddEntryView: View {
                         store.addEntry(entry)
                         dismiss()
                     }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
+            }
+            .alert("Fehlende Angaben", isPresented: $showValidation) {
+                Button("OK") { }
+            } message: {
+                Text("Bitte gib einen Titel ein.")
             }
         }
     }
