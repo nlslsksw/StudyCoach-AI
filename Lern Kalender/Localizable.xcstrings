@@ -3676,6 +3676,9 @@
     "Version" : {
 
     },
+    "Version 1.0 — Powered by %@" : {
+
+    },
     "Version 1.0 — Powered by Groq" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -489,19 +489,6 @@ struct ParentDashboardView: View {
                                 .padding(.horizontal)
                             }
 
-                            // TEMP: remove before release — re-subscribes push notifications
-                            Button {
-                                Task {
-                                    await CloudKitService.shared.subscribeToStudentDataChanges(pairingCode: child.pairingCode)
-                                }
-                            } label: {
-                                Label("Benachrichtigungen erneuern", systemImage: "bell.badge")
-                                    .font(.subheadline)
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(.blue)
-                            .padding(.horizontal)
-
                             Spacer(minLength: 20)
                         }
                         .padding(.top, 8)
