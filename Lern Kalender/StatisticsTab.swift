@@ -5,7 +5,6 @@ import SwiftUI
 struct StatisticsTab: View {
     var store: DataStore
     @State private var selectedPeriod: StatPeriod = .woche
-    @State private var showingAddGrade = false
 
     enum StatPeriod: String, CaseIterable {
         case woche = "Woche"
@@ -102,7 +101,6 @@ struct StatisticsTab: View {
     }
 
     @State private var showLernzeit = true
-    @State private var showNoten = false
     @State private var showVergleiche = false
 
     var body: some View {
@@ -190,121 +188,11 @@ struct StatisticsTab: View {
                         }
                     }
 
-                    // MARK: 2) Noten
-                    let gradeSubjects = store.allGradeSubjects()
-
-                    StatSection(title: "Noten", icon: "graduationcap.fill", color: .red, isExpanded: $showNoten) {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Button { showingAddGrade = true } label: {
-                                Label("Note hinzufügen", systemImage: "plus.circle.fill").font(.subheadline)
-                            }
-
-                            if !gradeSubjects.isEmpty {
-                                let allGrades = gradeSubjects.flatMap { store.gradesForSubject($0) }
-                                if !allGrades.isEmpty {
-                                    let totalAvg = allGrades.map(\.grade).reduce(0, +) / Double(allGrades.count)
-                                    let schriftlich = allGrades.filter { $0.type == .schriftlich }
-                                    let muendlich = allGrades.filter { $0.type == .muendlich }
-                                    HStack(spacing: 16) {
-                                        VStack(spacing: 4) {
-                                            Text(String(format: "%.1f", totalAvg))
-                                                .font(.system(size: 36, weight: .bold, design: .rounded))
-                                                .foregroundStyle(gradeColor(totalAvg))
-                                            Text("Gesamtschnitt").font(.caption).foregroundStyle(.secondary)
-                                        }
-                                        .frame(width: 100)
-                                        VStack(alignment: .leading, spacing: 6) {
-                                            if !schriftlich.isEmpty {
-                                                let sAvg = schriftlich.map(\.grade).reduce(0, +) / Double(schriftlich.count)
-                                                Label("Schriftlich: Ø \(String(format: "%.1f", sAvg)) (\(schriftlich.count)x)", systemImage: "doc.text.fill")
-                                                    .font(.caption).foregroundStyle(.secondary)
-                                            }
-                                            if !muendlich.isEmpty {
-                                                let mAvg = muendlich.map(\.grade).reduce(0, +) / Double(muendlich.count)
-                                                Label("Mündlich: Ø \(String(format: "%.1f", mAvg)) (\(muendlich.count)x)", systemImage: "bubble.left.fill")
-                                                    .font(.caption).foregroundStyle(.secondary)
-                                            }
-                                            let best = allGrades.map(\.grade).min() ?? 0
-                                            let worst = allGrades.map(\.grade).max() ?? 0
-                                            HStack(spacing: 12) {
-                                                Label("Beste: \(gradeString(best))", systemImage: "arrow.up.circle.fill").font(.caption).foregroundStyle(.green)
-                                                Label("\(gradeString(worst))", systemImage: "arrow.down.circle.fill").font(.caption).foregroundStyle(.red)
-                                            }
-                                        }
-                                        Spacer()
-                                    }
-                                    .padding()
-                                    .background(gradeColor(totalAvg).opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
-                                }
-
-                                // Notenentwicklung-Chart
-                                GradeLineChart(store: store)
-
-                                // Pro Fach
-                                ForEach(gradeSubjects, id: \.self) { subject in
-                                    let grades = store.gradesForSubject(subject)
-                                    if !grades.isEmpty {
-                                        let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
-                                        VStack(alignment: .leading, spacing: 6) {
-                                            HStack(spacing: 8) {
-                                                Text(subject).font(.subheadline.bold())
-                                                if grades.count >= 2 {
-                                                    let diff = grades[grades.count - 2].grade - grades.last!.grade
-                                                    if diff != 0 {
-                                                        Image(systemName: diff > 0 ? "arrow.up.right" : "arrow.down.right")
-                                                            .font(.caption2.bold())
-                                                            .foregroundStyle(diff > 0 ? .green : .red)
-                                                    }
-                                                }
-                                                Spacer()
-                                                Text("Ø \(String(format: "%.1f", avg))")
-                                                    .font(.subheadline.bold().monospacedDigit())
-                                                    .foregroundStyle(gradeColor(avg))
-                                                    .padding(.horizontal, 10).padding(.vertical, 3)
-                                                    .background(gradeColor(avg).opacity(0.12), in: Capsule())
-                                            }
-                                            VStack(spacing: 0) {
-                                                ForEach(Array(grades.enumerated()), id: \.offset) { index, item in
-                                                    HStack(spacing: 10) {
-                                                        Image(systemName: item.type.icon)
-                                                            .font(.caption2)
-                                                            .foregroundStyle(item.type == .schriftlich ? .blue : .orange)
-                                                            .frame(width: 14)
-                                                        Text(item.date, format: .dateTime.day().month(.twoDigits).year(.twoDigits))
-                                                            .font(.caption.monospacedDigit())
-                                                            .foregroundStyle(.secondary)
-                                                        Spacer()
-                                                        Text(gradeString(item.grade))
-                                                            .font(.subheadline.bold().monospacedDigit())
-                                                            .foregroundStyle(gradeColor(item.grade))
-                                                            .frame(width: 36, alignment: .trailing)
-                                                    }
-                                                    .padding(.horizontal, 12).padding(.vertical, 6)
-                                                    if index < grades.count - 1 {
-                                                        Divider().padding(.leading, 12)
-                                                    }
-                                                }
-                                            }
-                                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
-                                        }
-                                        .padding(.bottom, 4)
-                                    }
-                                }
-                            } else {
-                                VStack(spacing: 8) {
-                                    Image(systemName: "graduationcap").font(.system(size: 28)).foregroundStyle(.tertiary)
-                                    Text("Noch keine Noten").font(.subheadline).foregroundStyle(.secondary)
-                                }
-                                .frame(maxWidth: .infinity).padding(.vertical, 16)
-                            }
-                        }
-                    }
-
-                    if periodSessions.isEmpty && gradeSubjects.isEmpty {
+                    if periodSessions.isEmpty {
                         VStack(spacing: 12) {
                             Image(systemName: "chart.bar").font(.system(size: 40)).foregroundStyle(.secondary)
                             Text("Noch keine Lernzeiten eingetragen").foregroundStyle(.secondary)
-                            Text("Trage im \"Lernzeit\"-Tab ein, wann du gelernt hast.")
+                            Text("Trag im Heute-Tab ein, wann du gelernt hast.")
                                 .font(.caption).foregroundStyle(.tertiary).multilineTextAlignment(.center)
                         }
                         .padding(.top, 40)
@@ -315,9 +203,6 @@ struct StatisticsTab: View {
                 .padding(.top, 8)
             }
             .navigationTitle("Statistik")
-            .sheet(isPresented: $showingAddGrade) {
-                AddGradeView(store: store)
-            }
         }
     }
 }
