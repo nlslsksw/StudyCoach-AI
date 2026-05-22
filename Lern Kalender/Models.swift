@@ -108,6 +108,9 @@ struct Homework: Identifiable, Codable, Equatable {
     var createdAt: Date = Date()
     /// Optional: Webuntis-Quellen-ID (für späteren Sync, sonst nil = lokal).
     var sourceId: String? = nil
+    /// Anhänge: relative Pfade unter Documents/Attachments/ (Bilder, PDFs etc.).
+    /// Nur die Pfade syncen via iCloud KVS — die Files liegen lokal.
+    var attachmentRelativePaths: [String] = []
 }
 
 // MARK: - Streak State (Freezes, Ferien-Pause, Award-Buchhaltung)

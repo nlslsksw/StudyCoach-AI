@@ -1,4 +1,7 @@
 import SwiftUI
+import PhotosUI
+import QuickLook
+import UniformTypeIdentifiers
 
 // MARK: - ContentView
 
@@ -655,6 +658,11 @@ struct HomeworkRow: View {
                         Text(dueLabel)
                             .font(.caption)
                             .foregroundStyle(isOverdue ? .red : .secondary)
+                        if !homework.attachmentRelativePaths.isEmpty {
+                            Image(systemName: "paperclip")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
                     }
                 }
                 Spacer()
@@ -685,7 +693,12 @@ struct AddHomeworkView: View {
     @State private var title: String = ""
     @State private var notes: String = ""
     @State private var dueDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+    @State private var attachments: [String] = []
     @State private var showValidation = false
+    @State private var showingPhotoPicker = false
+    @State private var showingDocPicker = false
+    @State private var pickedPhotos: [PhotosPickerItem] = []
+    @State private var previewingPath: String? = nil
 
     init(store: DataStore, editing: Homework? = nil, initialSubject: String? = nil) {
         self.store = store
@@ -695,6 +708,7 @@ struct AddHomeworkView: View {
             _title = State(initialValue: hw.title)
             _notes = State(initialValue: hw.notes)
             _dueDate = State(initialValue: hw.dueDate)
+            _attachments = State(initialValue: hw.attachmentRelativePaths)
         } else if let pre = initialSubject {
             _subject = State(initialValue: pre)
         }
@@ -730,6 +744,7 @@ struct AddHomeworkView: View {
                         quickDateButton("Nächste Woche", offset: 7)
                     }
                 }
+                attachmentSection
                 if editing != nil {
                     Section {
                         Button(role: .destructive) {
@@ -758,6 +773,132 @@ struct AddHomeworkView: View {
             } message: {
                 Text("Bitte gib Fach und Aufgabe an.")
             }
+            .photosPicker(isPresented: $showingPhotoPicker,
+                          selection: $pickedPhotos,
+                          maxSelectionCount: 10,
+                          matching: .images)
+            .onChange(of: pickedPhotos) { _, items in
+                Task { await importPhotos(items) }
+            }
+            .fileImporter(
+                isPresented: $showingDocPicker,
+                allowedContentTypes: [.pdf, .plainText, .rtf, .data, .image],
+                allowsMultipleSelection: true
+            ) { result in
+                handleDocPicker(result)
+            }
+            .sheet(item: Binding(
+                get: { previewingPath.map { PreviewItem(path: $0) } },
+                set: { previewingPath = $0?.path }
+            )) { item in
+                QuickLookView(url: AttachmentStore.url(forRelativePath: item.path))
+            }
+        }
+    }
+
+    private var attachmentSection: some View {
+        Section {
+            if attachments.isEmpty {
+                Text("Keine Anhänge")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(attachments, id: \.self) { path in
+                            attachmentThumb(path)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+            HStack(spacing: 12) {
+                Button {
+                    showingPhotoPicker = true
+                } label: {
+                    Label("Foto", systemImage: "photo")
+                        .font(.subheadline)
+                }
+                Button {
+                    showingDocPicker = true
+                } label: {
+                    Label("Datei", systemImage: "doc")
+                        .font(.subheadline)
+                }
+            }
+        } header: {
+            Text("Anhänge")
+        } footer: {
+            Text("Bilder oder Dokumente (PDF, Text, …). Werden lokal auf deinem Gerät gespeichert.")
+        }
+    }
+
+    private func attachmentThumb(_ path: String) -> some View {
+        let url = AttachmentStore.url(forRelativePath: path)
+        let isImage = AttachmentStore.isImage(path)
+        return VStack(spacing: 4) {
+            ZStack(alignment: .topTrailing) {
+                Button {
+                    previewingPath = path
+                } label: {
+                    Group {
+                        if isImage, let img = UIImage(contentsOfFile: url.path) {
+                            Image(uiImage: img)
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            VStack(spacing: 4) {
+                                Image(systemName: "doc.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                                Text((path as NSString).pathExtension.uppercased())
+                                    .font(.caption2.bold())
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                    }
+                    .frame(width: 72, height: 72)
+                    .background(Color(.tertiarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    AttachmentStore.delete(relativePath: path)
+                    attachments.removeAll { $0 == path }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(.white, .black.opacity(0.6))
+                }
+                .offset(x: 6, y: -6)
+            }
+        }
+    }
+
+    private func importPhotos(_ items: [PhotosPickerItem]) async {
+        for item in items {
+            if let data = try? await item.loadTransferable(type: Data.self) {
+                let ext = "jpg"
+                if let path = AttachmentStore.save(data: data, fileExtension: ext) {
+                    await MainActor.run { attachments.append(path) }
+                }
+            }
+        }
+        await MainActor.run { pickedPhotos.removeAll() }
+    }
+
+    private func handleDocPicker(_ result: Result<[URL], Error>) {
+        guard case .success(let urls) = result else { return }
+        for url in urls {
+            let needsStop = url.startAccessingSecurityScopedResource()
+            defer { if needsStop { url.stopAccessingSecurityScopedResource() } }
+            if let data = try? Data(contentsOf: url) {
+                let ext = url.pathExtension.isEmpty ? "dat" : url.pathExtension
+                if let path = AttachmentStore.save(data: data, fileExtension: ext) {
+                    attachments.append(path)
+                }
+            }
         }
     }
 
@@ -781,12 +922,43 @@ struct AddHomeworkView: View {
             hw.title = trimmedTitle
             hw.notes = notes
             hw.dueDate = dueDate
+            hw.attachmentRelativePaths = attachments
             store.updateHomework(hw)
         } else {
-            let hw = Homework(subject: trimmedSubject, title: trimmedTitle, notes: notes, dueDate: dueDate)
+            var hw = Homework(subject: trimmedSubject, title: trimmedTitle, notes: notes, dueDate: dueDate)
+            hw.attachmentRelativePaths = attachments
             store.addHomework(hw)
         }
         dismiss()
+    }
+}
+
+private struct PreviewItem: Identifiable {
+    let path: String
+    var id: String { path }
+}
+
+// QuickLook für Attachments
+struct QuickLookView: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> QLPreviewController {
+        let controller = QLPreviewController()
+        controller.dataSource = context.coordinator
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: QLPreviewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(url: url) }
+
+    final class Coordinator: NSObject, QLPreviewControllerDataSource {
+        let url: URL
+        init(url: URL) { self.url = url }
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+            url as QLPreviewItem
+        }
     }
 }
 

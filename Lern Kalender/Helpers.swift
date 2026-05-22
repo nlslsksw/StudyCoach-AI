@@ -176,3 +176,47 @@ func gradeColor(_ grade: Double) -> Color {
     default: return .red
     }
 }
+
+// MARK: - Attachment Store
+
+/// Verwaltet lokal gespeicherte Anhänge (Bilder/Dokumente) für Hausaufgaben
+/// und andere Features. Die Files liegen unter Documents/Attachments/,
+/// gespeichert wird nur der relative Pfad — der wird im DataStore mitgeführt.
+enum AttachmentStore {
+    static var attachmentsDir: URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let dir = docs.appendingPathComponent("Attachments", isDirectory: true)
+        if !FileManager.default.fileExists(atPath: dir.path) {
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+        return dir
+    }
+
+    static func url(forRelativePath path: String) -> URL {
+        attachmentsDir.appendingPathComponent(path)
+    }
+
+    /// Speichert die Daten unter einem neuen UUID-Namen mit gegebener Extension.
+    /// Gibt den relativen Pfad (nur Dateiname) zurück.
+    @discardableResult
+    static func save(data: Data, fileExtension: String) -> String? {
+        let name = UUID().uuidString + "." + fileExtension.trimmingCharacters(in: .punctuationCharacters)
+        let target = attachmentsDir.appendingPathComponent(name)
+        do {
+            try data.write(to: target, options: .atomic)
+            return name
+        } catch {
+            return nil
+        }
+    }
+
+    static func delete(relativePath: String) {
+        let url = attachmentsDir.appendingPathComponent(relativePath)
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    static func isImage(_ relativePath: String) -> Bool {
+        let ext = (relativePath as NSString).pathExtension.lowercased()
+        return ["jpg", "jpeg", "png", "heic", "heif", "gif"].contains(ext)
+    }
+}

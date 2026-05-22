@@ -288,7 +288,13 @@ final class DataStore {
     func updateHomework(_ hw: Homework) {
         if let idx = homework.firstIndex(where: { $0.id == hw.id }) { homework[idx] = hw }
     }
-    func deleteHomework(_ hw: Homework) { homework.removeAll { $0.id == hw.id } }
+    func deleteHomework(_ hw: Homework) {
+        // Anhänge lokal aufräumen
+        for path in hw.attachmentRelativePaths {
+            AttachmentStore.delete(relativePath: path)
+        }
+        homework.removeAll { $0.id == hw.id }
+    }
     func toggleHomeworkDone(_ hw: Homework) {
         if let idx = homework.firstIndex(where: { $0.id == hw.id }) { homework[idx].isDone.toggle() }
     }
