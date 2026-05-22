@@ -466,21 +466,33 @@ struct StatCard: View {
     let color: Color
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(color)
+                .font(.subheadline)
+                .foregroundStyle(.white)
+                .frame(width: 32, height: 32)
+                .background(
+                    LinearGradient(colors: [color, color.opacity(0.75)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing),
+                    in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                )
+                .shadow(color: color.opacity(0.3), radius: 4, x: 0, y: 2)
 
             Text(value)
-                .font(.title3.bold().monospacedDigit())
+                .font(.subheadline.bold().monospacedDigit())
+                .contentTransition(.numericText())
 
             Text(title)
-                .font(.caption)
+                .font(.caption2)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+        .background(
+            Color(.secondarySystemGroupedBackground),
+            in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
     }
 }
 
@@ -532,15 +544,21 @@ struct StatSection<Content: View>: View {
     var body: some View {
         VStack(spacing: 0) {
             Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
+                withAnimation(AppAnimation.snappy) {
                     isExpanded.toggle()
                 }
             } label: {
-                HStack(spacing: 10) {
+                HStack(spacing: 12) {
                     Image(systemName: icon)
-                        .font(.subheadline)
-                        .foregroundStyle(color)
-                        .frame(width: 24)
+                        .font(.caption)
+                        .foregroundStyle(.white)
+                        .frame(width: 28, height: 28)
+                        .background(
+                            LinearGradient(colors: [color, color.opacity(0.75)],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing),
+                            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        )
+                        .shadow(color: color.opacity(0.3), radius: 3, x: 0, y: 1)
                     Text(title)
                         .font(.headline)
                         .foregroundStyle(.primary)
@@ -551,8 +569,12 @@ struct StatSection<Content: View>: View {
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
                 }
                 .padding(.vertical, 12)
-                .padding(.horizontal, 16)
-                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal, 14)
+                .background(
+                    Color(.secondarySystemGroupedBackground),
+                    in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+                )
+                .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
             }
             .buttonStyle(.plain)
 
