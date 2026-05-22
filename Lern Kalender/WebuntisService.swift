@@ -160,8 +160,17 @@ final class WebuntisService {
 
     private var endpointURL: URL? {
         guard !server.isEmpty, !school.isEmpty else { return nil }
-        let host = server.contains(".") ? server : "\(server).webuntis.com"
-        return URL(string: "https://\(host)/WebUntis/jsonrpc.do?school=\(school.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? school)")
+        let rawHost = server.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Falls der Nutzer "hepta.webuntis.com" oder einen vollen Hostnamen
+        // eingegeben hat, übernehmen; sonst Subdomain ergänzen.
+        let host = rawHost.contains(".") ? rawHost : "\(rawHost).webuntis.com"
+
+        var comps = URLComponents()
+        comps.scheme = "https"
+        comps.host = host
+        comps.path = "/WebUntis/jsonrpc.do"
+        comps.queryItems = [URLQueryItem(name: "school", value: school)]
+        return comps.url
     }
 
     private func rpc(method: String, params: Any) async throws -> Any {
@@ -184,7 +193,8 @@ final class WebuntisService {
 
         let (data, response) = try await URLSession.shared.data(for: req)
         guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            throw WebuntisError.http((response as? HTTPURLResponse)?.statusCode ?? -1)
+            let code = (response as? HTTPURLResponse)?.statusCode ?? -1
+            throw WebuntisError.http(code, url: url.absoluteString)
         }
         let json = try JSONSerialization.jsonObject(with: data)
         guard let dict = json as? [String: Any] else { throw WebuntisError.malformed }
@@ -411,7 +421,7 @@ final class WebuntisService {
 enum WebuntisError: Error {
     case notConfigured
     case authFailed
-    case http(Int)
+    case http(Int, url: String? = nil)
     case rpc(code: Int, message: String)
     case malformed
 
@@ -419,7 +429,11 @@ enum WebuntisError: Error {
         switch self {
         case .notConfigured: return "Bitte erst Schule und Zugangsdaten eingeben."
         case .authFailed: return "Login fehlgeschlagen. Bitte Zugangsdaten prüfen."
-        case .http(let code): return "Server-Fehler (HTTP \(code))."
+        case .http(let code, let url):
+            if code == 404 {
+                return "Schule oder Server nicht gefunden (HTTP 404). Prüfe Server-Adresse und Schul-Login-Name; am sichersten ist „Schule suchen“.\n\nVersuchte URL:\n\(url ?? "?")"
+            }
+            return "Server-Fehler (HTTP \(code))."
         case .rpc(_, let message): return "Webuntis: \(message)"
         case .malformed: return "Antwort vom Server war ungültig."
         }
