@@ -96,34 +96,43 @@ struct MonthHeader: View {
     }
 
     var body: some View {
-        HStack {
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
+        HStack(spacing: 4) {
+            chevronButton(systemName: "chevron.left") {
+                withAnimation(AppAnimation.snappy) {
                     displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth
                 }
-            } label: {
-                Image(systemName: "chevron.left")
-                    .fontWeight(.semibold)
-                    .frame(width: 44, height: 44)
             }
 
             Spacer()
 
             Text(monthYearString)
                 .font(.title3.bold())
+                .contentTransition(.numericText())
+                .id(monthYearString)
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
 
             Spacer()
 
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
+            chevronButton(systemName: "chevron.right") {
+                withAnimation(AppAnimation.snappy) {
                     displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth
                 }
-            } label: {
-                Image(systemName: "chevron.right")
-                    .fontWeight(.semibold)
-                    .frame(width: 44, height: 44)
             }
         }
+    }
+
+    private func chevronButton(systemName: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .fontWeight(.semibold)
+                .foregroundStyle(.secondary)
+                .frame(width: 34, height: 34)
+                .background(
+                    Color(.tertiarySystemFill),
+                    in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 
