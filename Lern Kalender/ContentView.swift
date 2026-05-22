@@ -158,6 +158,16 @@ struct ContentView: View {
             loadCloudKitData(for: link)
         }
         triggerWrappedIfDue()
+        triggerWebuntisAutoSyncIfDue()
+    }
+
+    /// Synchronisiert mit Webuntis im Hintergrund, wenn die App gestartet
+    /// wird und der letzte Sync mehr als 60 Minuten her ist (Throttle).
+    private func triggerWebuntisAutoSyncIfDue() {
+        guard WebuntisService.shared.isConfigured else { return }
+        let last = WebuntisService.shared.lastSync ?? .distantPast
+        if Date().timeIntervalSince(last) < 60 * 60 { return }
+        Task { await WebuntisService.shared.sync(into: store) }
     }
 
     /// Einmalige Migration: alte stale Motivation-Nachricht entsorgen.
@@ -1248,90 +1258,69 @@ struct TimetableSlotRow: View {
     }
 }
 
-// MARK: - Timetable View (Wochenraster)
+// MARK: - Timetable View (Wochen-Grid wie Webuntis)
 
 struct TimetableView: View {
     @Environment(\.dismiss) private var dismiss
     var store: DataStore
 
-    @State private var selectedWeekday: Int = {
-        var wd = Calendar.current.component(.weekday, from: Date())
-        wd = wd == 1 ? 7 : wd - 1
-        return wd
-    }()
+    @State private var weekOffset: Int = 0  // 0 = aktuelle, +1 = nächste etc.
     @State private var showingAddSlot = false
     @State private var slotToEdit: TimetableSlot? = nil
+    @State private var addInitialWeekday: Int = 1
 
-    private let weekdayNames = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+    private let weekdayShort = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+    /// Welche Wochentage gezeigt werden — wir blenden Sa/So aus, wenn dort nichts ist.
+    private var visibleWeekdays: [Int] {
+        let hasWeekend = (6...7).contains { !store.slotsFor(weekday: $0).isEmpty }
+        return Array(1...(hasWeekend ? 7 : 5))
+    }
+
+    /// Eindeutige Time-Slots, sortiert nach Startzeit.
+    private var timeSlots: [TimeSlotInfo] {
+        var seen = Set<String>()
+        var result: [TimeSlotInfo] = []
+        for s in store.timetable.sorted(by: { $0.startTime < $1.startTime }) {
+            let key = "\(s.startTime)|\(s.endTime)"
+            if !seen.contains(key) {
+                seen.insert(key)
+                result.append(TimeSlotInfo(startTime: s.startTime, endTime: s.endTime, lesson: s.lesson))
+            }
+        }
+        // Lesson-Nummern neu durchnummerieren (1..n), falls Webuntis-Daten
+        // unstimmig waren.
+        return result.enumerated().map { idx, t in
+            TimeSlotInfo(startTime: t.startTime, endTime: t.endTime, lesson: idx + 1)
+        }
+    }
+
+    /// Datum der ersten Spalte (Montag) in der gewählten Woche.
+    private var weekStart: Date {
+        let cal = Calendar(identifier: .iso8601)
+        let today = cal.startOfDay(for: Date())
+        let interval = cal.dateInterval(of: .weekOfYear, for: today) ?? DateInterval(start: today, duration: 0)
+        let offset = cal.date(byAdding: .weekOfYear, value: weekOffset, to: interval.start) ?? interval.start
+        return offset
+    }
+
+    private var weekNumber: Int {
+        Calendar(identifier: .iso8601).component(.weekOfYear, from: weekStart)
+    }
+    private var monthShort: String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "de_DE")
+        f.dateFormat = "LLL"
+        return f.string(from: weekStart)
+    }
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Tag-Picker
-                HStack(spacing: 6) {
-                    ForEach(1...7, id: \.self) { wd in
-                        Button {
-                            withAnimation(AppAnimation.snappy) { selectedWeekday = wd }
-                        } label: {
-                            VStack(spacing: 2) {
-                                Text(weekdayNames[wd - 1])
-                                    .font(.caption.bold())
-                                Circle()
-                                    .fill(store.slotsFor(weekday: wd).isEmpty ? Color.secondary.opacity(0.3) : Color.blue)
-                                    .frame(width: 5, height: 5)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(
-                                selectedWeekday == wd
-                                ? AnyShapeStyle(
-                                    LinearGradient(colors: [.blue, .purple],
-                                                   startPoint: .topLeading, endPoint: .bottomTrailing)
-                                  )
-                                : AnyShapeStyle(Color(.tertiarySystemFill)),
-                                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            )
-                            .foregroundStyle(selectedWeekday == wd ? .white : .primary)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 10)
-
-                Divider()
-
-                let slots = store.slotsFor(weekday: selectedWeekday)
-                if slots.isEmpty {
-                    VStack(spacing: 12) {
-                        Spacer()
-                        Image(systemName: "calendar.badge.plus")
-                            .font(.system(size: 40))
-                            .foregroundStyle(.tertiary)
-                        Text("Keine Stunden eingetragen")
-                            .foregroundStyle(.secondary)
-                        Button {
-                            showingAddSlot = true
-                        } label: {
-                            Label("Stunde hinzufügen", systemImage: "plus.circle.fill")
-                        }
-                        .buttonStyle(.borderedProminent)
-                        Spacer()
-                    }
-                    .frame(maxWidth: .infinity)
+                weekNavBar
+                if store.timetable.isEmpty {
+                    emptyState
                 } else {
-                    ScrollView {
-                        VStack(spacing: 8) {
-                            ForEach(slots) { slot in
-                                TimetableSlotRow(store: store, slot: slot, onTap: { slotToEdit = slot })
-                                    .background(
-                                        Color(.secondarySystemGroupedBackground),
-                                        in: RoundedRectangle(cornerRadius: AppRadius.small, style: .continuous)
-                                    )
-                            }
-                        }
-                        .padding()
-                    }
+                    grid
                 }
             }
             .navigationTitle("Stundenplan")
@@ -1341,18 +1330,251 @@ struct TimetableView: View {
                     Button("Fertig") { dismiss() }
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showingAddSlot = true } label: {
-                        Image(systemName: "plus")
+                    Menu {
+                        Button {
+                            addInitialWeekday = 1
+                            showingAddSlot = true
+                        } label: {
+                            Label("Stunde hinzufügen", systemImage: "plus")
+                        }
+                        if WebuntisService.shared.isConfigured {
+                            Button {
+                                Task { await WebuntisService.shared.sync(into: store) }
+                            } label: {
+                                Label("Aus Webuntis aktualisieren", systemImage: "arrow.triangle.2.circlepath")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
                     }
                 }
             }
             .sheet(isPresented: $showingAddSlot) {
-                AddTimetableSlotView(store: store, initialWeekday: selectedWeekday)
+                AddTimetableSlotView(store: store, initialWeekday: addInitialWeekday)
             }
             .sheet(item: $slotToEdit) { slot in
                 AddTimetableSlotView(store: store, editing: slot)
             }
         }
+    }
+
+    // MARK: – Header
+
+    private var weekNavBar: some View {
+        HStack(spacing: 12) {
+            Button {
+                withAnimation(AppAnimation.snappy) { weekOffset -= 1 }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .fontWeight(.semibold)
+                    .frame(width: 32, height: 32)
+                    .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+            }
+            .buttonStyle(.plain)
+
+            VStack(spacing: 0) {
+                Text("KW \(weekNumber)")
+                    .font(.headline.bold())
+                    .contentTransition(.numericText())
+                Text(monthShort)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+
+            Button {
+                withAnimation(AppAnimation.snappy) { weekOffset = 0 }
+            } label: {
+                Text("Heute")
+                    .font(.caption.bold())
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(weekOffset == 0 ? Color.blue.opacity(0.15) : Color(.tertiarySystemFill),
+                                in: Capsule())
+                    .foregroundStyle(weekOffset == 0 ? .blue : .primary)
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                withAnimation(AppAnimation.snappy) { weekOffset += 1 }
+            } label: {
+                Image(systemName: "chevron.right")
+                    .fontWeight(.semibold)
+                    .frame(width: 32, height: 32)
+                    .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Spacer()
+            Image(systemName: "calendar.badge.plus")
+                .font(.system(size: 40))
+                .foregroundStyle(.tertiary)
+            Text("Kein Stundenplan vorhanden")
+                .foregroundStyle(.secondary)
+            if WebuntisService.shared.isConfigured {
+                Button {
+                    Task { await WebuntisService.shared.sync(into: store) }
+                } label: {
+                    Label("Aus Webuntis laden", systemImage: "arrow.triangle.2.circlepath")
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            Button {
+                addInitialWeekday = 1
+                showingAddSlot = true
+            } label: {
+                Label("Manuell anlegen", systemImage: "plus.circle")
+            }
+            .buttonStyle(.bordered)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: – Grid
+
+    private var grid: some View {
+        let cal = Calendar(identifier: .iso8601)
+        let days = visibleWeekdays
+        let dayDates: [Date] = days.map {
+            cal.date(byAdding: .day, value: $0 - 1, to: weekStart) ?? weekStart
+        }
+        let today = cal.startOfDay(for: Date())
+        let timeColumnWidth: CGFloat = 50
+
+        return ScrollView {
+            VStack(spacing: 0) {
+                // Header-Zeile mit Wochentagen
+                HStack(alignment: .top, spacing: 4) {
+                    Color.clear.frame(width: timeColumnWidth)
+                    ForEach(Array(days.enumerated()), id: \.offset) { idx, wd in
+                        VStack(spacing: 2) {
+                            Text(weekdayShort[wd - 1] + ".")
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                            Text("\(cal.component(.day, from: dayDates[idx]))")
+                                .font(.title3.bold())
+                                .foregroundStyle(cal.isDate(dayDates[idx], inSameDayAs: today) ? Color.orange : .primary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
+                    }
+                }
+
+                Divider()
+
+                // Zeit-Slot-Reihen
+                ForEach(Array(timeSlots.enumerated()), id: \.offset) { _, time in
+                    HStack(alignment: .top, spacing: 4) {
+                        // Zeit-Spalte
+                        VStack(spacing: 2) {
+                            Text(time.startTime)
+                                .font(.caption2.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                            Text("\(time.lesson)")
+                                .font(.caption.bold().monospacedDigit())
+                                .foregroundStyle(.secondary)
+                            Text(time.endTime)
+                                .font(.system(size: 9, design: .monospaced))
+                                .foregroundStyle(.tertiary)
+                        }
+                        .frame(width: timeColumnWidth, alignment: .center)
+                        .padding(.vertical, 8)
+
+                        // Tag-Zellen
+                        ForEach(Array(days.enumerated()), id: \.offset) { _, wd in
+                            let slot = store.timetable.first(where: {
+                                $0.weekday == wd && $0.startTime == time.startTime
+                            })
+                            cell(for: slot, on: wd)
+                        }
+                    }
+                    Divider().opacity(0.4)
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 20)
+        }
+    }
+
+    private func cell(for slot: TimetableSlot?, on weekday: Int) -> some View {
+        Group {
+            if let slot {
+                Button {
+                    slotToEdit = slot
+                } label: {
+                    TimetableCardView(store: store, slot: slot)
+                }
+                .buttonStyle(.plain)
+            } else {
+                Button {
+                    // Schnell-Anlage: bei Tap auf leere Zelle direkt dieser Wochentag.
+                    addInitialWeekday = weekday
+                    showingAddSlot = true
+                } label: {
+                    Color.clear.frame(maxWidth: .infinity, minHeight: 56)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct TimeSlotInfo: Hashable {
+    let startTime: String
+    let endTime: String
+    let lesson: Int
+}
+
+// MARK: – Card im Webuntis-Look
+
+struct TimetableCardView: View {
+    var store: DataStore
+    let slot: TimetableSlot
+
+    var body: some View {
+        let color = store.colorForSubject(slot.subject)
+        let abbreviation = String(slot.subject.uppercased().prefix(4))
+        HStack(spacing: 0) {
+            RoundedRectangle(cornerRadius: 1.5, style: .continuous)
+                .fill(color)
+                .frame(width: 4)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(abbreviation)
+                    .font(.caption2.bold())
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                if !slot.teacher.isEmpty {
+                    Text(slot.teacher)
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                if !slot.room.isEmpty {
+                    Text(slot.room)
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .padding(.leading, 4)
+            .padding(.vertical, 5)
+            .padding(.trailing, 3)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, minHeight: 56)
+        .background(
+            color.opacity(0.18),
+            in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+        )
     }
 }
 
