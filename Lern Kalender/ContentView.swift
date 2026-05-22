@@ -1313,10 +1313,32 @@ struct TimetableView: View {
         return f.string(from: weekStart)
     }
 
+    private func relativeSyncString(_ date: Date) -> String {
+        let f = RelativeDateTimeFormatter()
+        f.locale = Locale(identifier: "de_DE")
+        f.unitsStyle = .short
+        return f.localizedString(for: date, relativeTo: Date())
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 weekNavBar
+                HStack {
+                    Text("KW \(weekNumber) · \(monthShort)")
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+                        .contentTransition(.numericText())
+                    Spacer()
+                    if let last = WebuntisService.shared.lastSync {
+                        Text("Aktualisiert \(relativeSyncString(last))")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 4)
+
                 if store.timetable.isEmpty {
                     emptyState
                 } else {
@@ -1361,52 +1383,70 @@ struct TimetableView: View {
     // MARK: – Header
 
     private var weekNavBar: some View {
-        HStack(spacing: 12) {
+        // Webuntis zeigt nur diese + nächste Woche → wir limitieren auf 0...1.
+        HStack(spacing: 8) {
             Button {
-                withAnimation(AppAnimation.snappy) { weekOffset -= 1 }
+                withAnimation(AppAnimation.snappy) {
+                    weekOffset = max(0, weekOffset - 1)
+                }
             } label: {
                 Image(systemName: "chevron.left")
                     .fontWeight(.semibold)
                     .frame(width: 32, height: 32)
                     .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+                    .opacity(weekOffset == 0 ? 0.35 : 1)
             }
             .buttonStyle(.plain)
+            .disabled(weekOffset == 0)
 
-            VStack(spacing: 0) {
-                Text("KW \(weekNumber)")
-                    .font(.headline.bold())
-                    .contentTransition(.numericText())
-                Text(monthShort)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+            HStack(spacing: 0) {
+                weekTab(label: "Diese Woche", offset: 0)
+                weekTab(label: "Nächste Woche", offset: 1)
             }
+            .padding(2)
+            .background(Color(.tertiarySystemFill), in: Capsule())
             .frame(maxWidth: .infinity)
 
             Button {
-                withAnimation(AppAnimation.snappy) { weekOffset = 0 }
-            } label: {
-                Text("Heute")
-                    .font(.caption.bold())
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(weekOffset == 0 ? Color.blue.opacity(0.15) : Color(.tertiarySystemFill),
-                                in: Capsule())
-                    .foregroundStyle(weekOffset == 0 ? .blue : .primary)
-            }
-            .buttonStyle(.plain)
-
-            Button {
-                withAnimation(AppAnimation.snappy) { weekOffset += 1 }
+                withAnimation(AppAnimation.snappy) {
+                    weekOffset = min(1, weekOffset + 1)
+                }
             } label: {
                 Image(systemName: "chevron.right")
                     .fontWeight(.semibold)
                     .frame(width: 32, height: 32)
                     .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+                    .opacity(weekOffset == 1 ? 0.35 : 1)
             }
             .buttonStyle(.plain)
+            .disabled(weekOffset == 1)
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
+
+        // KW-Label darunter
+        // (in separater HStack im Caller? — wir hängen es direkt ans Nav-Bar)
+    }
+
+    private func weekTab(label: String, offset: Int) -> some View {
+        Button {
+            withAnimation(AppAnimation.snappy) { weekOffset = offset }
+        } label: {
+            Text(label)
+                .font(.caption.bold())
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .frame(maxWidth: .infinity)
+                .background(
+                    weekOffset == offset
+                    ? AnyShapeStyle(LinearGradient(colors: [.blue, .purple],
+                                                   startPoint: .leading, endPoint: .trailing))
+                    : AnyShapeStyle(Color.clear),
+                    in: Capsule()
+                )
+                .foregroundStyle(weekOffset == offset ? .white : .secondary)
+        }
+        .buttonStyle(.plain)
     }
 
     private var emptyState: some View {
@@ -1487,11 +1527,10 @@ struct TimetableView: View {
                         .frame(width: timeColumnWidth, alignment: .center)
                         .padding(.vertical, 8)
 
-                        // Tag-Zellen
-                        ForEach(Array(days.enumerated()), id: \.offset) { _, wd in
-                            let slot = store.timetable.first(where: {
-                                $0.weekday == wd && $0.startTime == time.startTime
-                            })
+                        // Tag-Zellen — nach konkretem Datum, sonst weekday-Fallback.
+                        ForEach(Array(days.enumerated()), id: \.offset) { idx, wd in
+                            let slots = store.slotsFor(date: dayDates[idx])
+                            let slot = slots.first(where: { $0.startTime == time.startTime })
                             cell(for: slot, on: wd)
                         }
                     }
@@ -1540,41 +1579,69 @@ struct TimetableCardView: View {
     var store: DataStore
     let slot: TimetableSlot
 
+    private var displayColor: Color {
+        if slot.isCancelled { return .red }
+        if slot.isSubstitution { return .green }
+        return store.colorForSubject(slot.subject)
+    }
+
+    private var abbreviation: String {
+        String(slot.subject.uppercased().prefix(4))
+    }
+
     var body: some View {
-        let color = store.colorForSubject(slot.subject)
-        let abbreviation = String(slot.subject.uppercased().prefix(4))
-        HStack(spacing: 0) {
-            RoundedRectangle(cornerRadius: 1.5, style: .continuous)
-                .fill(color)
-                .frame(width: 4)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(abbreviation)
-                    .font(.caption2.bold())
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                if !slot.teacher.isEmpty {
-                    Text(slot.teacher)
-                        .font(.system(size: 9))
-                        .foregroundStyle(.secondary)
+        ZStack(alignment: .bottomTrailing) {
+            HStack(spacing: 0) {
+                RoundedRectangle(cornerRadius: 1.5, style: .continuous)
+                    .fill(displayColor)
+                    .frame(width: 4)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(abbreviation)
+                        .font(.caption2.bold())
+                        .foregroundStyle(.primary)
+                        .strikethrough(slot.isCancelled, color: .red)
                         .lineLimit(1)
+                    if !slot.teacher.isEmpty {
+                        Text(slot.teacher)
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                            .strikethrough(slot.isCancelled, color: .red.opacity(0.6))
+                            .lineLimit(1)
+                    }
+                    if !slot.room.isEmpty {
+                        Text(slot.room)
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                            .strikethrough(slot.isCancelled, color: .red.opacity(0.6))
+                            .lineLimit(1)
+                    }
                 }
-                if !slot.room.isEmpty {
-                    Text(slot.room)
-                        .font(.system(size: 9))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
+                .padding(.leading, 4)
+                .padding(.vertical, 5)
+                .padding(.trailing, 3)
+                Spacer(minLength: 0)
             }
-            .padding(.leading, 4)
-            .padding(.vertical, 5)
-            .padding(.trailing, 3)
-            Spacer(minLength: 0)
+
+            // Info-Badge unten rechts (i im grauen Kreis), wenn Info vorliegt.
+            if !slot.info.isEmpty {
+                Image(systemName: "info.circle.fill")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.white, .gray)
+                    .padding(2)
+            }
         }
         .frame(maxWidth: .infinity, minHeight: 56)
         .background(
-            color.opacity(0.18),
+            backgroundColor,
             in: RoundedRectangle(cornerRadius: 6, style: .continuous)
         )
+        .opacity(slot.isCancelled ? 0.7 : 1)
+    }
+
+    private var backgroundColor: Color {
+        if slot.isCancelled { return Color.red.opacity(0.10) }
+        if slot.isSubstitution { return Color.green.opacity(0.18) }
+        return store.colorForSubject(slot.subject).opacity(0.18)
     }
 }
 

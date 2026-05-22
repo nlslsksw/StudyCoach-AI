@@ -82,15 +82,18 @@ final class WebuntisService {
         }
 
         let weekRange = currentWeekRange()
+        // Webuntis zeigt nur diese und nächste Woche → wir fetchen 14 Tage.
+        let endRange = addDays(7, to: weekRange.end)
         var errors: [String] = []
         var importedSlots = 0
         var importedHomework = 0
+        var changes: [TimetableChange] = []
 
         // 1) Stundenplan — verschiedene Methodennamen ausprobieren, falls
         //    eine Schule den Klassiker getTimetable abgeschaltet hat.
         do {
-            let slots = try await fetchTimetable(from: weekRange.start, to: weekRange.end)
-            await MainActor.run { mergeTimetable(slots, into: store) }
+            let slots = try await fetchTimetable(from: weekRange.start, to: endRange)
+            await MainActor.run { changes = mergeTimetable(slots, into: store) }
             importedSlots = slots.count
         } catch {
             let msg = (error as? WebuntisError)?.userMessage ?? error.localizedDescription
@@ -105,6 +108,14 @@ final class WebuntisService {
         } catch {
             let msg = (error as? WebuntisError)?.userMessage ?? error.localizedDescription
             errors.append("Hausaufgaben: \(msg)")
+        }
+
+        // Benachrichtigungen bei neuen Vertretungen/Ausfällen — nicht beim
+        // allerersten Sync (sonst poppt für jede Stunde ein Ping auf).
+        if lastSync != nil {
+            for change in changes.prefix(10) {
+                NotificationHelper.scheduleTimetableChange(change)
+            }
         }
 
         try? await logout()
@@ -266,8 +277,12 @@ final class WebuntisService {
         let startTime: Int // 800
         let endTime: Int  // 845
         let subject: String
+        let originalSubject: String?
         let room: String
         let teacher: String
+        let isCancelled: Bool
+        let isSubstitution: Bool
+        let info: String
     }
 
     private func fetchTimetable(from start: Int, to end: Int) async throws -> [RawSlot] {
@@ -328,10 +343,36 @@ final class WebuntisService {
                   let date = entry["date"] as? Int,
                   let s = entry["startTime"] as? Int,
                   let e = entry["endTime"] as? Int else { return nil }
-            let subj = (entry["su"] as? [[String: Any]])?.first?["name"] as? String ?? ""
-            let room = (entry["ro"] as? [[String: Any]])?.first?["name"] as? String ?? ""
-            let teach = (entry["te"] as? [[String: Any]])?.first?["name"] as? String ?? ""
-            return RawSlot(id: id, date: date, startTime: s, endTime: e, subject: subj, room: room, teacher: teach)
+            let subjects = (entry["su"] as? [[String: Any]]) ?? []
+            let rooms = (entry["ro"] as? [[String: Any]]) ?? []
+            let teachers = (entry["te"] as? [[String: Any]]) ?? []
+
+            // Bei Vertretung enthält das erste Element manchmal "orgname"
+            // (original) und "name" (vertretendes Fach).
+            let subj = (subjects.first?["name"] as? String) ?? ""
+            let origSubj = subjects.first?["orgname"] as? String
+            let room = (rooms.first?["name"] as? String) ?? ""
+            let teach = (teachers.first?["name"] as? String) ?? ""
+
+            // Code: "cancelled" (Ausfall), "irregular" (Vertretung), sonst regulär.
+            let code = (entry["code"] as? String) ?? ""
+            let isCancelled = code.lowercased() == "cancelled"
+            let isSubstitution = code.lowercased() == "irregular" || (origSubj != nil && origSubj != subj)
+
+            // Info-Text aus mehreren möglichen Feldern.
+            var info = ""
+            if let s = entry["substText"] as? String, !s.isEmpty { info = s }
+            if info.isEmpty, let s = entry["lstext"] as? String, !s.isEmpty { info = s }
+            if info.isEmpty, let s = entry["info"] as? String, !s.isEmpty { info = s }
+            if info.isEmpty, let s = entry["statflags"] as? String, !s.isEmpty { info = s }
+
+            return RawSlot(
+                id: id, date: date, startTime: s, endTime: e,
+                subject: subj, originalSubject: origSubj,
+                room: room, teacher: teach,
+                isCancelled: isCancelled, isSubstitution: isSubstitution,
+                info: info
+            )
         }
     }
 
@@ -407,37 +448,79 @@ final class WebuntisService {
 
     // MARK: - Mapping in den DataStore
 
-    private func mergeTimetable(_ raw: [RawSlot], into store: DataStore) {
-        // Strategie: vorhandene Slots mit gleicher sourceId aktualisieren,
-        // unbekannte hinzufügen. Lokale Slots ohne sourceId bleiben erhalten.
+    /// Merge mit Diff-Detection: ergebnis enthält die Beschreibungen
+    /// neu erkannter Vertretungen/Ausfälle, damit der Aufrufer
+    /// Notifications schicken kann.
+    @discardableResult
+    private func mergeTimetable(_ raw: [RawSlot], into store: DataStore) -> [TimetableChange] {
+        var changes: [TimetableChange] = []
         for slot in raw {
             let weekday = isoWeekday(forYYYYMMDD: slot.date)
             let start = hhmm(from: slot.startTime)
             let end = hhmm(from: slot.endTime)
             let lesson = lessonFromStart(slot.startTime)
             let sourceId = String(slot.id)
+            let dateValue = dateFromYYYYMMDD(slot.date)
 
             if let idx = store.timetable.firstIndex(where: { $0.sourceId == sourceId }) {
-                var existing = store.timetable[idx]
-                existing.weekday = weekday
-                existing.lesson = lesson
-                existing.startTime = start
-                existing.endTime = end
-                existing.subject = slot.subject.isEmpty ? existing.subject : slot.subject
-                existing.room = slot.room
-                existing.teacher = slot.teacher
-                store.timetable[idx] = existing
+                let existing = store.timetable[idx]
+                var updated = existing
+                updated.date = dateValue
+                updated.weekday = weekday
+                updated.lesson = lesson
+                updated.startTime = start
+                updated.endTime = end
+                updated.subject = slot.subject.isEmpty ? existing.subject : slot.subject
+                updated.originalSubject = slot.originalSubject
+                updated.room = slot.room
+                updated.teacher = slot.teacher
+                updated.isCancelled = slot.isCancelled
+                updated.isSubstitution = slot.isSubstitution
+                updated.info = slot.info
+
+                changes.append(contentsOf: diffChanges(old: existing, new: updated))
+                store.timetable[idx] = updated
             } else {
                 let new = TimetableSlot(
+                    date: dateValue,
                     weekday: weekday, lesson: lesson,
                     startTime: start, endTime: end,
                     subject: slot.subject.isEmpty ? "Unbekannt" : slot.subject,
                     room: slot.room, teacher: slot.teacher,
-                    sourceId: sourceId
+                    sourceId: sourceId,
+                    isCancelled: slot.isCancelled,
+                    isSubstitution: slot.isSubstitution,
+                    originalSubject: slot.originalSubject,
+                    info: slot.info
                 )
                 store.timetable.append(new)
+
+                if slot.isCancelled || slot.isSubstitution || !slot.info.isEmpty {
+                    changes.append(TimetableChange(slot: new, kind: changeKind(for: new)))
+                }
             }
         }
+        return changes
+    }
+
+    private func diffChanges(old: TimetableSlot, new: TimetableSlot) -> [TimetableChange] {
+        var result: [TimetableChange] = []
+        if !old.isCancelled && new.isCancelled {
+            result.append(TimetableChange(slot: new, kind: .cancelled))
+        } else if !old.isSubstitution && new.isSubstitution {
+            result.append(TimetableChange(slot: new, kind: .substitution))
+        } else if old.info != new.info && !new.info.isEmpty {
+            result.append(TimetableChange(slot: new, kind: .info))
+        } else if old.room != new.room && !new.room.isEmpty {
+            result.append(TimetableChange(slot: new, kind: .roomChange))
+        }
+        return result
+    }
+
+    private func changeKind(for slot: TimetableSlot) -> TimetableChange.Kind {
+        if slot.isCancelled { return .cancelled }
+        if slot.isSubstitution { return .substitution }
+        return .info
     }
 
     private func mergeHomework(_ raw: [RawHomework], into store: DataStore) {
@@ -513,6 +596,49 @@ final class WebuntisService {
         let firstStart = 7 * 60 + 45
         let slot = max(1, (totalMin - firstStart) / 50 + 1)
         return slot
+    }
+}
+
+// MARK: - Timetable Change (für Push-Benachrichtigungen)
+
+struct TimetableChange {
+    let slot: TimetableSlot
+    let kind: Kind
+
+    enum Kind {
+        case cancelled, substitution, roomChange, info
+        var title: String {
+            switch self {
+            case .cancelled: return "Stunde fällt aus"
+            case .substitution: return "Vertretung"
+            case .roomChange: return "Raum geändert"
+            case .info: return "Neue Info"
+            }
+        }
+    }
+
+    var notificationBody: String {
+        let subj = slot.subject
+        let when: String = {
+            if let d = slot.date {
+                let f = DateFormatter()
+                f.locale = Locale(identifier: "de_DE")
+                f.dateFormat = "EEE d.MM."
+                return f.string(from: d)
+            }
+            return ""
+        }()
+        switch kind {
+        case .cancelled:
+            return "\(subj) \(when) \(slot.startTime) entfällt"
+        case .substitution:
+            let from = slot.originalSubject.map { "(statt \($0)) " } ?? ""
+            return "\(subj) \(from)\(when) \(slot.startTime)"
+        case .roomChange:
+            return "\(subj) \(when): neuer Raum \(slot.room)"
+        case .info:
+            return "\(subj) \(when): \(slot.info)"
+        }
     }
 }
 

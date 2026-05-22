@@ -121,6 +121,21 @@ struct NotificationHelper {
         let id = dailyReminderId(for: Date())
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
     }
+
+    // MARK: Stundenplan-Änderungen (Webuntis-Sync)
+
+    /// Sendet eine sofortige lokale Notification, wenn sich in Webuntis
+    /// etwas an einer Stunde geändert hat (Ausfall, Vertretung, Raum, Info).
+    static func scheduleTimetableChange(_ change: TimetableChange) {
+        let content = UNMutableNotificationContent()
+        content.title = change.kind.title
+        content.body = change.notificationBody
+        content.sound = .default
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let id = "timetableChange.\(change.slot.sourceId ?? change.slot.id.uuidString).\(change.kind.title)"
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request)
+    }
 }
 
 // MARK: - Weekday Helpers

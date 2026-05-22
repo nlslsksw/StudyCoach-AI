@@ -115,10 +115,14 @@ struct Homework: Identifiable, Codable, Equatable {
 
 // MARK: - Timetable / Stundenplan
 
-/// Eine einzelne Stunde im Stundenplan (fixe Woche, keine A/B-Wochen).
+/// Eine Stunde im Stundenplan. Wenn `date` gesetzt ist, gilt sie nur an
+/// diesem konkreten Tag (Webuntis-Sync). Wenn nicht, ist sie ein
+/// wiederkehrender Eintrag pro Wochentag (manuell angelegt).
 struct TimetableSlot: Identifiable, Codable, Equatable {
     var id = UUID()
-    /// 1 = Montag … 7 = Sonntag (ISO).
+    /// Konkretes Datum dieser Stunde (Webuntis). nil = wiederkehrend.
+    var date: Date? = nil
+    /// 1 = Montag … 7 = Sonntag (ISO). Bleibt für Sortierung/Fallback.
     var weekday: Int
     /// Stundenzahl (1, 2, 3, …) — optional, zur Sortierung & Anzeige.
     var lesson: Int
@@ -130,6 +134,14 @@ struct TimetableSlot: Identifiable, Codable, Equatable {
     var teacher: String = ""
     /// Webuntis-Quellen-ID (für späteren Sync, sonst nil = lokal).
     var sourceId: String? = nil
+    /// Stunde ist ausgefallen (im UI durchgestrichen).
+    var isCancelled: Bool = false
+    /// Vertretung — Fach/Lehrer wurde getauscht.
+    var isSubstitution: Bool = false
+    /// Ursprüngliches Fach bei Vertretung (durchgestrichen angezeigt).
+    var originalSubject: String? = nil
+    /// Freier Info-Text (z.B. "Test angekündigt") — wird per i-Badge angezeigt.
+    var info: String = ""
 }
 
 // MARK: - Streak State (Freezes, Ferien-Pause, Award-Buchhaltung)

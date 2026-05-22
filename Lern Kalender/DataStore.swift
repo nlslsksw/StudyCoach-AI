@@ -338,12 +338,27 @@ final class DataStore {
         timetable.filter { $0.weekday == weekday }
             .sorted { ($0.lesson, $0.startTime) < ($1.lesson, $1.startTime) }
     }
-    func todaySlots() -> [TimetableSlot] {
-        var wd = Calendar.current.component(.weekday, from: Date())
-        // Swift Calendar.weekday: 1 = Sonntag, 2 = Mo, ..., 7 = Sa.
-        // Wir nutzen ISO: 1 = Mo, ..., 7 = So.
+
+    /// Slots für ein konkretes Datum: bevorzugt date-gebundene Webuntis-
+    /// Einträge, ergänzt durch wiederkehrende (date == nil), wenn an dem
+    /// Wochentag keine konkrete Stunde liegt.
+    func slotsFor(date: Date) -> [TimetableSlot] {
+        let cal = Calendar.current
+        var wd = cal.component(.weekday, from: date)
         wd = wd == 1 ? 7 : wd - 1
-        return slotsFor(weekday: wd)
+        let dated = timetable.filter { slot in
+            guard let d = slot.date else { return false }
+            return cal.isDate(d, inSameDayAs: date)
+        }
+        if !dated.isEmpty {
+            return dated.sorted { $0.startTime < $1.startTime }
+        }
+        return timetable.filter { $0.date == nil && $0.weekday == wd }
+            .sorted { $0.startTime < $1.startTime }
+    }
+
+    func todaySlots() -> [TimetableSlot] {
+        slotsFor(date: Date())
     }
 
     // MARK: Holiday helpers
