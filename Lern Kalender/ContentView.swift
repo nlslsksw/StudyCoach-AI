@@ -1267,6 +1267,7 @@ struct TimetableView: View {
     @State private var weekOffset: Int = 0  // 0 = aktuelle, +1 = nächste etc.
     @State private var showingAddSlot = false
     @State private var slotToEdit: TimetableSlot? = nil
+    @State private var slotToShow: TimetableSlot? = nil
     @State private var addInitialWeekday: Int = 1
 
     private let weekdayShort = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
@@ -1377,6 +1378,20 @@ struct TimetableView: View {
             .sheet(item: $slotToEdit) { slot in
                 AddTimetableSlotView(store: store, editing: slot)
             }
+            .sheet(item: $slotToShow) { slot in
+                TimetableSlotDetailView(store: store, slot: slot)
+                    .presentationDetents([.medium, .large])
+            }
+        }
+    }
+
+    /// Wählt das richtige Sheet: Webuntis-Slots → Detail (read-only),
+    /// lokal angelegte Slots → Edit-Form.
+    private func openSlot(_ slot: TimetableSlot) {
+        if slot.sourceId != nil {
+            slotToShow = slot
+        } else {
+            slotToEdit = slot
         }
     }
 
@@ -1528,10 +1543,12 @@ struct TimetableView: View {
                         .padding(.vertical, 8)
 
                         // Tag-Zellen — nach konkretem Datum, sonst weekday-Fallback.
+                        // Mehrere Slots zur gleichen Zeit (Ausfall + Vertretung)
+                        // werden untereinander gestapelt.
                         ForEach(Array(days.enumerated()), id: \.offset) { idx, wd in
                             let slots = store.slotsFor(date: dayDates[idx])
-                            let slot = slots.first(where: { $0.startTime == time.startTime })
-                            cell(for: slot, on: wd)
+                                .filter { $0.startTime == time.startTime }
+                            cell(for: slots, on: wd)
                         }
                     }
                     Divider().opacity(0.4)
@@ -1542,18 +1559,12 @@ struct TimetableView: View {
         }
     }
 
-    private func cell(for slot: TimetableSlot?, on weekday: Int) -> some View {
+    /// Rendert eine Zelle: leer (Add-Tap), eine Karte oder gestapelte Karten
+    /// für Ausfall+Vertretung an der gleichen Stunde.
+    private func cell(for slots: [TimetableSlot], on weekday: Int) -> some View {
         Group {
-            if let slot {
+            if slots.isEmpty {
                 Button {
-                    slotToEdit = slot
-                } label: {
-                    TimetableCardView(store: store, slot: slot)
-                }
-                .buttonStyle(.plain)
-            } else {
-                Button {
-                    // Schnell-Anlage: bei Tap auf leere Zelle direkt dieser Wochentag.
                     addInitialWeekday = weekday
                     showingAddSlot = true
                 } label: {
@@ -1561,6 +1572,25 @@ struct TimetableView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+            } else if slots.count == 1, let slot = slots.first {
+                Button { openSlot(slot) } label: {
+                    TimetableCardView(store: store, slot: slot)
+                }
+                .buttonStyle(.plain)
+            } else {
+                // Ausfall + Vertretung übereinander, Ausfall zuerst (oben).
+                let sorted = slots.sorted { l, r in
+                    if l.isCancelled != r.isCancelled { return l.isCancelled }
+                    return l.subject < r.subject
+                }
+                VStack(spacing: 2) {
+                    ForEach(sorted) { slot in
+                        Button { openSlot(slot) } label: {
+                            TimetableCardView(store: store, slot: slot)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
             }
         }
         .frame(maxWidth: .infinity)
@@ -1774,5 +1804,122 @@ struct AddTimetableSlotView: View {
         let f = DateFormatter()
         f.dateFormat = "HH:mm"
         return f.date(from: string)
+    }
+}
+
+// MARK: - Timetable Slot Detail (read-only Anzeige aller Webuntis-Daten)
+
+struct TimetableSlotDetailView: View {
+    @Environment(\.dismiss) private var dismiss
+    var store: DataStore
+    let slot: TimetableSlot
+
+    private var dateLabel: String {
+        guard let d = slot.date else {
+            let names = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+            return names[max(0, min(6, slot.weekday - 1))]
+        }
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "de_DE")
+        f.dateFormat = "EEEE, d. MMMM yyyy"
+        return f.string(from: d)
+    }
+
+    private var statusBadge: (text: String, color: Color)? {
+        if slot.isCancelled { return ("Ausfall", .red) }
+        if slot.isSubstitution { return ("Vertretung", .green) }
+        return nil
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Hero
+                    VStack(alignment: .leading, spacing: 8) {
+                        if let badge = statusBadge {
+                            Text(badge.text)
+                                .font(.caption.bold())
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 4)
+                                .background(badge.color, in: Capsule())
+                        }
+                        Text(slot.subject)
+                            .font(.title.bold())
+                            .strikethrough(slot.isCancelled, color: .red)
+                        if let orig = slot.originalSubject, !orig.isEmpty, orig != slot.subject {
+                            Text("statt \(orig)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        Text(dateLabel)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("\(slot.startTime) – \(slot.endTime) · Stunde \(slot.lesson)")
+                            .font(.subheadline.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(16)
+                    .background(
+                        store.colorForSubject(slot.subject).opacity(0.15),
+                        in: RoundedRectangle(cornerRadius: AppRadius.large, style: .continuous)
+                    )
+
+                    // Detail-Liste
+                    VStack(spacing: 0) {
+                        detailRow(icon: "person.fill", label: "Lehrer:in", value: slot.teacher)
+                        detailRow(icon: "mappin.circle.fill", label: "Raum", value: slot.room)
+                        if !slot.info.isEmpty {
+                            detailRow(icon: "info.circle.fill", label: "Info",
+                                      value: slot.info, multiline: true)
+                        }
+                        if let sid = slot.sourceId {
+                            detailRow(icon: "number", label: "Webuntis-ID",
+                                      value: sid, mono: true)
+                        }
+                    }
+                    .background(
+                        Color(.secondarySystemGroupedBackground),
+                        in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+                    )
+                }
+                .padding()
+            }
+            .navigationTitle("Stunde")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Fertig") { dismiss() }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func detailRow(icon: String, label: String, value: String,
+                           multiline: Bool = false, mono: Bool = false) -> some View {
+        if !value.isEmpty {
+            HStack(alignment: multiline ? .top : .center, spacing: 12) {
+                Image(systemName: icon)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 22)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(label)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(value)
+                        .font(mono ? .caption.monospaced() : .subheadline)
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            Divider().padding(.leading, 44)
+        }
     }
 }

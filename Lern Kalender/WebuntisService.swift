@@ -346,25 +346,51 @@ final class WebuntisService {
             let subjects = (entry["su"] as? [[String: Any]]) ?? []
             let rooms = (entry["ro"] as? [[String: Any]]) ?? []
             let teachers = (entry["te"] as? [[String: Any]]) ?? []
+            let klassen = (entry["kl"] as? [[String: Any]]) ?? []
 
-            // Bei Vertretung enthält das erste Element manchmal "orgname"
-            // (original) und "name" (vertretendes Fach).
-            let subj = (subjects.first?["name"] as? String) ?? ""
-            let origSubj = subjects.first?["orgname"] as? String
-            let room = (rooms.first?["name"] as? String) ?? ""
-            let teach = (teachers.first?["name"] as? String) ?? ""
+            // Mehrere Fächer/Räume/Lehrer kommen je Schule vor (z.B. Kurse mit
+            // Doppelbesetzung). Wir nehmen alle "name"-Werte und fügen sie zusammen.
+            let subj = subjects.compactMap { $0["name"] as? String }
+                .filter { !$0.isEmpty }
+                .joined(separator: ", ")
+            let origSubj = subjects.compactMap { $0["orgname"] as? String }
+                .filter { !$0.isEmpty }
+                .joined(separator: ", ")
+            let room = rooms.compactMap { $0["name"] as? String }
+                .filter { !$0.isEmpty }
+                .joined(separator: ", ")
+            let origRoom = rooms.compactMap { $0["orgname"] as? String }
+                .filter { !$0.isEmpty }
+                .joined(separator: ", ")
+            let teach = teachers.compactMap { $0["name"] as? String }
+                .filter { !$0.isEmpty }
+                .joined(separator: ", ")
+            let klassenString = klassen.compactMap { $0["name"] as? String }
+                .filter { !$0.isEmpty }
+                .joined(separator: ", ")
 
             // Code: "cancelled" (Ausfall), "irregular" (Vertretung), sonst regulär.
             let code = (entry["code"] as? String) ?? ""
             let isCancelled = code.lowercased() == "cancelled"
             let isSubstitution = code.lowercased() == "irregular" || (origSubj != nil && origSubj != subj)
 
-            // Info-Text aus mehreren möglichen Feldern.
-            var info = ""
-            if let s = entry["substText"] as? String, !s.isEmpty { info = s }
-            if info.isEmpty, let s = entry["lstext"] as? String, !s.isEmpty { info = s }
-            if info.isEmpty, let s = entry["info"] as? String, !s.isEmpty { info = s }
-            if info.isEmpty, let s = entry["statflags"] as? String, !s.isEmpty { info = s }
+            // Info-Text aus mehreren möglichen Feldern — alle, die nicht leer sind,
+            // werden zusammengefügt (Webuntis liefert je Schule unterschiedliche).
+            var infoParts: [String] = []
+            for key in ["substText", "lstext", "info", "statflags",
+                        "bkRemark", "bkText", "lesstext", "remark", "description"] {
+                if let s = entry[key] as? String, !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    infoParts.append(s.trimmingCharacters(in: .whitespacesAndNewlines))
+                }
+            }
+            // Zusätzliche strukturierte Infos: ursprünglicher Raum, Klassen.
+            if !origRoom.isEmpty && origRoom != room {
+                infoParts.append("statt Raum \(origRoom)")
+            }
+            if !klassenString.isEmpty {
+                infoParts.append("Klasse \(klassenString)")
+            }
+            let info = infoParts.joined(separator: " · ")
 
             return RawSlot(
                 id: id, date: date, startTime: s, endTime: e,
