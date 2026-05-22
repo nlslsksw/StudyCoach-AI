@@ -108,24 +108,11 @@ struct StatisticsTab: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    // Streak (immer sichtbar)
-                    HStack(spacing: 16) {
-                        StreakCard(
-                            title: "Aktuelle Serie",
-                            value: store.currentStreak(),
-                            icon: "flame.fill",
-                            color: .orange,
-                            freezeCount: store.streakState.freezeCount
-                        )
-                        StreakCard(
-                            title: "Längste Serie",
-                            value: store.longestStreak(),
-                            icon: "trophy.fill",
-                            color: .yellow,
-                            freezeCount: nil
-                        )
-                    }
-                    .padding(.horizontal)
+                    // Aktuelle Serie als prominente Hero-Card, Längste Serie als
+                    // kleinere Begleiter-Karte daneben — vorher waren beide gleich
+                    // groß und auf schmalen iPhones gequetscht.
+                    StreakHeroSection(store: store)
+                        .padding(.horizontal)
 
                     Picker("Zeitraum", selection: $selectedPeriod) {
                         ForEach(StatPeriod.allCases, id: \.self) { period in
@@ -630,5 +617,155 @@ struct StatSection<Content: View>: View {
             }
         }
         .padding(.horizontal)
+    }
+}
+
+// MARK: - Streak Hero Section
+
+/// Großzügige Streak-Anzeige: aktuelle Serie groß als Hero, Längste-
+/// Serie + Eis-Anzahl als kompakte Pillen darunter.
+struct StreakHeroSection: View {
+    var store: DataStore
+    @State private var showFreezeInfo = false
+    @State private var heroAppearTrigger: Int = 0
+
+    private var current: Int { store.currentStreak() }
+    private var longest: Int { store.longestStreak() }
+    private var freezes: Int { store.streakState.freezeCount }
+    private var milestoneTrigger: Int { (current % 7 == 0 && current > 0) ? current : 0 }
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // Hero — Aktuelle Serie
+            HStack(spacing: 16) {
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(.white)
+                    .frame(width: 64, height: 64)
+                    .background(
+                        AppMeshBackground(colors: [.orange, .red, .pink])
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    )
+                    .shadow(color: .orange.opacity(0.45), radius: 10, x: 0, y: 4)
+                    .changeEffect(
+                        .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
+                            Image(systemName: "flame.fill").foregroundStyle(.orange)
+                        },
+                        value: current
+                    )
+
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text("\(current)")
+                            .font(.system(size: 44, weight: .heavy, design: .rounded))
+                            .foregroundStyle(.primary)
+                            .contentTransition(.numericText())
+                        Text(current == 1 ? "Tag" : "Tage")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    Text("Aktuelle Lernserie")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                ZStack {
+                    LinearGradient(colors: [.orange.opacity(0.18), .red.opacity(0.06)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing)
+                    RoundedRectangle(cornerRadius: AppRadius.large, style: .continuous)
+                        .stroke(.orange.opacity(0.18), lineWidth: 0.5)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.large, style: .continuous))
+            )
+            .conditionalEffect(
+                .repeat(.glow(color: .orange.opacity(0.55), radius: 22), every: 4.0),
+                condition: current > 0
+            )
+            .changeEffect(.shine.delay(0.3), value: heroAppearTrigger)
+            .changeEffect(
+                .spray(origin: UnitPoint(x: 0.3, y: 0.5)) {
+                    Group {
+                        Image(systemName: "flame.fill").foregroundStyle(.orange)
+                        Image(systemName: "star.fill").foregroundStyle(.yellow)
+                        Image(systemName: "sparkles").foregroundStyle(.pink)
+                    }
+                    .font(.system(size: 22))
+                },
+                value: milestoneTrigger
+            )
+            .changeEffect(
+                .pulse(shape: RoundedRectangle(cornerRadius: AppRadius.large), drawingMode: .stroke, count: 3),
+                value: milestoneTrigger
+            )
+            .changeEffect(.feedback(hapticNotification: .success), value: milestoneTrigger)
+
+            // Sekundäre Pillen
+            HStack(spacing: 10) {
+                streakPill(
+                    icon: "trophy.fill",
+                    color: .yellow,
+                    value: "\(longest)",
+                    label: longest == 1 ? "Bester Tag" : "Beste Serie"
+                )
+                Button {
+                    showFreezeInfo = true
+                } label: {
+                    streakPill(
+                        icon: "snowflake",
+                        color: .cyan,
+                        value: "\(freezes)",
+                        label: freezes == 1 ? "Eis" : "Eis",
+                        trailingIcon: "info.circle"
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .onAppear { heroAppearTrigger += 1 }
+        .sheet(isPresented: $showFreezeInfo) {
+            FreezeInfoSheet(count: freezes)
+                .presentationDetents([.medium])
+        }
+    }
+
+    private func streakPill(icon: String, color: Color, value: String, label: String,
+                            trailingIcon: String? = nil) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundStyle(.white)
+                .frame(width: 24, height: 24)
+                .background(
+                    LinearGradient(colors: [color, color.opacity(0.75)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing),
+                    in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+                )
+            VStack(alignment: .leading, spacing: 0) {
+                Text(value)
+                    .font(.subheadline.bold().monospacedDigit())
+                    .foregroundStyle(.primary)
+                Text(label)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if let trailingIcon {
+                Image(systemName: trailingIcon)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            Color(.secondarySystemGroupedBackground),
+            in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 5, x: 0, y: 2)
     }
 }

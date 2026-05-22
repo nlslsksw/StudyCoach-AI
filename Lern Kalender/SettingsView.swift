@@ -20,6 +20,9 @@ struct SettingsView: View {
     @State private var showingWrappedJahr = false
     @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
     @State private var showingWebuntis = false
+    @State private var devCode: String = ""
+    @State private var devUnlocked: Bool = false
+    @State private var devFreezeCount: Double = 0
     @State private var dailyReminderEnabled: Bool = NotificationHelper.dailyReminderEnabled
     @State private var dailyReminderTime: Date = {
         var comps = DateComponents()
@@ -317,6 +320,61 @@ struct SettingsView: View {
                     Text("Rechtliches")
                 } footer: {
                     Text("Datenschutz, Nutzungsbedingungen und Impressum direkt in der App.")
+                }
+
+                // Entwickler — versteckt hinter Code 222
+                Section {
+                    if !devUnlocked {
+                        HStack {
+                            Image(systemName: "hammer.fill")
+                                .foregroundStyle(.secondary)
+                            SecureField("Entwickler-Code", text: $devCode)
+                                .keyboardType(.numberPad)
+                                .onChange(of: devCode) { _, new in
+                                    if new == "222" {
+                                        devUnlocked = true
+                                        devFreezeCount = Double(store.streakState.freezeCount)
+                                    }
+                                }
+                        }
+                    } else {
+                        HStack {
+                            Image(systemName: "snowflake")
+                                .foregroundStyle(.cyan)
+                            Text("Streak-Eis")
+                            Spacer()
+                            Text("\(Int(devFreezeCount))")
+                                .font(.body.monospacedDigit())
+                                .foregroundStyle(.cyan)
+                        }
+                        Stepper(value: $devFreezeCount, in: 0...9999, step: 1) {
+                            Text("Anzahl Eis")
+                        }
+                        .onChange(of: devFreezeCount) { _, new in
+                            store.streakState.freezeCount = Int(new)
+                        }
+                        HStack(spacing: 8) {
+                            Button("+10") { devFreezeCount = min(devFreezeCount + 10, 9999) }
+                                .buttonStyle(.bordered)
+                            Button("+100") { devFreezeCount = min(devFreezeCount + 100, 9999) }
+                                .buttonStyle(.bordered)
+                            Button("Reset", role: .destructive) { devFreezeCount = 0 }
+                                .buttonStyle(.bordered)
+                        }
+                        Button("Entwicklermodus sperren") {
+                            devUnlocked = false
+                            devCode = ""
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+                } header: {
+                    Text(devUnlocked ? "Entwickler-Modus" : "Entwickler")
+                } footer: {
+                    if !devUnlocked {
+                        Text("Nur für Entwicklungstests. Wenn du den Code nicht kennst, ignorier diesen Abschnitt.")
+                    } else {
+                        Text("Änderungen wirken sofort — auch über iCloud auf anderen Geräten.")
+                    }
                 }
 
                 // App-Info
