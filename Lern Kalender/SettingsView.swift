@@ -19,6 +19,13 @@ struct SettingsView: View {
     @State private var showingWrappedHalbjahr = false
     @State private var showingWrappedJahr = false
     @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
+    @State private var dailyReminderEnabled: Bool = NotificationHelper.dailyReminderEnabled
+    @State private var dailyReminderTime: Date = {
+        var comps = DateComponents()
+        comps.hour = NotificationHelper.dailyReminderHour
+        comps.minute = NotificationHelper.dailyReminderMinute
+        return Calendar.current.date(from: comps) ?? Date()
+    }()
 
     private var appVersion: String {
         let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -72,6 +79,31 @@ struct SettingsView: View {
                     Text("Lern-Feed")
                 } footer: {
                     Text("Wähle, wie du den Topic-Feed schließen möchtest. Bei \"Doppel-Tap oben\" tippst du oben auf den Bildschirm zweimal kurz hintereinander.")
+                }
+
+                // Tägliche Lernzeit-Erinnerung
+                Section {
+                    Toggle("Tägliche Erinnerung", isOn: $dailyReminderEnabled)
+                        .onChange(of: dailyReminderEnabled) { _, newValue in
+                            NotificationHelper.dailyReminderEnabled = newValue
+                            NotificationHelper.refreshDailyReminder()
+                        }
+                    if dailyReminderEnabled {
+                        DatePicker("Uhrzeit",
+                                   selection: $dailyReminderTime,
+                                   displayedComponents: .hourAndMinute)
+                            .environment(\.locale, Locale(identifier: "de_DE"))
+                            .onChange(of: dailyReminderTime) { _, newValue in
+                                let comps = Calendar.current.dateComponents([.hour, .minute], from: newValue)
+                                NotificationHelper.dailyReminderHour = comps.hour ?? 18
+                                NotificationHelper.dailyReminderMinute = comps.minute ?? 0
+                                NotificationHelper.refreshDailyReminder()
+                            }
+                    }
+                } header: {
+                    Text("Lern-Erinnerung")
+                } footer: {
+                    Text("Du bekommst täglich zur gewählten Zeit eine Mitteilung. Wenn du an dem Tag schon Lernzeit eingetragen hast, wird die Erinnerung für heute übersprungen.")
                 }
 
                 // Schulferien

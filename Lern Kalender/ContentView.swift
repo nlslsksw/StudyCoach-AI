@@ -115,6 +115,20 @@ struct ContentView: View {
         }
         .onAppear {
             NotificationHelper.requestPermission()
+            // Tägliche Lernzeit-Erinnerung neu planen
+            NotificationHelper.refreshDailyReminder()
+            // Streak-Lücken (z.B. seit letztem App-Start) mit Freezes überbrücken
+            store.recomputeAndConsumeFreezes()
+            // Einmalige Migration: alte stale Motivation-Nachricht entsorgen.
+            // Vorher wurde die Nachricht bei jedem Fetch mit neuer UUID erzeugt,
+            // dadurch hat der id-basierte lastSeen-Vergleich nie gepasst und die
+            // Nachricht poppte nach jedem App-Start wieder auf.
+            let motivationMigrationKey = "motivationCleanupV2"
+            if !UserDefaults.standard.bool(forKey: motivationMigrationKey) {
+                UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lastSeenMotivationDate")
+                store.motivationMessage = nil
+                UserDefaults.standard.set(true, forKey: motivationMigrationKey)
+            }
             // Kind-Daten beim Start zu CloudKit synchen
             store.syncToCloudIfNeeded()
             if let link = store.familyLink, link.isActive {
@@ -124,12 +138,17 @@ struct ContentView: View {
                     }
                 }
             }
-            // Motivations-Nachricht laden (nur neue anzeigen)
+            // Motivations-Nachricht laden (nur neue anzeigen).
+            // Vergleich über `date`, da fetchMotivationMessage bei jedem Aufruf eine
+            // neue UUID erzeugt. `lastSeen` wird sofort beim Anzeigen gesetzt, damit
+            // die Nachricht nicht erneut aufpoppt, falls die App vor dem Dismiss
+            // geschlossen wird.
             if let link = store.familyLink, link.isActive {
                 Task {
                     if let msg = await CloudKitService.shared.fetchMotivationMessage(pairingCode: link.pairingCode) {
-                        let lastSeenId = UserDefaults.standard.string(forKey: "lastSeenMotivationId")
-                        if lastSeenId != msg.id.uuidString {
+                        let lastSeen = UserDefaults.standard.double(forKey: "lastSeenMotivationDate")
+                        if msg.date.timeIntervalSince1970 > lastSeen {
+                            UserDefaults.standard.set(msg.date.timeIntervalSince1970, forKey: "lastSeenMotivationDate")
                             await MainActor.run { store.motivationMessage = msg }
                         }
                     }
@@ -204,7 +223,7 @@ struct ContentView: View {
 
     private func dismissMotivation() {
         if let msg = store.motivationMessage {
-            UserDefaults.standard.set(msg.id.uuidString, forKey: "lastSeenMotivationId")
+            UserDefaults.standard.set(msg.date.timeIntervalSince1970, forKey: "lastSeenMotivationDate")
         }
         withAnimation { showingMotivation = false }
         store.motivationMessage = nil

@@ -111,8 +111,20 @@ struct StatisticsTab: View {
                 VStack(spacing: 16) {
                     // Streak (immer sichtbar)
                     HStack(spacing: 16) {
-                        StreakCard(title: "Aktuelle Serie", value: store.currentStreak(), icon: "flame.fill", color: .orange)
-                        StreakCard(title: "Längste Serie", value: store.longestStreak(), icon: "trophy.fill", color: .yellow)
+                        StreakCard(
+                            title: "Aktuelle Serie",
+                            value: store.currentStreak(),
+                            icon: "flame.fill",
+                            color: .orange,
+                            freezeCount: store.streakState.freezeCount
+                        )
+                        StreakCard(
+                            title: "Längste Serie",
+                            value: store.longestStreak(),
+                            icon: "trophy.fill",
+                            color: .yellow,
+                            freezeCount: nil
+                        )
                     }
                     .padding(.horizontal)
 
@@ -233,46 +245,49 @@ struct StatisticsTab: View {
                                     let grades = store.gradesForSubject(subject)
                                     if !grades.isEmpty {
                                         let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
-                                        VStack(alignment: .leading, spacing: 8) {
-                                            HStack {
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            HStack(spacing: 8) {
                                                 Text(subject).font(.subheadline.bold())
+                                                if grades.count >= 2 {
+                                                    let diff = grades[grades.count - 2].grade - grades.last!.grade
+                                                    if diff != 0 {
+                                                        Image(systemName: diff > 0 ? "arrow.up.right" : "arrow.down.right")
+                                                            .font(.caption2.bold())
+                                                            .foregroundStyle(diff > 0 ? .green : .red)
+                                                    }
+                                                }
                                                 Spacer()
                                                 Text("Ø \(String(format: "%.1f", avg))")
                                                     .font(.subheadline.bold().monospacedDigit())
                                                     .foregroundStyle(gradeColor(avg))
-                                                    .padding(.horizontal, 10).padding(.vertical, 4)
+                                                    .padding(.horizontal, 10).padding(.vertical, 3)
                                                     .background(gradeColor(avg).opacity(0.12), in: Capsule())
                                             }
                                             VStack(spacing: 0) {
                                                 ForEach(Array(grades.enumerated()), id: \.offset) { index, item in
-                                                    HStack(spacing: 8) {
-                                                        Image(systemName: item.type.icon).font(.caption)
-                                                            .foregroundStyle(item.type == .schriftlich ? .blue : .orange).frame(width: 20)
-                                                        Text(item.date, format: .dateTime.day().month(.abbreviated).year())
-                                                            .font(.subheadline).foregroundStyle(.secondary)
-                                                        Text(item.type.rawValue).font(.caption2).foregroundStyle(.tertiary)
+                                                    HStack(spacing: 10) {
+                                                        Image(systemName: item.type.icon)
+                                                            .font(.caption2)
+                                                            .foregroundStyle(item.type == .schriftlich ? .blue : .orange)
+                                                            .frame(width: 14)
+                                                        Text(item.date, format: .dateTime.day().month(.twoDigits).year(.twoDigits))
+                                                            .font(.caption.monospacedDigit())
+                                                            .foregroundStyle(.secondary)
                                                         Spacer()
                                                         Text(gradeString(item.grade))
-                                                            .font(.title3.bold().monospacedDigit())
+                                                            .font(.subheadline.bold().monospacedDigit())
                                                             .foregroundStyle(gradeColor(item.grade))
-                                                            .frame(width: 40, alignment: .trailing)
+                                                            .frame(width: 36, alignment: .trailing)
                                                     }
-                                                    .padding(.horizontal, 16).padding(.vertical, 10)
-                                                    if index < grades.count - 1 { Divider().padding(.leading, 16) }
+                                                    .padding(.horizontal, 12).padding(.vertical, 6)
+                                                    if index < grades.count - 1 {
+                                                        Divider().padding(.leading, 12)
+                                                    }
                                                 }
                                             }
-                                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
-
-                                            if grades.count >= 2 {
-                                                let diff = grades[grades.count - 2].grade - grades.last!.grade
-                                                HStack(spacing: 4) {
-                                                    Image(systemName: diff > 0 ? "arrow.up.right" : diff < 0 ? "arrow.down.right" : "arrow.right").font(.caption2.bold())
-                                                    Text(diff > 0 ? "Verbessert um \(String(format: "%.1f", diff))" : diff < 0 ? "Verschlechtert um \(String(format: "%.1f", abs(diff)))" : "Gleichgeblieben").font(.caption)
-                                                }
-                                                .foregroundStyle(diff > 0 ? .green : diff < 0 ? .red : .secondary)
-                                            }
+                                            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
                                         }
-                                        .padding(.bottom, 8)
+                                        .padding(.bottom, 4)
                                     }
                                 }
                             } else {
@@ -444,9 +459,13 @@ struct StreakCard: View {
     let value: Int
     let icon: String
     let color: Color
+    /// Wenn gesetzt: zeigt klein das Eis-Symbol als Button oben rechts (öffnet Info-Sheet).
+    var freezeCount: Int? = nil
+
+    @State private var showFreezeInfo = false
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Image(systemName: icon)
                 .font(.title)
                 .foregroundStyle(color)
@@ -459,10 +478,81 @@ struct StreakCard: View {
                     .foregroundStyle(.secondary)
             }
 
-            Spacer()
+            Spacer(minLength: 0)
         }
         .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+        .overlay(alignment: .topTrailing) {
+            if let freezeCount {
+                Button {
+                    showFreezeInfo = true
+                } label: {
+                    HStack(spacing: 3) {
+                        Image(systemName: "snowflake")
+                            .font(.system(size: 10, weight: .bold))
+                        Text("\(freezeCount)")
+                            .font(.caption2.bold().monospacedDigit())
+                    }
+                    .foregroundStyle(.cyan)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(Color.cyan.opacity(0.18), in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 6)
+                .padding(.trailing, 6)
+                .sheet(isPresented: $showFreezeInfo) {
+                    FreezeInfoSheet(count: freezeCount)
+                        .presentationDetents([.medium])
+                }
+            }
+        }
+    }
+}
+
+struct FreezeInfoSheet: View {
+    let count: Int
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 16) {
+                Image(systemName: "snowflake")
+                    .font(.system(size: 56))
+                    .foregroundStyle(.cyan)
+                    .padding(.top, 8)
+
+                Text("\(count) Eis im Vorrat")
+                    .font(.title2.bold())
+
+                Text("Wenn du einen Tag nicht lernst, wird automatisch ein Eis verbraucht und deine Serie läuft weiter. In den Schulferien (Bundesland in den Einstellungen) pausiert die Serie ohne Eis-Verbrauch.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("Alle 7 Tage Serie → +1 Eis", systemImage: "flame.fill")
+                    Label("Alle 300 Minuten Lernzeit → +1 Eis", systemImage: "clock.fill")
+                    Label("Wochenziel erreicht → +1 Eis", systemImage: "target")
+                }
+                .font(.subheadline)
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+                .padding(.horizontal)
+
+                Spacer()
+            }
+            .navigationTitle("Streak-Eis")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Fertig") { dismiss() }
+                }
+            }
+        }
     }
 }
 
@@ -568,7 +658,7 @@ struct StatSection<Content: View>: View {
             if isExpanded {
                 content
                     .padding(.top, 12)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .transition(.opacity)
             }
         }
         .padding(.horizontal)

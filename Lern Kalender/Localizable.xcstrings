@@ -75,6 +75,9 @@
     "%lld Einträge" : {
 
     },
+    "%lld Eis im Vorrat" : {
+
+    },
     "%lld Fächer" : {
 
     },
@@ -270,6 +273,12 @@
           }
         }
       }
+    },
+    "Alle 7 Tage Serie → +1 Eis" : {
+
+    },
+    "Alle 300 Minuten Lernzeit → +1 Eis" : {
+
     },
     "Alle Einträge, Daueraufgaben und Lernzeiten werden unwiderruflich gelöscht." : {
       "extractionState" : "manual",
@@ -468,9 +477,6 @@
         }
       }
     },
-    "Benachrichtigungen erneuern" : {
-
-    },
     "Beste: %@" : {
 
     },
@@ -503,6 +509,18 @@
       }
     },
     "Bild wählen" : {
+
+    },
+    "Bitte fülle die Quelle aus (Thema, Foto, PDF oder Link)." : {
+
+    },
+    "Bitte gib einen Titel ein." : {
+
+    },
+    "Bitte gib einen Topic-Titel ein." : {
+
+    },
+    "Bitte wähle ein Fach aus." : {
 
     },
     "Bitte zuerst in den Einstellungen eingeben." : {
@@ -763,6 +781,9 @@
     "Diese Woche geübt: %@" : {
 
     },
+    "Du bekommst täglich zur gewählten Zeit eine Mitteilung. Wenn du an dem Tag schon Lernzeit eingetragen hast, wird die Erinnerung für heute übersprungen." : {
+
+    },
     "Du hast alle Posts für heute durch!" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -820,6 +841,9 @@
           }
         }
       }
+    },
+    "Eigener API-Key von %@ erforderlich." : {
+
     },
     "Ein Elternteil hat den KI-Assistenten deaktiviert. Bitte frage deine Eltern, ob sie ihn in den Einstellungen aktivieren können." : {
       "extractionState" : "manual",
@@ -1260,6 +1284,9 @@
         }
       }
     },
+    "Fehlende Angaben" : {
+
+    },
     "Fehler" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1512,7 +1539,7 @@
         }
       }
     },
-    "Hilfe" : {
+    "Hilfe & Rückblick" : {
 
     },
     "Hinzufügen" : {
@@ -2056,6 +2083,9 @@
         }
       }
     },
+    "Kostenlos — kein eigener API-Key nötig. Powered by Groq." : {
+
+    },
     "Lass dir etwas verständlich erklären" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2088,6 +2118,9 @@
           }
         }
       }
+    },
+    "Lern-Erinnerung" : {
+
     },
     "Lern-Feed" : {
       "extractionState" : "manual",
@@ -3215,6 +3248,9 @@
     "Score: %lld/100" : {
 
     },
+    "Seit %@" : {
+
+    },
     "Serie" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3317,6 +3353,9 @@
         }
       }
     },
+    "Streak-Eis" : {
+
+    },
     "Symbol" : {
 
     },
@@ -3338,6 +3377,9 @@
       }
     },
     "Täglich: %lld min" : {
+
+    },
+    "Tägliche Erinnerung" : {
 
     },
     "Tägliches Lernziel" : {
@@ -3529,6 +3571,9 @@
     "Tutorial erneut anzeigen" : {
 
     },
+    "Tutorial oder deinen persönlichen Lern-Rückblick im Story-Format noch einmal ansehen." : {
+
+    },
     "Typ" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3553,6 +3598,9 @@
           }
         }
       }
+    },
+    "Uhrzeit" : {
+
     },
     "Um Lern-Feeds zu generieren, brauchst du einen kostenlosen API-Schlüssel von Groq." : {
       "extractionState" : "manual",
@@ -3859,6 +3907,9 @@
         }
       }
     },
+    "Wenn du einen Tag nicht lernst, wird automatisch ein Eis verbraucht und deine Serie läuft weiter. In den Schulferien (Bundesland in den Einstellungen) pausiert die Serie ohne Eis-Verbrauch." : {
+
+    },
     "Wie lange hast du gelernt?" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3995,6 +4046,9 @@
         }
       }
     },
+    "Wochenziel erreicht → +1 Eis" : {
+
+    },
     "Wusste ich" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4062,9 +4116,6 @@
       }
     },
     "z.B. Mathematik, Deutsch..." : {
-
-    },
-    "Zeigt das Willkommens-Tutorial mit allen App-Funktionen noch einmal an." : {
 
     },
     "Zeitraum" : {

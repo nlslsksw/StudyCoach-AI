@@ -142,6 +142,11 @@ struct StudyLogTab: View {
                 Text("\(store.studySessions.count) Einträge")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                if let firstDate = store.firstSessionDate {
+                    Text("Seit \(firstSessionDateString(firstDate))")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
             }
             Spacer()
             Text(formatHoursMinutes(total))
@@ -291,6 +296,13 @@ struct StudyLogTab: View {
             formatter.dateFormat = "EEEE, d. MMM"
             return formatter.string(from: date)
         }
+    }
+
+    private func firstSessionDateString(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "de_DE")
+        formatter.dateFormat = "d. MMMM yyyy"
+        return formatter.string(from: date)
     }
 }
 

@@ -66,6 +66,9 @@ final class DataStore {
     var aiAllowed: Bool = true {
         didSet { store.set(aiAllowed, forKey: "aiAllowed") }
     }
+    var streakState: StreakState = StreakState() {
+        didSet { saveStreakState() }
+    }
 
     private let entriesKey = "calendarEntries"
     private let recurringKey = "recurringTasks"
@@ -83,6 +86,7 @@ final class DataStore {
     private let parentalPINKey = "parentalPIN"
     private let motivationMessageKey = "motivationMessage"
     private let sharedEntriesKey = "sharedCalendarEntries"
+    private let streakStateKey = "streakState"
 
     private let store = NSUbiquitousKeyValueStore.default
 
@@ -206,6 +210,10 @@ final class DataStore {
         if store.object(forKey: "aiAllowed") != nil {
             aiAllowed = store.bool(forKey: "aiAllowed")
         }
+        if let data = store.data(forKey: streakStateKey),
+           let decoded = try? JSONDecoder().decode(StreakState.self, from: data) {
+            streakState = decoded
+        }
     }
 
     private func saveEntries() {
@@ -258,6 +266,9 @@ final class DataStore {
     }
     private func saveSharedEntries() {
         if let data = try? JSONEncoder().encode(sharedCalendarEntries) { store.set(data, forKey: sharedEntriesKey) }
+    }
+    private func saveStreakState() {
+        if let data = try? JSONEncoder().encode(streakState) { store.set(data, forKey: streakStateKey) }
     }
 
     // MARK: Holiday helpers
@@ -510,6 +521,11 @@ final class DataStore {
         if isDuplicate { return }
 
         studySessions.append(session)
+        // Streak-State pflegen: erst Lücken überbrücken, dann neue Freezes vergeben
+        recomputeAndConsumeFreezes()
+        processFreezeAwards()
+        // Tägliche Erinnerung für heute zurückziehen (heute wurde ja schon gelernt)
+        NotificationHelper.cancelDailyReminderForToday()
         syncToCloudIfNeeded()
         sendSessionNotification(session)
         // XP vergeben und Challenges prüfen
@@ -549,21 +565,147 @@ final class DataStore {
 
     // MARK: Streak
 
+    /// Datum des allerersten Lerneintrags (Beginn der Messung).
+    var firstSessionDate: Date? {
+        studySessions.map(\.date).min().map { Calendar.current.startOfDay(for: $0) }
+    }
+
+    /// Prüft, ob ein Datum in die Schulferien des gewählten Bundeslandes fällt.
+    /// Unabhängig vom `showHolidays`-Toggle (der nur die Anzeige im Kalender steuert).
+    func isHolidayDate(_ date: Date) -> Bool {
+        guard let bundesland = selectedBundesland else { return false }
+        let cal = Calendar.current
+        let checkDate = cal.startOfDay(for: date)
+        for holiday in SchoolHolidayData.holidays(for: bundesland) {
+            let start = cal.startOfDay(for: holiday.start)
+            let end = cal.startOfDay(for: holiday.end)
+            if checkDate >= start && checkDate <= end { return true }
+        }
+        return false
+    }
+
+    private func freezeUsedSet() -> Set<Date> {
+        let cal = Calendar.current
+        return Set(streakState.freezeUsedOnDays.map { cal.startOfDay(for: $0) })
+    }
+
     func currentStreak() -> Int {
         let cal = Calendar.current
+        let used = freezeUsedSet()
         var streak = 0
         var checkDate = cal.startOfDay(for: Date())
+
+        // Heute leer und kein Feiertag → ab gestern zurückzählen.
         if sessions(for: checkDate).isEmpty {
             guard let yesterday = cal.date(byAdding: .day, value: -1, to: checkDate) else { return 0 }
             checkDate = yesterday
         }
-        while true {
-            if sessions(for: checkDate).isEmpty { break }
-            streak += 1
+
+        let stopBefore = firstSessionDate.map { cal.date(byAdding: .day, value: -1, to: $0) ?? $0 }
+
+        var iter = 0
+        while iter < 3650 {
+            iter += 1
+            if !sessions(for: checkDate).isEmpty {
+                streak += 1
+            } else if isHolidayDate(checkDate) {
+                // Ferien-Tage zählen nicht, brechen aber auch nicht.
+            } else if used.contains(checkDate) {
+                // Mit Freeze überbrückt — zählt nicht, bricht nicht.
+            } else {
+                break
+            }
             guard let prevDay = cal.date(byAdding: .day, value: -1, to: checkDate) else { break }
             checkDate = prevDay
+            if let stop = stopBefore, checkDate <= stop { break }
         }
         return streak
+    }
+
+    /// Geht von gestern aus rückwärts und schließt offene Lücken automatisch mit Freezes,
+    /// solange welche vorhanden sind. Sobald ein Lerntag erreicht ist oder die Freezes
+    /// alle sind, hört es auf. Sicher mehrfach aufrufbar (idempotent).
+    func recomputeAndConsumeFreezes() {
+        guard !studySessions.isEmpty else { return }
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        guard var d = cal.date(byAdding: .day, value: -1, to: today) else { return }
+
+        var state = streakState
+        var used = Set(state.freezeUsedOnDays.map { cal.startOfDay(for: $0) })
+        let stopBefore = firstSessionDate.map { cal.date(byAdding: .day, value: -1, to: $0) ?? $0 } ?? Date.distantPast
+
+        var changed = false
+        var iter = 0
+        while iter < 3650 {
+            iter += 1
+            if d <= stopBefore { break }
+            if !sessions(for: d).isEmpty { break }
+            if isHolidayDate(d) || used.contains(d) {
+                // bereits überbrückt
+            } else if state.freezeCount > 0 {
+                state.freezeCount -= 1
+                used.insert(d)
+                state.freezeUsedOnDays.append(d)
+                changed = true
+            } else {
+                break
+            }
+            guard let prev = cal.date(byAdding: .day, value: -1, to: d) else { break }
+            d = prev
+        }
+
+        if changed { streakState = state }
+    }
+
+    /// Vergibt neue Freezes basierend auf:
+    /// - alle 7 Tage in der aktuellen Streak  +1
+    /// - alle 300 Minuten Gesamt-Lernzeit    +1
+    /// - jedes erreichte Wochenziel          +1
+    /// Buckets/Wochen werden persistiert, damit nicht doppelt belohnt wird.
+    func processFreezeAwards() {
+        var state = streakState
+        var changed = false
+
+        // A) Streak-Bucket (alle 7 Tage). Wenn die Serie gebrochen ist, wandert der
+        //    Baseline-Bucket auch nach unten — sonst gäbe es nie wieder Eis.
+        let newStreakBucket = currentStreak() / 7
+        if newStreakBucket > state.awardedStreakBucket {
+            state.freezeCount += (newStreakBucket - state.awardedStreakBucket)
+            state.awardedStreakBucket = newStreakBucket
+            changed = true
+        } else if newStreakBucket < state.awardedStreakBucket {
+            state.awardedStreakBucket = newStreakBucket
+            changed = true
+        }
+
+        // B) Gesamt-Minuten-Bucket (alle 300 min)
+        let totalMin = studySessions.reduce(0) { $0 + $1.minutes }
+        let newMinutesBucket = totalMin / 300
+        if newMinutesBucket > state.awardedMinutesBucket {
+            state.freezeCount += (newMinutesBucket - state.awardedMinutesBucket)
+            state.awardedMinutesBucket = newMinutesBucket
+            changed = true
+        }
+
+        // C) Wochenziel erreicht
+        if let goal = studyGoal, goal.weeklyMinutesGoal > 0 {
+            let weeklyMin = weeklyTotalMinutes(weekOffset: 0)
+            let weekKey = Self.currentWeekKey()
+            if weeklyMin >= goal.weeklyMinutesGoal && !state.awardedWeeks.contains(weekKey) {
+                state.freezeCount += 1
+                state.awardedWeeks.append(weekKey)
+                changed = true
+            }
+        }
+
+        if changed { streakState = state }
+    }
+
+    static func currentWeekKey(for date: Date = Date()) -> String {
+        let cal = Calendar(identifier: .iso8601)
+        let comps = cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
+        return String(format: "%04d-W%02d", comps.yearForWeekOfYear ?? 0, comps.weekOfYear ?? 0)
     }
 
     // MARK: Delete All

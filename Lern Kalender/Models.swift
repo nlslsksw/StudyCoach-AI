@@ -96,6 +96,21 @@ struct StudyGoal: Identifiable, Codable {
     var weeklyMinutesGoal: Int = 0
 }
 
+// MARK: - Streak State (Freezes, Ferien-Pause, Award-Buchhaltung)
+
+struct StreakState: Codable {
+    /// Verfügbare Streak-Freezes ("Eis"). Wird automatisch verbraucht, um Lücken zu überbrücken.
+    var freezeCount: Int = 0
+    /// Vergangene Tage, die mit einem Freeze bereits überbrückt wurden.
+    var freezeUsedOnDays: [Date] = []
+    /// ISO-Wochen-Keys (yyyy-Www), in denen schon ein Freeze für das Wochenziel vergeben wurde.
+    var awardedWeeks: [String] = []
+    /// Letzter bereits belohnter 300-Minuten-Bucket (Gesamt-Lernzeit).
+    var awardedMinutesBucket: Int = 0
+    /// Letzter bereits belohnter 7-Tage-Streak-Bucket.
+    var awardedStreakBucket: Int = 0
+}
+
 struct MotivationMessage: Identifiable, Codable, Equatable {
     var id = UUID()
     var text: String

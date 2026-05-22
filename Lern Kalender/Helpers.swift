@@ -32,6 +32,95 @@ struct NotificationHelper {
     static func remove(for entry: CalendarEntry) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [entry.id.uuidString])
     }
+
+    // MARK: Daily Study Reminder
+
+    static let dailyReminderId = "dailyStudyReminder"
+    static let dailyReminderTodayId = "dailyStudyReminder.today"
+
+    private static let dailyEnabledKey = "dailyReminderEnabled"
+    private static let dailyHourKey = "dailyReminderHour"
+    private static let dailyMinuteKey = "dailyReminderMinute"
+
+    static var dailyReminderEnabled: Bool {
+        get {
+            if UserDefaults.standard.object(forKey: dailyEnabledKey) == nil { return true }
+            return UserDefaults.standard.bool(forKey: dailyEnabledKey)
+        }
+        set { UserDefaults.standard.set(newValue, forKey: dailyEnabledKey) }
+    }
+
+    static var dailyReminderHour: Int {
+        get {
+            if UserDefaults.standard.object(forKey: dailyHourKey) == nil { return 18 }
+            return UserDefaults.standard.integer(forKey: dailyHourKey)
+        }
+        set { UserDefaults.standard.set(newValue, forKey: dailyHourKey) }
+    }
+
+    static var dailyReminderMinute: Int {
+        get {
+            if UserDefaults.standard.object(forKey: dailyMinuteKey) == nil { return 0 }
+            return UserDefaults.standard.integer(forKey: dailyMinuteKey)
+        }
+        set { UserDefaults.standard.set(newValue, forKey: dailyMinuteKey) }
+    }
+
+    private static let dailyReminderHorizonDays = 14
+
+    private static func dailyReminderId(for date: Date) -> String {
+        let cal = Calendar.current
+        let comps = cal.dateComponents([.year, .month, .day], from: date)
+        return String(format: "dailyStudyReminder.%04d-%02d-%02d",
+                      comps.year ?? 0, comps.month ?? 0, comps.day ?? 0)
+    }
+
+    /// Plant die tägliche Erinnerung neu (für die nächsten ~2 Wochen).
+    /// Bei deaktivierter Einstellung werden alle ausstehenden entfernt.
+    static func refreshDailyReminder() {
+        let center = UNUserNotificationCenter.current()
+        center.getPendingNotificationRequests { requests in
+            let oldIds = requests.map(\.identifier).filter { $0.hasPrefix("dailyStudyReminder") }
+            center.removePendingNotificationRequests(withIdentifiers: oldIds)
+            guard dailyReminderEnabled else { return }
+
+            let cal = Calendar.current
+            let now = Date()
+            let hour = dailyReminderHour
+            let minute = dailyReminderMinute
+
+            for offset in 0..<dailyReminderHorizonDays {
+                guard let day = cal.date(byAdding: .day, value: offset, to: now) else { continue }
+                var comps = cal.dateComponents([.year, .month, .day], from: day)
+                comps.hour = hour
+                comps.minute = minute
+                guard let fireDate = cal.date(from: comps), fireDate > now else { continue }
+
+                let content = UNMutableNotificationContent()
+                content.title = "Zeit zum Lernen!"
+                content.body = "Trag jetzt deine heutige Lernzeit ein."
+                content.sound = .default
+
+                let trigger = UNCalendarNotificationTrigger(
+                    dateMatching: cal.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate),
+                    repeats: false
+                )
+                let request = UNNotificationRequest(
+                    identifier: dailyReminderId(for: day),
+                    content: content,
+                    trigger: trigger
+                )
+                center.add(request)
+            }
+        }
+    }
+
+    /// Unterdrückt nur die HEUTIGE Erinnerung (z.B. weil schon gelernt wurde).
+    /// Die Erinnerungen für die Folgetage bleiben bestehen.
+    static func cancelDailyReminderForToday() {
+        let id = dailyReminderId(for: Date())
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
+    }
 }
 
 // MARK: - Weekday Helpers
