@@ -389,6 +389,8 @@ struct SubjectDetailView: View {
     @State private var showingAddGrade = false
     @State private var showingAddSession = false
     @State private var showingAIForSubject = false
+    @State private var showingAddHomework = false
+    @State private var homeworkToEdit: Homework? = nil
 
     private var grades: [(date: Date, grade: Double, type: GradeType)] {
         store.gradesFor(subject: subject)
@@ -500,6 +502,42 @@ struct SubjectDetailView: View {
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
+                    }
+                }
+
+                // Hausaufgaben-Bereich
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("Hausaufgaben")
+                            .font(.headline)
+                        Spacer()
+                        Button {
+                            showingAddHomework = true
+                        } label: {
+                            Label("Hinzufügen", systemImage: "plus.circle.fill")
+                                .font(.subheadline)
+                        }
+                    }
+                    .padding(.horizontal)
+
+                    let subjectHomework = store.homeworkFor(subject: subject.name)
+                    if subjectHomework.isEmpty {
+                        Text("Keine Hausaufgaben")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    } else {
+                        VStack(spacing: 0) {
+                            ForEach(Array(subjectHomework.enumerated()), id: \.element.id) { index, hw in
+                                HomeworkRow(store: store, homework: hw, onTap: { homeworkToEdit = hw })
+                                if index < subjectHomework.count - 1 {
+                                    Divider().padding(.leading, 44)
+                                }
+                            }
+                        }
+                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal)
                     }
                 }
 
@@ -622,6 +660,12 @@ struct SubjectDetailView: View {
         }
         .sheet(isPresented: $showingAIForSubject) {
             AIAssistantTab(store: store)
+        }
+        .sheet(isPresented: $showingAddHomework) {
+            AddHomeworkView(store: store, initialSubject: subject.name)
+        }
+        .sheet(item: $homeworkToEdit) { hw in
+            AddHomeworkView(store: store, editing: hw)
         }
     }
 }

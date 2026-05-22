@@ -1528,6 +1528,9 @@
         }
       }
     },
+    "Heute fällig" : {
+
+    },
     "Heute gelernt" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1538,6 +1541,19 @@
           }
         }
       }
+    },
+    "Heute gelernt · %lld %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Heute gelernt · %1$lld %2$@"
+          }
+        }
+      }
+    },
+    "Heute noch nichts gelernt" : {
+
     },
     "Hilfe & Rückblick" : {
 
@@ -1878,6 +1894,9 @@
           }
         }
       }
+    },
+    "KI für %@" : {
+
     },
     "KI ist für dein Kind gesperrt." : {
 

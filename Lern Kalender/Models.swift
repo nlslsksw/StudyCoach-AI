@@ -96,6 +96,20 @@ struct StudyGoal: Identifiable, Codable {
     var weeklyMinutesGoal: Int = 0
 }
 
+// MARK: - Homework
+
+struct Homework: Identifiable, Codable, Equatable {
+    var id = UUID()
+    var subject: String
+    var title: String
+    var notes: String = ""
+    var dueDate: Date
+    var isDone: Bool = false
+    var createdAt: Date = Date()
+    /// Optional: Webuntis-Quellen-ID (für späteren Sync, sonst nil = lokal).
+    var sourceId: String? = nil
+}
+
 // MARK: - Streak State (Freezes, Ferien-Pause, Award-Buchhaltung)
 
 struct StreakState: Codable {

@@ -69,6 +69,9 @@ final class DataStore {
     var streakState: StreakState = StreakState() {
         didSet { saveStreakState() }
     }
+    var homework: [Homework] = [] {
+        didSet { saveHomework() }
+    }
 
     private let entriesKey = "calendarEntries"
     private let recurringKey = "recurringTasks"
@@ -87,6 +90,7 @@ final class DataStore {
     private let motivationMessageKey = "motivationMessage"
     private let sharedEntriesKey = "sharedCalendarEntries"
     private let streakStateKey = "streakState"
+    private let homeworkKey = "homework"
 
     private let store = NSUbiquitousKeyValueStore.default
 
@@ -214,6 +218,10 @@ final class DataStore {
            let decoded = try? JSONDecoder().decode(StreakState.self, from: data) {
             streakState = decoded
         }
+        if let data = store.data(forKey: homeworkKey),
+           let decoded = try? JSONDecoder().decode([Homework].self, from: data) {
+            homework = decoded
+        }
     }
 
     private func saveEntries() {
@@ -269,6 +277,36 @@ final class DataStore {
     }
     private func saveStreakState() {
         if let data = try? JSONEncoder().encode(streakState) { store.set(data, forKey: streakStateKey) }
+    }
+    private func saveHomework() {
+        if let data = try? JSONEncoder().encode(homework) { store.set(data, forKey: homeworkKey) }
+    }
+
+    // MARK: Homework helpers
+
+    func addHomework(_ hw: Homework) { homework.append(hw) }
+    func updateHomework(_ hw: Homework) {
+        if let idx = homework.firstIndex(where: { $0.id == hw.id }) { homework[idx] = hw }
+    }
+    func deleteHomework(_ hw: Homework) { homework.removeAll { $0.id == hw.id } }
+    func toggleHomeworkDone(_ hw: Homework) {
+        if let idx = homework.firstIndex(where: { $0.id == hw.id }) { homework[idx].isDone.toggle() }
+    }
+
+    /// Offene Hausaufgaben, älteste zuerst (überfällig oben).
+    func openHomework() -> [Homework] {
+        homework.filter { !$0.isDone }.sorted { $0.dueDate < $1.dueDate }
+    }
+    func homeworkFor(subject: String) -> [Homework] {
+        homework.filter { $0.subject.localizedCaseInsensitiveCompare(subject) == .orderedSame }
+            .sorted { $0.dueDate < $1.dueDate }
+    }
+    func upcomingHomework(within days: Int = 7) -> [Homework] {
+        let cal = Calendar.current
+        let now = Date()
+        let until = cal.date(byAdding: .day, value: days, to: now) ?? now
+        return homework.filter { !$0.isDone && $0.dueDate <= until }
+            .sorted { $0.dueDate < $1.dueDate }
     }
 
     // MARK: Holiday helpers

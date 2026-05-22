@@ -308,6 +308,9 @@ struct TodayTab: View {
     @State private var showingAI = false
     @State private var showingSettings = false
     @State private var showingProfile = false
+    @State private var showingAddHomework = false
+    @State private var showingAllHomework = false
+    @State private var homeworkToEdit: Homework? = nil
 
     private var today: Date { Date() }
     private var todaySessions: [StudySession] { store.sessions(for: today) }
@@ -354,6 +357,12 @@ struct TodayTab: View {
                     // Quick-Actions
                     quickActionsRow
                         .padding(.horizontal)
+
+                    // Hausaufgaben
+                    if !store.homework.isEmpty || !store.openHomework().isEmpty {
+                        homeworkSection
+                            .padding(.horizontal)
+                    }
 
                     // Anstehende Termine heute
                     if !todayEntries.isEmpty {
@@ -408,6 +417,22 @@ struct TodayTab: View {
             .sheet(isPresented: $showingSettings) {
                 SettingsView(store: store)
             }
+            .sheet(isPresented: $showingAddHomework) {
+                AddHomeworkView(store: store)
+            }
+            .sheet(item: $homeworkToEdit) { hw in
+                AddHomeworkView(store: store, editing: hw)
+            }
+            .sheet(isPresented: $showingAllHomework) {
+                NavigationStack {
+                    HomeworkListView(store: store)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Fertig") { showingAllHomework = false }
+                            }
+                        }
+                }
+            }
         }
     }
 
@@ -448,6 +473,9 @@ struct TodayTab: View {
             quickActionTile(icon: "timer", title: "Timer", color: .green) {
                 showingTimer = true
             }
+            quickActionTile(icon: "checklist", title: "HA", color: .orange) {
+                showingAddHomework = true
+            }
             if store.aiAllowed {
                 quickActionTile(icon: "sparkles", title: "KI", color: .purple) {
                     showingAI = true
@@ -471,6 +499,55 @@ struct TodayTab: View {
             .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)
+    }
+
+    private var homeworkSection: some View {
+        let open = store.openHomework()
+        let visible = Array(open.prefix(5))
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Hausaufgaben")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.secondary)
+                if open.count > visible.count {
+                    Text("\(open.count - visible.count) weitere")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                Spacer()
+                Button {
+                    showingAllHomework = true
+                } label: {
+                    Text("Alle")
+                        .font(.caption.bold())
+                }
+            }
+            .padding(.horizontal, 4)
+
+            if visible.isEmpty {
+                Text("Keine offenen Hausaufgaben — gut gemacht!")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 14)
+                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(visible.enumerated()), id: \.element.id) { index, hw in
+                        HomeworkRow(
+                            store: store,
+                            homework: hw,
+                            onTap: { homeworkToEdit = hw }
+                        )
+                        if index < visible.count - 1 {
+                            Divider().padding(.leading, 44)
+                        }
+                    }
+                }
+                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+            }
+        }
     }
 
     private var todayEntriesSection: some View {
@@ -508,6 +585,287 @@ struct TodayTab: View {
                 }
             }
             .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}
+
+// MARK: - Homework Row
+
+struct HomeworkRow: View {
+    var store: DataStore
+    let homework: Homework
+    var onTap: (() -> Void)? = nil
+
+    private var dueLabel: String {
+        let cal = Calendar.current
+        let now = Date()
+        let due = homework.dueDate
+        if cal.isDateInToday(due) { return "Heute" }
+        if cal.isDateInYesterday(due) { return "Gestern" }
+        if cal.isDateInTomorrow(due) { return "Morgen" }
+        let days = cal.dateComponents([.day], from: cal.startOfDay(for: now), to: cal.startOfDay(for: due)).day ?? 0
+        if days < 0 { return "vor \(-days) Tg." }
+        if days <= 7 {
+            let f = DateFormatter()
+            f.locale = Locale(identifier: "de_DE")
+            f.dateFormat = "EEEE"
+            return f.string(from: due)
+        }
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "de_DE")
+        f.dateFormat = "d. MMM"
+        return f.string(from: due)
+    }
+
+    private var isOverdue: Bool {
+        !homework.isDone && homework.dueDate < Calendar.current.startOfDay(for: Date())
+    }
+
+    var body: some View {
+        Button {
+            onTap?()
+        } label: {
+            HStack(spacing: 10) {
+                Button {
+                    store.toggleHomeworkDone(homework)
+                } label: {
+                    Image(systemName: homework.isDone ? "checkmark.circle.fill" : "circle")
+                        .font(.title3)
+                        .foregroundStyle(homework.isDone ? .green : .secondary)
+                        .frame(width: 28)
+                }
+                .buttonStyle(.plain)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(homework.title)
+                        .font(.subheadline.bold())
+                        .foregroundStyle(homework.isDone ? .secondary : .primary)
+                        .strikethrough(homework.isDone, color: .secondary)
+                        .lineLimit(1)
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(store.colorForSubject(homework.subject))
+                            .frame(width: 7, height: 7)
+                        Text(homework.subject)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text("·")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                        Text(dueLabel)
+                            .font(.caption)
+                            .foregroundStyle(isOverdue ? .red : .secondary)
+                    }
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                store.deleteHomework(homework)
+            } label: {
+                Label("Löschen", systemImage: "trash")
+            }
+        }
+    }
+}
+
+// MARK: - Add / Edit Homework
+
+struct AddHomeworkView: View {
+    @Environment(\.dismiss) private var dismiss
+    var store: DataStore
+    var editing: Homework? = nil
+
+    @State private var subject: String = ""
+    @State private var title: String = ""
+    @State private var notes: String = ""
+    @State private var dueDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+    @State private var showValidation = false
+
+    init(store: DataStore, editing: Homework? = nil, initialSubject: String? = nil) {
+        self.store = store
+        self.editing = editing
+        if let hw = editing {
+            _subject = State(initialValue: hw.subject)
+            _title = State(initialValue: hw.title)
+            _notes = State(initialValue: hw.notes)
+            _dueDate = State(initialValue: hw.dueDate)
+        } else if let pre = initialSubject {
+            _subject = State(initialValue: pre)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Fach") {
+                    if !store.subjects.isEmpty {
+                        Picker("Fach", selection: $subject) {
+                            Text("Auswählen…").tag("")
+                            ForEach(store.subjects) { sub in
+                                Text(sub.name).tag(sub.name)
+                            }
+                        }
+                    } else {
+                        TextField("Fach (z.B. Mathe)", text: $subject)
+                    }
+                }
+                Section("Aufgabe") {
+                    TextField("Was ist zu tun?", text: $title)
+                    TextField("Notizen (optional)", text: $notes, axis: .vertical)
+                        .lineLimit(2...5)
+                }
+                Section("Fällig") {
+                    DatePicker("Datum", selection: $dueDate, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: "de_DE"))
+                    HStack(spacing: 8) {
+                        quickDateButton("Heute", offset: 0)
+                        quickDateButton("Morgen", offset: 1)
+                        quickDateButton("In 3 Tg.", offset: 3)
+                        quickDateButton("Nächste Woche", offset: 7)
+                    }
+                }
+                if editing != nil {
+                    Section {
+                        Button(role: .destructive) {
+                            if let hw = editing {
+                                store.deleteHomework(hw)
+                                dismiss()
+                            }
+                        } label: {
+                            Label("Löschen", systemImage: "trash")
+                        }
+                    }
+                }
+            }
+            .navigationTitle(editing == nil ? "Neue Hausaufgabe" : "Hausaufgabe")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Abbrechen") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Speichern") { save() }
+                }
+            }
+            .alert("Fehlende Angaben", isPresented: $showValidation) {
+                Button("OK") { }
+            } message: {
+                Text("Bitte gib Fach und Aufgabe an.")
+            }
+        }
+    }
+
+    private func quickDateButton(_ label: String, offset: Int) -> some View {
+        Button(label) {
+            dueDate = Calendar.current.date(byAdding: .day, value: offset, to: Date()) ?? Date()
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+    }
+
+    private func save() {
+        let trimmedSubject = subject.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedSubject.isEmpty || trimmedTitle.isEmpty {
+            showValidation = true
+            return
+        }
+        if var hw = editing {
+            hw.subject = trimmedSubject
+            hw.title = trimmedTitle
+            hw.notes = notes
+            hw.dueDate = dueDate
+            store.updateHomework(hw)
+        } else {
+            let hw = Homework(subject: trimmedSubject, title: trimmedTitle, notes: notes, dueDate: dueDate)
+            store.addHomework(hw)
+        }
+        dismiss()
+    }
+}
+
+// MARK: - Homework List
+
+struct HomeworkListView: View {
+    var store: DataStore
+    @State private var homeworkToEdit: Homework? = nil
+    @State private var showingAdd = false
+    @State private var showDone = false
+
+    private var sections: [(label: String, items: [Homework])] {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        let endOfWeek = cal.date(byAdding: .day, value: 7, to: today) ?? today
+        let open = store.openHomework()
+
+        let overdue = open.filter { $0.dueDate < today }
+        let todayItems = open.filter { cal.isDate($0.dueDate, inSameDayAs: today) }
+        let weekItems = open.filter { $0.dueDate > today && $0.dueDate <= endOfWeek }
+        let later = open.filter { $0.dueDate > endOfWeek }
+        let done = store.homework.filter { $0.isDone }.sorted { $0.dueDate > $1.dueDate }
+
+        var result: [(String, [Homework])] = []
+        if !overdue.isEmpty { result.append(("Überfällig", overdue)) }
+        if !todayItems.isEmpty { result.append(("Heute", todayItems)) }
+        if !weekItems.isEmpty { result.append(("Diese Woche", weekItems)) }
+        if !later.isEmpty { result.append(("Später", later)) }
+        if showDone && !done.isEmpty { result.append(("Erledigt", done)) }
+        return result
+    }
+
+    var body: some View {
+        Group {
+            if store.homework.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "checklist")
+                        .font(.system(size: 40))
+                        .foregroundStyle(.tertiary)
+                    Text("Keine Hausaufgaben")
+                        .foregroundStyle(.secondary)
+                    Button { showingAdd = true } label: {
+                        Label("Hausaufgabe hinzufügen", systemImage: "plus.circle.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding(.top, 4)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List {
+                    ForEach(sections, id: \.label) { section in
+                        Section(section.label) {
+                            ForEach(section.items) { hw in
+                                HomeworkRow(store: store, homework: hw, onTap: { homeworkToEdit = hw })
+                                    .listRowInsets(EdgeInsets())
+                                    .listRowSeparator(.hidden)
+                            }
+                        }
+                    }
+                    Toggle("Erledigte anzeigen", isOn: $showDone)
+                        .font(.caption)
+                }
+                .listStyle(.insetGrouped)
+            }
+        }
+        .navigationTitle("Hausaufgaben")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { showingAdd = true } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .sheet(isPresented: $showingAdd) {
+            AddHomeworkView(store: store)
+        }
+        .sheet(item: $homeworkToEdit) { hw in
+            AddHomeworkView(store: store, editing: hw)
         }
     }
 }
