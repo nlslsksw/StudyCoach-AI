@@ -340,22 +340,20 @@ struct TodayTab: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
-                    // Streak + Eis
-                    HStack(spacing: 12) {
-                        StreakCard(
-                            title: "Aktuelle Serie",
-                            value: store.currentStreak(),
-                            icon: "flame.fill",
-                            color: .orange,
-                            freezeCount: store.streakState.freezeCount
-                        )
-                    }
-                    .padding(.horizontal)
-
-                    // Heutige Lernzeit
-                    todayStudyCard
+                VStack(spacing: AppSpacing.lg) {
+                    heroHeader
                         .padding(.horizontal)
+                        .padding(.top, AppSpacing.sm)
+
+                    // Streak-Karte
+                    StreakCard(
+                        title: "Aktuelle Serie",
+                        value: store.currentStreak(),
+                        icon: "flame.fill",
+                        color: .orange,
+                        freezeCount: store.streakState.freezeCount
+                    )
+                    .padding(.horizontal)
 
                     // Quick-Actions
                     quickActionsRow
@@ -379,18 +377,14 @@ struct TodayTab: View {
                             .padding(.horizontal)
                     }
 
-                    Spacer(minLength: 20)
+                    Spacer(minLength: 24)
                 }
                 .padding(.top, 4)
             }
-            .navigationTitle(greeting)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text(todayString)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                ToolbarItem(placement: .principal) {
+                    Text("Heute").font(.headline)
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button { showingSettings = true } label: {
@@ -439,31 +433,50 @@ struct TodayTab: View {
         }
     }
 
-    private var todayStudyCard: some View {
-        Button {
+    /// Hero-Header oben im Today-Tab: Gradient-Card mit Begrüßung, Datum
+    /// und heutiger Lernzeit. Tap öffnet die ausführliche Lernzeit-Liste.
+    private var heroHeader: some View {
+        let gradientColors: [Color] = [Color.blue, Color.purple]
+        return Button {
             showingAllSessions = true
         } label: {
-            HStack(spacing: 14) {
-                Image(systemName: "clock.fill")
-                    .font(.title)
-                    .foregroundStyle(.blue)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(formatHoursMinutes(todayMinutes))
-                        .font(.title2.bold().monospacedDigit())
-                        .foregroundStyle(.primary)
-                    Text(todaySessions.isEmpty ? "Heute noch nichts gelernt" : "Heute gelernt · \(todaySessions.count) \(todaySessions.count == 1 ? "Eintrag" : "Einträge")")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(greeting)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white.opacity(0.85))
+                        Text(todayString)
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.75))
+                    }
+                    Spacer()
+                    Image(systemName: "sun.max.fill")
+                        .font(.title3)
+                        .foregroundStyle(.white.opacity(0.9))
                 }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    AnimatedNumber(value: todayMinutes,
+                                   font: .system(size: 44, weight: .bold, design: .rounded),
+                                   color: .white)
+                    Text("min")
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.9))
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(todaySessions.isEmpty ? "Heute noch nichts" : "\(todaySessions.count) \(todaySessions.count == 1 ? "Eintrag" : "Einträge")")
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.85))
+                        if todayMinutes > 0 {
+                            Text(formatHoursMinutes(todayMinutes))
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.white.opacity(0.9))
+                        }
+                    }
+                }
             }
-            .padding(14)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.blue.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
+            .appHeroCard(gradientColors)
         }
         .buttonStyle(.plain)
     }
@@ -489,19 +502,38 @@ struct TodayTab: View {
 
     private func quickActionTile(icon: String, title: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.title3)
-                    .foregroundStyle(color)
+                    .foregroundStyle(.white)
+                    .frame(width: 38, height: 38)
+                    .background(
+                        LinearGradient(colors: [color, color.opacity(0.8)],
+                                       startPoint: .topLeading, endPoint: .bottomTrailing),
+                        in: RoundedRectangle(cornerRadius: 11, style: .continuous)
+                    )
+                    .shadow(color: color.opacity(0.3), radius: 4, x: 0, y: 2)
                 Text(title)
                     .font(.caption.bold())
                     .foregroundStyle(.primary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
+            .padding(.vertical, 12)
+            .background(
+                Color(.secondarySystemGroupedBackground),
+                in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+            )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(QuickActionButtonStyle())
+    }
+
+    /// Sanftes Tap-Feedback für Quick-Action-Tiles.
+    private struct QuickActionButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+                .animation(AppAnimation.snappy, value: configuration.isPressed)
+        }
     }
 
     private var homeworkSection: some View {
@@ -532,9 +564,7 @@ struct TodayTab: View {
                     .font(.caption)
                     .foregroundStyle(.tertiary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 14)
-                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                    .appCard()
             } else {
                 VStack(spacing: 0) {
                     ForEach(Array(visible.enumerated()), id: \.element.id) { index, hw in
@@ -548,7 +578,11 @@ struct TodayTab: View {
                         }
                     }
                 }
-                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                .background(
+                    Color(.secondarySystemGroupedBackground),
+                    in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+                )
+                .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
             }
         }
     }
@@ -587,7 +621,11 @@ struct TodayTab: View {
                     }
                 }
             }
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+            .background(
+                Color(.secondarySystemGroupedBackground),
+                in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+            )
+            .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
         }
     }
 }

@@ -220,3 +220,119 @@ enum AttachmentStore {
         return ["jpg", "jpeg", "png", "heic", "heif", "gif"].contains(ext)
     }
 }
+
+// MARK: - Design System
+//
+// Zentrales Theme für die App. Konstanten für Radien/Spacing + ViewModifier,
+// damit Cards, Buttons und Akzente überall gleich aussehen.
+
+enum AppRadius {
+    static let small: CGFloat = 10
+    static let medium: CGFloat = 14
+    static let large: CGFloat = 18
+    static let xLarge: CGFloat = 22
+}
+
+enum AppSpacing {
+    static let xs: CGFloat = 4
+    static let sm: CGFloat = 8
+    static let md: CGFloat = 12
+    static let lg: CGFloat = 16
+    static let xl: CGFloat = 20
+}
+
+enum AppAnimation {
+    static let smooth: Animation = .smooth(duration: 0.35)
+    static let snappy: Animation = .spring(response: 0.35, dampingFraction: 0.78)
+    static let bouncy: Animation = .spring(response: 0.45, dampingFraction: 0.65)
+}
+
+/// Card im Standard-App-Look: weicher Hintergrund, dezenter Schatten, gerundet.
+struct AppCardStyle: ViewModifier {
+    var radius: CGFloat = AppRadius.medium
+    var padding: CGFloat = AppSpacing.md
+    func body(content: Content) -> some View {
+        content
+            .padding(padding)
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
+    }
+}
+
+/// Akzent-Card mit getöntem Hintergrund + zarte Border-Kante.
+struct AppTintedCardStyle: ViewModifier {
+    let color: Color
+    var radius: CGFloat = AppRadius.medium
+    var padding: CGFloat = AppSpacing.md
+    func body(content: Content) -> some View {
+        content
+            .padding(padding)
+            .background(
+                ZStack {
+                    LinearGradient(
+                        colors: [color.opacity(0.18), color.opacity(0.06)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    RoundedRectangle(cornerRadius: radius, style: .continuous)
+                        .stroke(color.opacity(0.15), lineWidth: 0.5)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+            )
+    }
+}
+
+/// Hero-Card mit kräftigem Farbverlauf — für die Top-Karte im Today-Tab o.ä.
+struct AppHeroCardStyle: ViewModifier {
+    let colors: [Color]
+    var radius: CGFloat = AppRadius.large
+    var padding: CGFloat = AppSpacing.lg
+    func body(content: Content) -> some View {
+        content
+            .padding(padding)
+            .background(
+                LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing),
+                in: RoundedRectangle(cornerRadius: radius, style: .continuous)
+            )
+            .foregroundStyle(.white)
+            .shadow(color: (colors.first ?? .black).opacity(0.25), radius: 14, x: 0, y: 6)
+    }
+}
+
+extension View {
+    func appCard(radius: CGFloat = AppRadius.medium,
+                 padding: CGFloat = AppSpacing.md) -> some View {
+        modifier(AppCardStyle(radius: radius, padding: padding))
+    }
+    func appTintedCard(_ color: Color,
+                       radius: CGFloat = AppRadius.medium,
+                       padding: CGFloat = AppSpacing.md) -> some View {
+        modifier(AppTintedCardStyle(color: color, radius: radius, padding: padding))
+    }
+    func appHeroCard(_ colors: [Color],
+                     radius: CGFloat = AppRadius.large,
+                     padding: CGFloat = AppSpacing.lg) -> some View {
+        modifier(AppHeroCardStyle(colors: colors, radius: radius, padding: padding))
+    }
+}
+
+/// Animiert eine Zahl beim Wechsel (Counter-Effekt für Statistiken).
+struct AnimatedNumber: View {
+    let value: Int
+    var font: Font = .title2.bold().monospacedDigit()
+    var color: Color = .primary
+    @State private var displayed: Int = 0
+
+    var body: some View {
+        Text("\(displayed)")
+            .font(font)
+            .foregroundStyle(color)
+            .contentTransition(.numericText())
+            .onAppear { animate(to: value) }
+            .onChange(of: value) { _, newValue in animate(to: newValue) }
+    }
+
+    private func animate(to target: Int) {
+        withAnimation(AppAnimation.smooth) { displayed = target }
+    }
+}

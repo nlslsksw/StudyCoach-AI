@@ -350,14 +350,22 @@ struct StreakCard: View {
     @State private var showFreezeInfo = false
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.title)
-                .foregroundStyle(color)
+                .font(.title2)
+                .foregroundStyle(.white)
+                .frame(width: 44, height: 44)
+                .background(
+                    LinearGradient(colors: [color, color.opacity(0.75)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing),
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+                .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(value) Tage")
-                    .font(.title3.bold().monospacedDigit())
+                    .font(.title2.bold().monospacedDigit())
+                    .contentTransition(.numericText())
                 Text(title)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -365,9 +373,17 @@ struct StreakCard: View {
 
             Spacer(minLength: 0)
         }
-        .padding(12)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+        .background(
+            ZStack {
+                LinearGradient(colors: [color.opacity(0.16), color.opacity(0.04)],
+                               startPoint: .topLeading, endPoint: .bottomTrailing)
+                RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+                    .stroke(color.opacity(0.18), lineWidth: 0.5)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous))
+        )
         .overlay(alignment: .topTrailing) {
             if let freezeCount {
                 Button {
