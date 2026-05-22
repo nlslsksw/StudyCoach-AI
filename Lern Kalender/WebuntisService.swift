@@ -64,6 +64,8 @@ final class WebuntisService {
 
     /// Verbindet, holt Stundenplan + Hausaufgaben und mappt sie in den DataStore.
     /// Stundenplan: aktuelle Woche. Hausaufgaben: nächste 4 Wochen.
+    /// Beide Sync-Schritte laufen unabhängig — wenn einer fehlschlägt, wird
+    /// der andere trotzdem versucht und der Fehler gesammelt zurückgegeben.
     func sync(into store: DataStore) async {
         guard isConfigured else {
             lastError = "Bitte erst in den Einstellungen verbinden."
@@ -74,18 +76,47 @@ final class WebuntisService {
 
         do {
             try await authenticate()
-            let weekRange = currentWeekRange()
-            let slots = try await fetchTimetable(from: weekRange.start, to: weekRange.end)
-            let homework = try await fetchHomework(from: weekRange.start, to: addDays(28, to: weekRange.end))
-            await MainActor.run {
-                mergeTimetable(slots, into: store)
-                mergeHomework(homework, into: store)
-            }
-            lastSync = Date()
-            lastError = nil
-            try? await logout()
         } catch {
             lastError = (error as? WebuntisError)?.userMessage ?? error.localizedDescription
+            return
+        }
+
+        let weekRange = currentWeekRange()
+        var errors: [String] = []
+        var importedSlots = 0
+        var importedHomework = 0
+
+        // 1) Stundenplan — verschiedene Methodennamen ausprobieren, falls
+        //    eine Schule den Klassiker getTimetable abgeschaltet hat.
+        do {
+            let slots = try await fetchTimetable(from: weekRange.start, to: weekRange.end)
+            await MainActor.run { mergeTimetable(slots, into: store) }
+            importedSlots = slots.count
+        } catch {
+            let msg = (error as? WebuntisError)?.userMessage ?? error.localizedDescription
+            errors.append("Stundenplan: \(msg)")
+        }
+
+        // 2) Hausaufgaben
+        do {
+            let homework = try await fetchHomework(from: weekRange.start, to: addDays(28, to: weekRange.end))
+            await MainActor.run { mergeHomework(homework, into: store) }
+            importedHomework = homework.count
+        } catch {
+            let msg = (error as? WebuntisError)?.userMessage ?? error.localizedDescription
+            errors.append("Hausaufgaben: \(msg)")
+        }
+
+        try? await logout()
+        lastSync = Date()
+
+        if errors.isEmpty {
+            lastError = nil
+        } else if importedSlots == 0 && importedHomework == 0 {
+            lastError = errors.joined(separator: "\n\n")
+        } else {
+            // Teilweise erfolgreich
+            lastError = "Teilweise importiert (\(importedSlots) Stunden, \(importedHomework) Hausaufgaben).\n\n" + errors.joined(separator: "\n\n")
         }
     }
 
@@ -241,7 +272,8 @@ final class WebuntisService {
 
     private func fetchTimetable(from start: Int, to end: Int) async throws -> [RawSlot] {
         guard let personType, let personId else { throw WebuntisError.authFailed }
-        let params: [String: Any] = [
+
+        let optionsParams: [String: Any] = [
             "options": [
                 "startDate": start,
                 "endDate": end,
@@ -256,7 +288,40 @@ final class WebuntisService {
                 "teacherFields": ["id", "name"]
             ]
         ]
-        let result = try await rpc(method: "getTimetable", params: params)
+
+        let flatParams: [String: Any] = [
+            "id": personId,
+            "type": personType,
+            "startDate": start,
+            "endDate": end
+        ]
+
+        // Reihenfolge: zuerst getTimetable mit Options-Wrapper (Standard),
+        // dann ohne Wrapper (manche Schulen), dann getTimetable2017 (neuer).
+        let attempts: [(method: String, params: Any)] = [
+            ("getTimetable", optionsParams),
+            ("getTimetable", flatParams),
+            ("getTimetable2017", optionsParams)
+        ]
+
+        var lastError: Error?
+        for attempt in attempts {
+            do {
+                let result = try await rpc(method: attempt.method, params: attempt.params)
+                return parseTimetable(result)
+            } catch let err as WebuntisError {
+                if case .rpc(let code, _) = err, code == -32601 {
+                    // method not found -> nächste Variante probieren
+                    lastError = err
+                    continue
+                }
+                throw err
+            }
+        }
+        throw lastError ?? WebuntisError.rpc(code: -32601, message: "Stundenplan-API nicht verfügbar")
+    }
+
+    private func parseTimetable(_ result: Any) -> [RawSlot] {
         guard let arr = result as? [[String: Any]] else { return [] }
         return arr.compactMap { entry in
             guard let id = entry["id"] as? Int,
@@ -282,7 +347,26 @@ final class WebuntisService {
             "startDate": start,
             "endDate": end
         ]
-        let result = try await rpc(method: "getHomeWork", params: params)
+        // Schreibweise variiert je Webuntis-Version.
+        let methodCandidates = ["getHomeWork", "getHomeworks", "getHomeWorks"]
+
+        var lastError: Error?
+        for method in methodCandidates {
+            do {
+                let result = try await rpc(method: method, params: params)
+                return parseHomework(result)
+            } catch let err as WebuntisError {
+                if case .rpc(let code, _) = err, code == -32601 {
+                    lastError = err
+                    continue
+                }
+                throw err
+            }
+        }
+        throw lastError ?? WebuntisError.rpc(code: -32601, message: "Hausaufgaben-API nicht verfügbar")
+    }
+
+    private func parseHomework(_ result: Any) -> [RawHomework] {
         guard let dict = result as? [String: Any] else { return [] }
         let records = (dict["records"] as? [[String: Any]]) ?? (dict["homeworks"] as? [[String: Any]]) ?? []
         let lessons = (dict["lessons"] as? [[String: Any]]) ?? []
