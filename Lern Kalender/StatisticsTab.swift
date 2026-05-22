@@ -509,12 +509,23 @@ struct BarChartView: View {
                 VStack(spacing: 4) {
                     if item.minutes > 0 {
                         Text("\(item.minutes)")
-                            .font(.system(size: 8))
+                            .font(.system(size: 8, weight: .semibold))
                             .foregroundStyle(.secondary)
                     }
 
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(item.minutes > 0 ? Color.blue : Color.blue.opacity(0.15))
+                    // Bar mit Farbverlauf von tief (blass) nach hoch (kräftig).
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(
+                            item.minutes > 0
+                            ? AnyShapeStyle(
+                                LinearGradient(
+                                    colors: [Color.blue.opacity(0.85), Color.purple.opacity(0.9)],
+                                    startPoint: .bottom,
+                                    endPoint: .top
+                                )
+                              )
+                            : AnyShapeStyle(Color.blue.opacity(0.12))
+                        )
                         .frame(height: max(CGFloat(item.minutes) / CGFloat(maxValue) * 140, 4))
 
                     if showAllLabels || index % 5 == 0 || index == data.count - 1 {

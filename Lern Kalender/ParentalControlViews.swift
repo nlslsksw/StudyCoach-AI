@@ -1224,7 +1224,11 @@ struct GoalProgressView: View {
                 }
             }
             .padding()
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+            .background(
+                Color(.secondarySystemGroupedBackground),
+                in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+            )
+            .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
         }
     }
 }
@@ -1252,11 +1256,20 @@ private struct GoalBar: View {
             }
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
+                    Capsule()
                         .fill(Color(.tertiarySystemFill))
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(progress >= 1.0 ? Color.green : Color.blue)
+                    Capsule()
+                        .fill(
+                            progress >= 1.0
+                            ? AnyShapeStyle(
+                                LinearGradient(colors: [.green, .mint], startPoint: .leading, endPoint: .trailing)
+                              )
+                            : AnyShapeStyle(
+                                LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)
+                              )
+                        )
                         .frame(width: min(CGFloat(progress), 1.0) * geo.size.width)
+                        .animation(AppAnimation.smooth, value: progress)
                 }
             }
             .frame(height: 8)
