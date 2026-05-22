@@ -1,4 +1,5 @@
 import SwiftUI
+import Pow
 
 // MARK: - Statistics Tab
 
@@ -361,6 +362,14 @@ struct StreakCard: View {
                     in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                 )
                 .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
+                // Sprühender Funken-Effekt, sobald die Serie nach oben steigt
+                // (z.B. wenn man nach dem ersten Eintrag des Tages reinkommt).
+                .changeEffect(
+                    .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
+                        Image(systemName: "flame.fill").foregroundStyle(color)
+                    },
+                    value: value
+                )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(value) Tage")
@@ -383,6 +392,12 @@ struct StreakCard: View {
                     .stroke(color.opacity(0.18), lineWidth: 0.5)
             }
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous))
+        )
+        // Sanfter Glow-Loop auf aktive Streaks. `every: 4` macht ihn dezent,
+        // nicht aufdringlich. Erst ab 1 Tag, damit eine 0-Serie ruhig bleibt.
+        .conditionalEffect(
+            .repeat(.glow(color: color.opacity(0.6), radius: 18), every: 4.0),
+            condition: value > 0
         )
         .overlay(alignment: .topTrailing) {
             if let freezeCount {

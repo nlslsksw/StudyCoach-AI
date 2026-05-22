@@ -2,6 +2,7 @@ import SwiftUI
 import PhotosUI
 import QuickLook
 import UniformTypeIdentifiers
+import Pow
 
 // MARK: - ContentView
 
@@ -477,6 +478,9 @@ struct TodayTab: View {
                 }
             }
             .appHeroCard(gradientColors)
+            // Shine-Sweep läuft einmal, wenn sich die Lernzeit ändert
+            // (z.B. ein neuer Eintrag dazukommt).
+            .changeEffect(.shine.delay(0.1), value: todayMinutes)
         }
         .buttonStyle(.plain)
     }
@@ -674,6 +678,14 @@ struct HomeworkRow: View {
                         .font(.title3)
                         .foregroundStyle(homework.isDone ? .green : .secondary)
                         .frame(width: 28)
+                        // Funken-Spray, wenn die HA als erledigt markiert wird.
+                        .changeEffect(
+                            .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
+                                Image(systemName: "sparkle").foregroundStyle(.green)
+                            },
+                            value: homework.isDone
+                        )
+                        .changeEffect(.feedback(hapticImpact: .light), value: homework.isDone)
                 }
                 .buttonStyle(.plain)
 
