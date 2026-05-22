@@ -1,4 +1,5 @@
 import SwiftUI
+import Charts
 
 // MARK: - Subjects Tab
 
@@ -451,51 +452,37 @@ struct SubjectDetailView: View {
                     .padding(.horizontal)
 
                     if !grades.isEmpty {
+                        // Notenschnitt + Sparkline + Beste/Schlechteste
+                        SubjectGradeOverview(grades: grades)
+                            .padding(.horizontal)
+
                         VStack(spacing: 0) {
                             ForEach(Array(grades.enumerated()), id: \.offset) { index, item in
-                                HStack(spacing: 8) {
+                                HStack(spacing: 10) {
                                     Image(systemName: item.type.icon)
-                                        .font(.caption)
-                                        .foregroundStyle(item.type == .schriftlich ? .blue : .orange)
-                                        .frame(width: 20)
-                                    Text(item.date, format: .dateTime.day().month(.abbreviated).year())
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                    Text(item.type.rawValue)
                                         .font(.caption2)
-                                        .foregroundStyle(.tertiary)
+                                        .foregroundStyle(item.type == .schriftlich ? .blue : .orange)
+                                        .frame(width: 14)
+                                    Text(item.date, format: .dateTime.day().month(.twoDigits).year(.twoDigits))
+                                        .font(.caption.monospacedDigit())
+                                        .foregroundStyle(.secondary)
                                     Spacer()
                                     Text(gradeString(item.grade))
-                                        .font(.title3.bold().monospacedDigit())
+                                        .font(.subheadline.bold().monospacedDigit())
                                         .foregroundStyle(gradeColor(item.grade))
-                                        .frame(width: 40, alignment: .trailing)
+                                        .frame(width: 36, alignment: .trailing)
                                 }
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 10)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
 
                                 if index < grades.count - 1 {
                                     Divider()
-                                        .padding(.leading, 16)
+                                        .padding(.leading, 12)
                                 }
                             }
                         }
                         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
                         .padding(.horizontal)
-
-                        // Trend
-                        if grades.count >= 2 {
-                            let lastGrade = grades.last!.grade
-                            let prevGrade = grades[grades.count - 2].grade
-                            let diff = prevGrade - lastGrade
-                            HStack(spacing: 4) {
-                                Image(systemName: diff > 0 ? "arrow.up.right" : diff < 0 ? "arrow.down.right" : "arrow.right")
-                                    .font(.caption2.bold())
-                                Text(diff > 0 ? "Verbessert um \(String(format: "%.1f", diff))" : diff < 0 ? "Verschlechtert um \(String(format: "%.1f", abs(diff)))" : "Gleichgeblieben")
-                                    .font(.caption)
-                            }
-                            .foregroundStyle(diff > 0 ? .green : diff < 0 ? .red : .secondary)
-                            .padding(.horizontal)
-                        }
                     } else {
                         Text("Noch keine Noten")
                             .font(.subheadline)
@@ -815,5 +802,83 @@ struct SubjectAddSessionView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Subject Grade Overview
+
+/// Notenschnitt + Inline-Sparkline + Beste/Schlechteste/Trend für ein Fach.
+struct SubjectGradeOverview: View {
+    let grades: [(date: Date, grade: Double, type: GradeType)]
+
+    private var average: Double {
+        guard !grades.isEmpty else { return 0 }
+        return grades.map(\.grade).reduce(0, +) / Double(grades.count)
+    }
+    private var best: Double { grades.map(\.grade).min() ?? 0 }
+    private var worst: Double { grades.map(\.grade).max() ?? 0 }
+    private var trend: Double? {
+        guard grades.count >= 2 else { return nil }
+        return grades[grades.count - 2].grade - grades.last!.grade
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            VStack(spacing: 2) {
+                Text(String(format: "%.1f", average))
+                    .font(.system(size: 38, weight: .bold, design: .rounded))
+                    .foregroundStyle(gradeColor(average))
+                Text("Schnitt")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(width: 80)
+
+            VStack(alignment: .leading, spacing: 8) {
+                if grades.count >= 2 {
+                    sparkline
+                        .frame(height: 36)
+                }
+                HStack(spacing: 12) {
+                    Label(gradeString(best), systemImage: "arrow.up.circle.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.green)
+                    Label(gradeString(worst), systemImage: "arrow.down.circle.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.red)
+                    if let d = trend, abs(d) > 0.05 {
+                        Label("\(d > 0 ? "+" : "")\(String(format: "%.1f", d))",
+                              systemImage: d > 0 ? "arrow.up.right" : "arrow.down.right")
+                            .font(.caption2.bold())
+                            .foregroundStyle(d > 0 ? .green : .red)
+                    }
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(12)
+        .background(gradeColor(average).opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var sparkline: some View {
+        Chart {
+            ForEach(Array(grades.enumerated()), id: \.offset) { idx, item in
+                LineMark(
+                    x: .value("Idx", idx),
+                    y: .value("Note", item.grade)
+                )
+                .foregroundStyle(gradeColor(average))
+                .interpolationMethod(.monotone)
+                PointMark(
+                    x: .value("Idx", idx),
+                    y: .value("Note", item.grade)
+                )
+                .foregroundStyle(gradeColor(item.grade))
+                .symbolSize(22)
+            }
+        }
+        .chartYScale(domain: .automatic(includesZero: false, reversed: true))
+        .chartXAxis(.hidden)
+        .chartYAxis(.hidden)
     }
 }
