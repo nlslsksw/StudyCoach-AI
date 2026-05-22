@@ -871,10 +871,20 @@ struct AIChatView: View {
                         .foregroundStyle(message.role == "user" ? .white : .primary)
                         .background(
                             message.role == "user"
-                                ? AnyShapeStyle(LinearGradient(colors: [.blue, .blue.opacity(0.8)], startPoint: .top, endPoint: .bottom))
-                                : AnyShapeStyle(Color(.systemGray6)),
-                        in: RoundedRectangle(cornerRadius: 18)
-                    )
+                                ? AnyShapeStyle(LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                : AnyShapeStyle(Color(.secondarySystemGroupedBackground)),
+                            in: UnevenRoundedRectangle(
+                                cornerRadii: .init(
+                                    topLeading: 18,
+                                    bottomLeading: message.role == "user" ? 18 : 6,
+                                    bottomTrailing: message.role == "user" ? 6 : 18,
+                                    topTrailing: 18
+                                ),
+                                style: .continuous
+                            )
+                        )
+                        .shadow(color: message.role == "user" ? .purple.opacity(0.18) : .black.opacity(0.04),
+                                radius: 4, x: 0, y: 2)
                 }
 
                 // Quiz-Link
