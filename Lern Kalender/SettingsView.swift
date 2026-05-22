@@ -19,6 +19,7 @@ struct SettingsView: View {
     @State private var showingWrappedHalbjahr = false
     @State private var showingWrappedJahr = false
     @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
+    @State private var showingWebuntis = false
     @State private var dailyReminderEnabled: Bool = NotificationHelper.dailyReminderEnabled
     @State private var dailyReminderTime: Date = {
         var comps = DateComponents()
@@ -104,6 +105,42 @@ struct SettingsView: View {
                     Text("Lern-Erinnerung")
                 } footer: {
                     Text("Du bekommst täglich zur gewählten Zeit eine Mitteilung. Wenn du an dem Tag schon Lernzeit eingetragen hast, wird die Erinnerung für heute übersprungen.")
+                }
+
+                // Webuntis
+                Section {
+                    Button {
+                        showingWebuntis = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "network")
+                                .foregroundStyle(.white)
+                                .frame(width: 28, height: 28)
+                                .background(
+                                    LinearGradient(colors: [.cyan, .blue],
+                                                   startPoint: .topLeading, endPoint: .bottomTrailing),
+                                    in: RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                )
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(WebuntisService.shared.isConfigured ? "Webuntis verbunden" : "Mit Webuntis verbinden")
+                                    .foregroundStyle(.primary)
+                                if WebuntisService.shared.isConfigured {
+                                    Text(WebuntisService.shared.school)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            Spacer()
+                            if WebuntisService.shared.isConfigured {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.green)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Webuntis")
+                } footer: {
+                    Text("Holt Stundenplan und Hausaufgaben automatisch aus Webuntis. Zugangsdaten werden lokal im Gerät gespeichert (Passwort im Keychain).")
                 }
 
                 // Schulferien
@@ -306,6 +343,9 @@ struct SettingsView: View {
                 PINSetupView { pin in
                     store.parentalPIN = pin
                 }
+            }
+            .sheet(isPresented: $showingWebuntis) {
+                WebuntisConnectView(store: store)
             }
             .navigationTitle("Einstellungen")
             .navigationBarTitleDisplayMode(.inline)
