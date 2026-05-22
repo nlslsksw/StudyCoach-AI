@@ -388,6 +388,7 @@ struct SubjectDetailView: View {
     let subject: Subject
     @State private var showingAddGrade = false
     @State private var showingAddSession = false
+    @State private var showingAIForSubject = false
 
     private var grades: [(date: Date, grade: Double, type: GradeType)] {
         store.gradesFor(subject: subject)
@@ -602,11 +603,25 @@ struct SubjectDetailView: View {
         }
         .navigationTitle(subject.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if store.aiAllowed {
+                ToolbarItem(placement: .primaryAction) {
+                    Button { showingAIForSubject = true } label: {
+                        Image(systemName: "sparkles")
+                            .foregroundStyle(.purple)
+                    }
+                    .accessibilityLabel("KI für \(subject.name)")
+                }
+            }
+        }
         .sheet(isPresented: $showingAddGrade) {
             SubjectAddGradeView(store: store, subjectName: subject.name)
         }
         .sheet(isPresented: $showingAddSession) {
             SubjectAddSessionView(store: store, subjectName: subject.name)
+        }
+        .sheet(isPresented: $showingAIForSubject) {
+            AIAssistantTab(store: store)
         }
     }
 }

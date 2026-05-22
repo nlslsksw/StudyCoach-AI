@@ -68,6 +68,11 @@ struct ContentView: View {
                 NavigationSplitView {
                     List {
                         NavigationLink {
+                            TodayTab(store: store)
+                        } label: {
+                            Label("Heute", systemImage: "sun.max.fill")
+                        }
+                        NavigationLink {
                             CalendarTab(store: store)
                         } label: {
                             Label("Kalender", systemImage: "calendar")
@@ -78,16 +83,6 @@ struct ContentView: View {
                             Label("Fächer", systemImage: "book.fill")
                         }
                         NavigationLink {
-                            StudyLogTab(store: store)
-                        } label: {
-                            Label("Lernzeit", systemImage: "clock.fill")
-                        }
-                        NavigationLink {
-                            AIAssistantTab(store: store)
-                        } label: {
-                            Label("KI", systemImage: "sparkles")
-                        }
-                        NavigationLink {
                             StatisticsTab(store: store)
                         } label: {
                             Label("Statistik", systemImage: "chart.bar.fill")
@@ -95,97 +90,23 @@ struct ContentView: View {
                     }
                     .navigationTitle("Lern Kalender")
                 } detail: {
-                    CalendarTab(store: store)
+                    TodayTab(store: store)
                 }
             } else {
                 // iPhone: TabView
                 TabView {
+                    TodayTab(store: store)
+                        .tabItem { Label("Heute", systemImage: "sun.max.fill") }
                     CalendarTab(store: store)
                         .tabItem { Label("Kalender", systemImage: "calendar") }
                     SubjectsTab(store: store)
                         .tabItem { Label("Fächer", systemImage: "book.fill") }
-                    StudyLogTab(store: store)
-                        .tabItem { Label("Lernzeit", systemImage: "clock.fill") }
-                    AIAssistantTab(store: store)
-                        .tabItem { Label("KI", systemImage: "sparkles") }
                     StatisticsTab(store: store)
                         .tabItem { Label("Statistik", systemImage: "chart.bar.fill") }
                 }
             }
         }
-        .onAppear {
-            NotificationHelper.requestPermission()
-            // Tägliche Lernzeit-Erinnerung neu planen
-            NotificationHelper.refreshDailyReminder()
-            // Streak-Lücken (z.B. seit letztem App-Start) mit Freezes überbrücken
-            store.recomputeAndConsumeFreezes()
-            // Einmalige Migration: alte stale Motivation-Nachricht entsorgen.
-            // Vorher wurde die Nachricht bei jedem Fetch mit neuer UUID erzeugt,
-            // dadurch hat der id-basierte lastSeen-Vergleich nie gepasst und die
-            // Nachricht poppte nach jedem App-Start wieder auf.
-            let motivationMigrationKey = "motivationCleanupV2"
-            if !UserDefaults.standard.bool(forKey: motivationMigrationKey) {
-                UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lastSeenMotivationDate")
-                store.motivationMessage = nil
-                UserDefaults.standard.set(true, forKey: motivationMigrationKey)
-            }
-            // Kind-Daten beim Start zu CloudKit synchen
-            store.syncToCloudIfNeeded()
-            if let link = store.familyLink, link.isActive {
-                Task {
-                    if let goal = await CloudKitService.shared.fetchStudyGoal(pairingCode: link.pairingCode) {
-                        await MainActor.run { store.studyGoal = goal }
-                    }
-                }
-            }
-            // Motivations-Nachricht laden (nur neue anzeigen).
-            // Vergleich über `date`, da fetchMotivationMessage bei jedem Aufruf eine
-            // neue UUID erzeugt. `lastSeen` wird sofort beim Anzeigen gesetzt, damit
-            // die Nachricht nicht erneut aufpoppt, falls die App vor dem Dismiss
-            // geschlossen wird.
-            if let link = store.familyLink, link.isActive {
-                Task {
-                    if let msg = await CloudKitService.shared.fetchMotivationMessage(pairingCode: link.pairingCode) {
-                        let lastSeen = UserDefaults.standard.double(forKey: "lastSeenMotivationDate")
-                        if msg.date.timeIntervalSince1970 > lastSeen {
-                            UserDefaults.standard.set(msg.date.timeIntervalSince1970, forKey: "lastSeenMotivationDate")
-                            await MainActor.run { store.motivationMessage = msg }
-                        }
-                    }
-                }
-            }
-            // Shared calendar entries laden
-            if let link = store.familyLink, link.isActive {
-                Task {
-                    let shared = await CloudKitService.shared.fetchSharedCalendarEntries(pairingCode: link.pairingCode)
-                    await MainActor.run { store.sharedCalendarEntries = shared }
-                }
-            }
-            // Hivemind: pull parent-assigned topics
-            if let link = store.familyLink, link.isActive {
-                Task {
-                    let (remoteTopics, remoteProgress) = await CloudKitService.shared.fetchTopics(pairingCode: link.pairingCode)
-                    await MainActor.run {
-                        TopicStore.shared.mergeRemote(topics: remoteTopics, progress: remoteProgress)
-                    }
-                }
-            }
-            // Parental controls: pull aiAllowed flag from the parent
-            if let link = store.familyLink, link.isActive {
-                Task {
-                    if let allowed = await CloudKitService.shared.fetchAIAllowed(pairingCode: link.pairingCode) {
-                        await MainActor.run { store.aiAllowed = allowed }
-                    }
-                }
-            }
-            // Lern-Wrapped automatisch anzeigen
-            if let trigger = WrappedTrigger.shouldShowWrapped(store: store) {
-                wrappedSchoolYear = trigger.schoolYear
-                wrappedIsHalbjahr = trigger.isHalbjahr
-                showWrapped = true
-                WrappedTrigger.markAsShown(store: store, isHalbjahr: trigger.isHalbjahr)
-            }
-        }
+        .onAppear(perform: handleStudentAppear)
         .fullScreenCover(isPresented: $showWrapped) {
             LernWrappedView(store: store, schoolYear: wrappedSchoolYear, isHalbjahr: wrappedIsHalbjahr)
         }
@@ -218,6 +139,75 @@ struct ContentView: View {
             if newValue != nil {
                 withAnimation { showingMotivation = true }
             }
+        }
+    }
+
+    // MARK: - Setup-Helpers (entschlackt aus onAppear)
+
+    private func handleStudentAppear() {
+        NotificationHelper.requestPermission()
+        NotificationHelper.refreshDailyReminder()
+        store.recomputeAndConsumeFreezes()
+        runMotivationCleanupMigration()
+        store.syncToCloudIfNeeded()
+        if let link = store.familyLink, link.isActive {
+            loadCloudKitData(for: link)
+        }
+        triggerWrappedIfDue()
+    }
+
+    /// Einmalige Migration: alte stale Motivation-Nachricht entsorgen.
+    /// Vor dem Fix hatte jede gefetchte Nachricht eine neue UUID — der id-basierte
+    /// lastSeen-Vergleich passte nie, dadurch poppte die alte Nachricht jedes
+    /// Mal wieder auf.
+    private func runMotivationCleanupMigration() {
+        let key = "motivationCleanupV2"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lastSeenMotivationDate")
+        store.motivationMessage = nil
+        UserDefaults.standard.set(true, forKey: key)
+    }
+
+    private func loadCloudKitData(for link: FamilyLink) {
+        Task {
+            if let goal = await CloudKitService.shared.fetchStudyGoal(pairingCode: link.pairingCode) {
+                await MainActor.run { store.studyGoal = goal }
+            }
+        }
+        // Motivations-Nachricht: Vergleich über `date`, `lastSeen` wird sofort
+        // beim Anzeigen gesetzt — auch wenn die App vor Dismiss geschlossen wird.
+        Task {
+            if let msg = await CloudKitService.shared.fetchMotivationMessage(pairingCode: link.pairingCode) {
+                let lastSeen = UserDefaults.standard.double(forKey: "lastSeenMotivationDate")
+                if msg.date.timeIntervalSince1970 > lastSeen {
+                    UserDefaults.standard.set(msg.date.timeIntervalSince1970, forKey: "lastSeenMotivationDate")
+                    await MainActor.run { store.motivationMessage = msg }
+                }
+            }
+        }
+        Task {
+            let shared = await CloudKitService.shared.fetchSharedCalendarEntries(pairingCode: link.pairingCode)
+            await MainActor.run { store.sharedCalendarEntries = shared }
+        }
+        Task {
+            let (remoteTopics, remoteProgress) = await CloudKitService.shared.fetchTopics(pairingCode: link.pairingCode)
+            await MainActor.run {
+                TopicStore.shared.mergeRemote(topics: remoteTopics, progress: remoteProgress)
+            }
+        }
+        Task {
+            if let allowed = await CloudKitService.shared.fetchAIAllowed(pairingCode: link.pairingCode) {
+                await MainActor.run { store.aiAllowed = allowed }
+            }
+        }
+    }
+
+    private func triggerWrappedIfDue() {
+        if let trigger = WrappedTrigger.shouldShowWrapped(store: store) {
+            wrappedSchoolYear = trigger.schoolYear
+            wrappedIsHalbjahr = trigger.isHalbjahr
+            showWrapped = true
+            WrappedTrigger.markAsShown(store: store, isHalbjahr: trigger.isHalbjahr)
         }
     }
 
@@ -304,3 +294,220 @@ struct ParentSettingsTab: View {
 }
 
 #Preview { ContentView() }
+
+// MARK: - Today Tab (Dashboard)
+
+/// Startseite mit Streak, heutiger Lernzeit, anstehenden Terminen und Quick-Actions.
+/// Ersetzt den separaten "Lernzeit"-Tab und den "KI"-Tab.
+struct TodayTab: View {
+    var store: DataStore
+
+    @State private var showingAddSession = false
+    @State private var showingTimer = false
+    @State private var showingAllSessions = false
+    @State private var showingAI = false
+    @State private var showingSettings = false
+    @State private var showingProfile = false
+
+    private var today: Date { Date() }
+    private var todaySessions: [StudySession] { store.sessions(for: today) }
+    private var todayMinutes: Int { store.totalMinutes(in: todaySessions) }
+    private var todayEntries: [CalendarEntry] { store.entries(for: today) }
+
+    private var greeting: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<11: return "Guten Morgen"
+        case 11..<14: return "Hallo"
+        case 14..<18: return "Guten Tag"
+        default: return "Guten Abend"
+        }
+    }
+
+    private var todayString: String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "de_DE")
+        f.dateFormat = "EEEE, d. MMMM"
+        return f.string(from: today)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    // Streak + Eis
+                    HStack(spacing: 12) {
+                        StreakCard(
+                            title: "Aktuelle Serie",
+                            value: store.currentStreak(),
+                            icon: "flame.fill",
+                            color: .orange,
+                            freezeCount: store.streakState.freezeCount
+                        )
+                    }
+                    .padding(.horizontal)
+
+                    // Heutige Lernzeit
+                    todayStudyCard
+                        .padding(.horizontal)
+
+                    // Quick-Actions
+                    quickActionsRow
+                        .padding(.horizontal)
+
+                    // Anstehende Termine heute
+                    if !todayEntries.isEmpty {
+                        todayEntriesSection
+                            .padding(.horizontal)
+                    }
+
+                    // Lernziel (falls gesetzt)
+                    if let goal = store.studyGoal, goal.dailyMinutesGoal > 0 || goal.weeklyMinutesGoal > 0 {
+                        GoalProgressView(store: store)
+                            .padding(.horizontal)
+                    }
+
+                    Spacer(minLength: 20)
+                }
+                .padding(.top, 4)
+            }
+            .navigationTitle(greeting)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(todayString)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button { showingSettings = true } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddSession) {
+                AddStudySessionView(initialDate: Date(), store: store)
+            }
+            .fullScreenCover(isPresented: $showingTimer) {
+                StudyTimerView(store: store)
+            }
+            .sheet(isPresented: $showingAllSessions) {
+                NavigationStack {
+                    StudyLogTab(store: store)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Fertig") { showingAllSessions = false }
+                            }
+                        }
+                }
+            }
+            .sheet(isPresented: $showingAI) {
+                AIAssistantTab(store: store)
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView(store: store)
+            }
+        }
+    }
+
+    private var todayStudyCard: some View {
+        Button {
+            showingAllSessions = true
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "clock.fill")
+                    .font(.title)
+                    .foregroundStyle(.blue)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(formatHoursMinutes(todayMinutes))
+                        .font(.title2.bold().monospacedDigit())
+                        .foregroundStyle(.primary)
+                    Text(todaySessions.isEmpty ? "Heute noch nichts gelernt" : "Heute gelernt · \(todaySessions.count) \(todaySessions.count == 1 ? "Eintrag" : "Einträge")")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.blue.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var quickActionsRow: some View {
+        HStack(spacing: 10) {
+            quickActionTile(icon: "plus.circle.fill", title: "Eintragen", color: .blue) {
+                showingAddSession = true
+            }
+            quickActionTile(icon: "timer", title: "Timer", color: .green) {
+                showingTimer = true
+            }
+            if store.aiAllowed {
+                quickActionTile(icon: "sparkles", title: "KI", color: .purple) {
+                    showingAI = true
+                }
+            }
+        }
+    }
+
+    private func quickActionTile(icon: String, title: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(color)
+                Text(title)
+                    .font(.caption.bold())
+                    .foregroundStyle(.primary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var todayEntriesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Heute fällig")
+                .font(.subheadline.bold())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 4)
+
+            VStack(spacing: 0) {
+                ForEach(Array(todayEntries.enumerated()), id: \.element.id) { index, entry in
+                    HStack(spacing: 10) {
+                        Image(systemName: entry.type.icon)
+                            .font(.subheadline)
+                            .foregroundStyle(entry.type.color)
+                            .frame(width: 24)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(entry.title)
+                                .font(.subheadline.bold())
+                            Text(entry.type.rawValue)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if entry.isCompleted {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    if index < todayEntries.count - 1 {
+                        Divider().padding(.leading, 12)
+                    }
+                }
+            }
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}

@@ -9,7 +9,6 @@ struct CalendarTab: View {
     @State private var showingAddEntry = false
     @State private var showingAddSession = false
     @State private var showingDeleteAll = false
-    @State private var showingSettings = false
     @State private var showingStudyPlan = false
 
     var body: some View {
@@ -59,20 +58,12 @@ struct CalendarTab: View {
                         Text("Heute")
                     }
                 }
-                ToolbarItem(placement: .primaryAction) {
-                    Button { showingSettings = true } label: {
-                        Image(systemName: "gearshape")
-                    }
-                }
             }
             .sheet(isPresented: $showingAddEntry) {
                 AddEntryView(initialDate: selectedDate, store: store)
             }
             .sheet(isPresented: $showingAddSession) {
                 AddStudySessionView(initialDate: selectedDate, store: store)
-            }
-            .sheet(isPresented: $showingSettings) {
-                SettingsView(store: store)
             }
             .sheet(isPresented: $showingStudyPlan) {
                 StudyPlanView(store: store)
