@@ -343,27 +343,43 @@ final class WebuntisService {
     }
 
     private func fetchHomework(from start: Int, to end: Int) async throws -> [RawHomework] {
-        let params: [String: Any] = [
+        let dictParams: [String: Any] = [
             "startDate": start,
             "endDate": end
         ]
-        // Schreibweise variiert je Webuntis-Version.
-        let methodCandidates = ["getHomeWork", "getHomeworks", "getHomeWorks"]
+
+        // Webuntis benennt die Methode je nach Version unterschiedlich,
+        // manche Versionen wollen außerdem positionale Parameter [start, end]
+        // statt eines Dicts. Wir probieren alle gängigen Kombinationen.
+        let attempts: [(method: String, params: Any)] = [
+            ("getHomeWork", dictParams),
+            ("getHomeworks", dictParams),
+            ("getHomeWorks", dictParams),
+            ("getHomework", dictParams),
+            ("getStudentHomeWork", dictParams),
+            ("getHomeWorkForUser", dictParams),
+            ("getHomeWork", [start, end]),
+            ("getHomeworks", [start, end])
+        ]
 
         var lastError: Error?
-        for method in methodCandidates {
+        for attempt in attempts {
             do {
-                let result = try await rpc(method: method, params: params)
+                let result = try await rpc(method: attempt.method, params: attempt.params)
                 return parseHomework(result)
             } catch let err as WebuntisError {
-                if case .rpc(let code, _) = err, code == -32601 {
+                if case .rpc(let code, _) = err, code == -32601 || code == -32602 {
+                    // -32601 = method not found, -32602 = invalid params
                     lastError = err
                     continue
                 }
                 throw err
             }
         }
-        throw lastError ?? WebuntisError.rpc(code: -32601, message: "Hausaufgaben-API nicht verfügbar")
+        throw lastError ?? WebuntisError.rpc(
+            code: -32601,
+            message: "Hausaufgaben-API ist auf eurer Webuntis-Instanz nicht über JSON-RPC verfügbar. Vermutlich gehen Hausaufgaben nur über die neue REST-API (kann ich nachrüsten)."
+        )
     }
 
     private func parseHomework(_ result: Any) -> [RawHomework] {
