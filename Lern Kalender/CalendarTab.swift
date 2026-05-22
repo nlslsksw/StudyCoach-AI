@@ -311,30 +311,54 @@ struct DayDetailSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Ferien-Banner
+            // Ferien-Banner mit Gradient
             if let holiday = store.holidayName(on: date) {
-                HStack(spacing: 6) {
+                HStack(spacing: 8) {
                     Image(systemName: "sun.max.fill")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.white)
+                        .frame(width: 26, height: 26)
+                        .background(
+                            LinearGradient(colors: [.orange, .yellow],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing),
+                            in: RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        )
                     Text(holiday)
                         .font(.subheadline.bold())
-                        .foregroundStyle(.green)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Text("Ferien")
+                        .font(.caption2.bold())
+                        .foregroundStyle(.orange)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Color.orange.opacity(0.15), in: Capsule())
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
-                .background(Color.green.opacity(0.1))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(
+                    LinearGradient(colors: [Color.orange.opacity(0.10), Color.yellow.opacity(0.04)],
+                                   startPoint: .leading, endPoint: .trailing)
+                )
             }
 
-            // Tages-Header
-            HStack(alignment: .center) {
-                VStack(alignment: .leading, spacing: 2) {
+            // Tages-Header mit Lernzeit-Capsule
+            HStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(dateString)
-                        .font(.headline)
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.primary)
                     let dayMinutes = store.totalMinutes(in: store.sessions(for: date))
                     if dayMinutes > 0 {
-                        Label("\(formatHoursMinutes(dayMinutes)) gelernt", systemImage: "book.fill")
-                            .font(.caption)
-                            .foregroundStyle(.purple)
+                        HStack(spacing: 6) {
+                            Image(systemName: "book.fill")
+                                .font(.caption2)
+                                .foregroundStyle(.white)
+                                .frame(width: 18, height: 18)
+                                .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+                            Text("\(formatHoursMinutes(dayMinutes)) gelernt")
+                                .font(.caption)
+                                .foregroundStyle(.purple)
+                        }
                     }
                 }
                 Spacer()
@@ -342,15 +366,15 @@ struct DayDetailSection: View {
                     onAddSession()
                 } label: {
                     Label("Lernzeit", systemImage: "clock.badge.checkmark")
-                        .font(.caption)
+                        .font(.caption.bold())
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
                 .controlSize(.small)
                 .tint(.purple)
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 14)
             .padding(.top, 10)
-            .padding(.bottom, 4)
+            .padding(.bottom, 6)
 
             let dayEntries = store.entries(for: date)
             let dayRecurring = store.recurringTasks(for: date)
@@ -617,47 +641,73 @@ struct EntryRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            // Icon-Plakette mit Type-Farbe
+            Image(systemName: entry.type.icon)
+                .font(.caption)
+                .foregroundStyle(.white)
+                .frame(width: 32, height: 32)
+                .background(
+                    LinearGradient(colors: [entry.type.color, entry.type.color.opacity(0.75)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing),
+                    in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                )
+                .shadow(color: entry.type.color.opacity(0.3), radius: 3, x: 0, y: 1)
+                .opacity(entry.isCompleted ? 0.45 : 1)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(entry.title)
+                    .font(.subheadline.bold())
+                    .strikethrough(entry.isCompleted)
+                    .foregroundStyle(entry.isCompleted ? .secondary : .primary)
+
+                HStack(spacing: 6) {
+                    Text(entry.type.rawValue)
+                        .font(.caption2)
+                        .foregroundStyle(entry.type.color)
+                    Text("·")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Text(entry.date, format: .dateTime.hour().minute())
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                    if entry.reminderEnabled {
+                        Image(systemName: "bell.fill")
+                            .font(.caption2)
+                            .foregroundStyle(.orange)
+                    }
+                    if !entry.notes.isEmpty {
+                        Text("·")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                        Text(entry.notes)
+                            .font(.caption2)
+                            .lineLimit(1)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+            }
+
+            Spacer()
+
+            if let grade = entry.grade {
+                Text(gradeString(grade))
+                    .font(.subheadline.bold().monospacedDigit())
+                    .foregroundStyle(gradeColor(grade))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(gradeColor(grade).opacity(0.15), in: Capsule())
+            }
+
             Button {
                 onToggle()
             } label: {
                 Image(systemName: entry.isCompleted ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
                     .foregroundStyle(entry.isCompleted ? .green : .secondary)
+                    .frame(width: 32, height: 32)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(entry.title)
-                    .fontWeight(.medium)
-                    .strikethrough(entry.isCompleted)
-                    .foregroundStyle(entry.isCompleted ? .secondary : .primary)
-
-                HStack(spacing: 8) {
-                    Label(entry.type.rawValue, systemImage: entry.type.icon)
-                        .foregroundStyle(entry.type.color)
-                    if !entry.notes.isEmpty {
-                        Text(entry.notes)
-                            .lineLimit(1)
-                    }
-                    if entry.reminderEnabled {
-                        Image(systemName: "bell.fill")
-                            .foregroundStyle(.orange)
-                    }
-                    if let grade = entry.grade {
-                        Text("Note: \(gradeString(grade))")
-                            .fontWeight(.semibold)
-                            .foregroundStyle(gradeColor(grade))
-                    }
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Text(entry.date, format: .dateTime.hour().minute())
-                .font(.subheadline.monospacedDigit())
-                .foregroundStyle(.secondary)
         }
         .padding(.vertical, 4)
     }

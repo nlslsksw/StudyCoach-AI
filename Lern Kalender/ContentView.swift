@@ -486,11 +486,13 @@ struct TodayTab: View {
                 }
             }
             .appHeroCard(gradientColors)
-            // Shine-Sweep läuft einmal, wenn sich die Lernzeit ändert
-            // (z.B. ein neuer Eintrag dazukommt).
+            // Shine-Sweep läuft einmal beim Erscheinen UND wenn sich die
+            // Lernzeit ändert (z.B. neuer Eintrag).
+            .changeEffect(.shine.delay(0.3), value: heroAppearTrigger)
             .changeEffect(.shine.delay(0.1), value: todayMinutes)
         }
         .buttonStyle(.plain)
+        .onAppear { heroAppearTrigger += 1 }
     }
 
     private var quickActionsRow: some View {
@@ -512,8 +514,14 @@ struct TodayTab: View {
         }
     }
 
+    @State private var quickActionTapCounters: [String: Int] = [:]
+    @State private var heroAppearTrigger: Int = 0
+
     private func quickActionTile(icon: String, title: String, color: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        Button {
+            quickActionTapCounters[title, default: 0] += 1
+            action()
+        } label: {
             VStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.title3)
@@ -525,6 +533,20 @@ struct TodayTab: View {
                         in: RoundedRectangle(cornerRadius: 11, style: .continuous)
                     )
                     .shadow(color: color.opacity(0.3), radius: 4, x: 0, y: 2)
+                    // Spray + Pulse beim Tippen — fühlt sich klickig an.
+                    .changeEffect(
+                        .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
+                            Image(systemName: icon).foregroundStyle(color)
+                        },
+                        value: quickActionTapCounters[title, default: 0]
+                    )
+                    .changeEffect(
+                        .pulse(shape: RoundedRectangle(cornerRadius: 11, style: .continuous),
+                               drawingMode: .stroke, count: 1),
+                        value: quickActionTapCounters[title, default: 0]
+                    )
+                    .changeEffect(.feedback(hapticImpact: .light),
+                                  value: quickActionTapCounters[title, default: 0])
                 Text(title)
                     .font(.caption.bold())
                     .foregroundStyle(.primary)
@@ -740,17 +762,26 @@ struct HomeworkRow: View {
                     store.toggleHomeworkDone(homework)
                 } label: {
                     Image(systemName: homework.isDone ? "checkmark.circle.fill" : "circle")
-                        .font(.title3)
+                        .font(.title2)
                         .foregroundStyle(homework.isDone ? .green : .secondary)
-                        .frame(width: 28)
-                        // Funken-Spray, wenn die HA als erledigt markiert wird.
+                        .frame(width: 32, height: 32)
+                        .contentShape(Rectangle())
+                        // Springt sichtbar, sobald abgehakt — der eigentliche
+                        // Spray-Effekt darunter wird mit dem .ping- und .pop-
+                        // Combo deutlich sichtbarer.
                         .changeEffect(
                             .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
-                                Image(systemName: "sparkle").foregroundStyle(.green)
+                                Group {
+                                    Image(systemName: "sparkle").foregroundStyle(.green)
+                                    Image(systemName: "checkmark").foregroundStyle(.mint)
+                                    Image(systemName: "star.fill").foregroundStyle(.yellow)
+                                }
+                                .font(.system(size: 16))
                             },
                             value: homework.isDone
                         )
-                        .changeEffect(.feedback(hapticImpact: .light), value: homework.isDone)
+                        .changeEffect(.pulse(shape: Circle(), drawingMode: .stroke, count: 2), value: homework.isDone)
+                        .changeEffect(.feedback(hapticImpact: .medium), value: homework.isDone)
                 }
                 .buttonStyle(.plain)
 

@@ -349,6 +349,8 @@ struct StreakCard: View {
     var freezeCount: Int? = nil
 
     @State private var showFreezeInfo = false
+    /// Trigger für Milestone-Effekt (steigt nur bei 7/30/100/365 etc.).
+    private var milestoneTrigger: Int { (value % 7 == 0 && value > 0) ? value : 0 }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -399,6 +401,23 @@ struct StreakCard: View {
             .repeat(.glow(color: color.opacity(0.6), radius: 18), every: 4.0),
             condition: value > 0
         )
+        // Milestone-Burst: Ping-Wellen + großer Spray bei jedem 7-er-Schritt.
+        .changeEffect(
+            .spray(origin: UnitPoint(x: 0.25, y: 0.5)) {
+                Group {
+                    Image(systemName: "flame.fill").foregroundStyle(.orange)
+                    Image(systemName: "star.fill").foregroundStyle(.yellow)
+                    Image(systemName: "sparkles").foregroundStyle(.pink)
+                }
+                .font(.system(size: 20))
+            },
+            value: milestoneTrigger
+        )
+        .changeEffect(
+            .pulse(shape: RoundedRectangle(cornerRadius: AppRadius.medium), drawingMode: .stroke, count: 3),
+            value: milestoneTrigger
+        )
+        .changeEffect(.feedback(hapticNotification: .success), value: milestoneTrigger)
         .overlay(alignment: .topTrailing) {
             if let freezeCount {
                 Button {
