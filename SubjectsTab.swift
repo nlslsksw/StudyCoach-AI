@@ -907,23 +907,25 @@ struct SubjectGradeOverview: View {
     }
 
     private var sparkline: some View {
+        // Werte werden gespiegelt (7 - grade), damit eine 1 oben und eine 6
+        // unten landet. Echte Note bleibt in der Farbe sichtbar.
         Chart {
             ForEach(Array(grades.enumerated()), id: \.offset) { idx, item in
                 LineMark(
                     x: .value("Idx", idx),
-                    y: .value("Note", item.grade)
+                    y: .value("Note", 7 - item.grade)
                 )
                 .foregroundStyle(gradeColor(average))
                 .interpolationMethod(.monotone)
                 PointMark(
                     x: .value("Idx", idx),
-                    y: .value("Note", item.grade)
+                    y: .value("Note", 7 - item.grade)
                 )
                 .foregroundStyle(gradeColor(item.grade))
                 .symbolSize(22)
             }
         }
-        .chartYScale(domain: 6.0...1.0)
+        .chartYScale(domain: 1...6)
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
     }
@@ -1082,9 +1084,17 @@ struct SubjectActivitySheet: View {
         HStack(spacing: 12) {
             Image(systemName: subject.icon)
                 .font(.title2)
-                .foregroundStyle(subject.color)
+                .foregroundStyle(.white)
                 .frame(width: 52, height: 52)
-                .background(subject.color.opacity(0.15), in: RoundedRectangle(cornerRadius: 14))
+                .background(
+                    AppMeshBackground(colors: [
+                        subject.color,
+                        subject.color.opacity(0.7),
+                        subject.color.opacity(0.85)
+                    ])
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                )
+                .shadow(color: subject.color.opacity(0.35), radius: 6, x: 0, y: 3)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Aktivität in \(subject.name)")
@@ -1281,11 +1291,12 @@ struct GradesOverviewView: View {
             }
             .padding(16)
             .background(
-                LinearGradient(
-                    colors: [gradeColor(totalAvg).opacity(0.18), gradeColor(totalAvg).opacity(0.05)],
-                    startPoint: .topLeading, endPoint: .bottomTrailing
-                ),
-                in: RoundedRectangle(cornerRadius: 18)
+                AppMeshBackground(colors: [
+                    gradeColor(totalAvg).opacity(0.32),
+                    gradeColor(totalAvg).opacity(0.12),
+                    gradeColor(totalAvg).opacity(0.20)
+                ])
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             )
         }
     }
@@ -1296,31 +1307,37 @@ struct GradesOverviewView: View {
             Text("Notenverlauf")
                 .font(.subheadline.bold())
                 .foregroundStyle(.secondary)
+            // Achse gespiegelt: gespeichert wird `7 - grade`, Y-Labels werden
+            // beim Anzeigen zurückgerechnet (Domain bleibt valides 1...6).
             Chart {
                 ForEach(points) { p in
                     LineMark(
                         x: .value("Datum", p.date),
-                        y: .value("Note", p.grade),
+                        y: .value("Note", 7 - p.grade),
                         series: .value("Alle", "alle")
                     )
                     .foregroundStyle(.secondary.opacity(0.4))
                     .interpolationMethod(.monotone)
                     PointMark(
                         x: .value("Datum", p.date),
-                        y: .value("Note", p.grade)
+                        y: .value("Note", 7 - p.grade)
                     )
                     .foregroundStyle(store.colorForSubject(p.subject))
                     .symbolSize(40)
                 }
-                RuleMark(y: .value("Schnitt", totalAvg))
+                RuleMark(y: .value("Schnitt", 7 - totalAvg))
                     .foregroundStyle(gradeColor(totalAvg).opacity(0.7))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
             }
-            .chartYScale(domain: 6.0...1.0)
+            .chartYScale(domain: 1...6)
             .chartYAxis {
-                AxisMarks(values: [1, 2, 3, 4, 5, 6]) { _ in
+                AxisMarks(values: [1, 2, 3, 4, 5, 6]) { value in
                     AxisGridLine()
-                    AxisValueLabel()
+                    AxisValueLabel {
+                        if let v = value.as(Int.self) {
+                            Text("\(7 - v)")
+                        }
+                    }
                 }
             }
             .frame(height: 160)
@@ -1400,19 +1417,19 @@ struct GradeSubjectCard: View {
                     ForEach(Array(grades.enumerated()), id: \.offset) { idx, item in
                         LineMark(
                             x: .value("Idx", idx),
-                            y: .value("Note", item.grade)
+                            y: .value("Note", 7 - item.grade)
                         )
                         .foregroundStyle(color)
                         .interpolationMethod(.monotone)
                         PointMark(
                             x: .value("Idx", idx),
-                            y: .value("Note", item.grade)
+                            y: .value("Note", 7 - item.grade)
                         )
                         .foregroundStyle(gradeColor(item.grade))
                         .symbolSize(18)
                     }
                 }
-                .chartYScale(domain: 6.0...1.0)
+                .chartYScale(domain: 1...6)
                 .chartXAxis(.hidden)
                 .chartYAxis(.hidden)
                 .frame(height: 30)

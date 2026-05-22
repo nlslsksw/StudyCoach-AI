@@ -436,7 +436,7 @@ struct TodayTab: View {
     /// Hero-Header oben im Today-Tab: Gradient-Card mit Begrüßung, Datum
     /// und heutiger Lernzeit. Tap öffnet die ausführliche Lernzeit-Liste.
     private var heroHeader: some View {
-        let gradientColors: [Color] = [Color.blue, Color.purple]
+        let gradientColors: [Color] = [Color.blue, Color.purple, Color.indigo]
         return Button {
             showingAllSessions = true
         } label: {

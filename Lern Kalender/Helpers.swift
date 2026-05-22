@@ -282,7 +282,7 @@ struct AppTintedCardStyle: ViewModifier {
     }
 }
 
-/// Hero-Card mit kräftigem Farbverlauf — für die Top-Karte im Today-Tab o.ä.
+/// Hero-Card mit lebendigem Mesh-Gradient (Fallback Linear für ältere iOS).
 struct AppHeroCardStyle: ViewModifier {
     let colors: [Color]
     var radius: CGFloat = AppRadius.large
@@ -291,11 +291,55 @@ struct AppHeroCardStyle: ViewModifier {
         content
             .padding(padding)
             .background(
-                LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing),
-                in: RoundedRectangle(cornerRadius: radius, style: .continuous)
+                AppMeshBackground(colors: colors)
+                    .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
             )
             .foregroundStyle(.white)
             .shadow(color: (colors.first ?? .black).opacity(0.25), radius: 14, x: 0, y: 6)
+    }
+}
+
+/// 3x3 MeshGradient für Hero-Cards (iOS 18+), sonst Linear-Gradient-Fallback.
+/// Erwartet 2+ Farben; weniger werden auf 2 ergänzt.
+struct AppMeshBackground: View {
+    let colors: [Color]
+
+    var body: some View {
+        let c = expandedColors
+        if #available(iOS 18.0, *) {
+            MeshGradient(
+                width: 3,
+                height: 3,
+                points: [
+                    [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
+                    [0.0, 0.5], [0.5, 0.5], [1.0, 0.5],
+                    [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
+                ],
+                colors: [
+                    c[0], blend(c[0], c[1], 0.4), c[1],
+                    blend(c[0], c[2], 0.3), blend(c[1], c[2], 0.5), blend(c[1], c[2], 0.6),
+                    c[2], blend(c[2], c[0], 0.4), c[0]
+                ]
+            )
+        } else {
+            LinearGradient(colors: c, startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+    }
+
+    /// Stellt sicher, dass mindestens 3 Farben vorliegen — duplizieren falls zu wenig.
+    private var expandedColors: [Color] {
+        switch colors.count {
+        case 0: return [.blue, .purple, .indigo]
+        case 1: return [colors[0], colors[0].opacity(0.8), colors[0]]
+        case 2: return [colors[0], colors[1], colors[0]]
+        default: return Array(colors.prefix(3))
+        }
+    }
+
+    private func blend(_ a: Color, _ b: Color, _ t: CGFloat) -> Color {
+        // Einfaches Pseudo-Blending über Opacity-Stacking — funktional reicht das
+        // für MeshGradient-Anker; Apple interpoliert die Übergänge ohnehin glatt.
+        t < 0.5 ? a.opacity(1 - t * 0.4) : b.opacity(1 - (1 - t) * 0.4)
     }
 }
 
