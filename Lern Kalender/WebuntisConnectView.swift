@@ -20,6 +20,7 @@ struct WebuntisConnectView: View {
     @State private var testMessage: String? = nil
     @State private var testIsError = false
     @State private var showingDisconnectAlert = false
+    @State private var showingSchoolSearch = false
 
     var body: some View {
         NavigationStack {
@@ -49,6 +50,17 @@ struct WebuntisConnectView: View {
                 }
 
                 Section {
+                    Button {
+                        showingSchoolSearch = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundStyle(.blue)
+                            Text(school.isEmpty ? "Schule suchen" : "Andere Schule wählen")
+                                .foregroundStyle(.blue)
+                            Spacer()
+                        }
+                    }
                     HStack {
                         Text("Server")
                         Spacer()
@@ -160,6 +172,12 @@ struct WebuntisConnectView: View {
             } message: {
                 Text("Webuntis-Zugangsdaten werden vom Gerät gelöscht.")
             }
+            .sheet(isPresented: $showingSchoolSearch) {
+                WebuntisSchoolSearchView { picked in
+                    school = picked.loginName
+                    server = picked.server
+                }
+            }
         }
     }
 
@@ -214,6 +232,111 @@ struct WebuntisConnectView: View {
         } else {
             testMessage = "Synchronisierung abgeschlossen."
             testIsError = false
+        }
+    }
+}
+
+// MARK: - School Search
+
+/// Sucht über die öffentliche Webuntis-API nach Schulen anhand des
+/// Schulnamens und liefert dem Aufrufer ein ausgewähltes Ergebnis.
+struct WebuntisSchoolSearchView: View {
+    @Environment(\.dismiss) private var dismiss
+    var onPick: (WebuntisService.SchoolSearchResult) -> Void
+
+    @State private var query: String = ""
+    @State private var results: [WebuntisService.SchoolSearchResult] = []
+    @State private var isSearching = false
+    @State private var error: String?
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    HStack(spacing: 10) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundStyle(.secondary)
+                        TextField("Schulname oder Ort eingeben…", text: $query)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .submitLabel(.search)
+                            .onSubmit { Task { await runSearch() } }
+                        if isSearching { ProgressView() }
+                    }
+                } footer: {
+                    Text("Suche fragt direkt bei Webuntis. Mindestens 3 Zeichen tippen, dann ↩ drücken.")
+                }
+
+                if let error {
+                    Section {
+                        Label(error, systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+
+                if !results.isEmpty {
+                    Section {
+                        ForEach(results) { school in
+                            Button {
+                                onPick(school)
+                                dismiss()
+                            } label: {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(school.displayName)
+                                        .font(.subheadline.bold())
+                                        .foregroundStyle(.primary)
+                                    if !school.address.isEmpty {
+                                        Text(school.address)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    HStack(spacing: 8) {
+                                        Label(school.server, systemImage: "server.rack")
+                                            .font(.caption2)
+                                            .foregroundStyle(.tertiary)
+                                        Text("·")
+                                            .foregroundStyle(.tertiary)
+                                        Text(school.loginName)
+                                            .font(.caption2.monospaced())
+                                            .foregroundStyle(.tertiary)
+                                    }
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    } header: {
+                        Text("\(results.count) Treffer")
+                    }
+                }
+            }
+            .navigationTitle("Schule suchen")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Abbrechen") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Suchen") { Task { await runSearch() } }
+                        .disabled(query.count < 3)
+                }
+            }
+        }
+    }
+
+    private func runSearch() async {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count >= 3 else { return }
+        isSearching = true
+        error = nil
+        defer { isSearching = false }
+        do {
+            results = try await WebuntisService.shared.searchSchools(query: trimmed)
+            if results.isEmpty { error = "Keine Schule gefunden." }
+        } catch {
+            self.error = (error as? WebuntisError)?.userMessage ?? error.localizedDescription
+            results = []
         }
     }
 }

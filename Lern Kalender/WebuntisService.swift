@@ -95,6 +95,54 @@ final class WebuntisService {
         try? await logout()
     }
 
+    /// Sucht über die öffentliche Webuntis-School-Search-API.
+    /// Liefert Treffer, aus denen der Nutzer Schule + Server auswählen kann.
+    struct SchoolSearchResult: Identifiable, Hashable {
+        let id = UUID()
+        let displayName: String
+        let loginName: String
+        let server: String
+        let address: String
+    }
+
+    func searchSchools(query: String) async throws -> [SchoolSearchResult] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [] }
+        guard let url = URL(string: "https://mobile.webuntis.com/ms/schoolquery2") else { return [] }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = [
+            "id": UUID().uuidString,
+            "method": "searchSchool",
+            "params": [["search": trimmed]],
+            "jsonrpc": "2.0"
+        ]
+        req.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await URLSession.shared.data(for: req)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            throw WebuntisError.http((response as? HTTPURLResponse)?.statusCode ?? -1)
+        }
+        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        guard let result = json?["result"] as? [String: Any],
+              let schools = result["schools"] as? [[String: Any]] else { return [] }
+
+        return schools.compactMap { s -> SchoolSearchResult? in
+            guard let displayName = s["displayName"] as? String,
+                  let loginName = s["loginName"] as? String,
+                  let server = s["server"] as? String else { return nil }
+            let address = (s["address"] as? String) ?? ""
+            return SchoolSearchResult(
+                displayName: displayName,
+                loginName: loginName,
+                server: server,
+                address: address
+            )
+        }
+    }
+
     /// Löscht alle gespeicherten Webuntis-Daten (Credentials + Sync-Status).
     func disconnect() {
         UserDefaults.standard.removeObject(forKey: udServer)
