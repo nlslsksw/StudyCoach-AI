@@ -315,6 +315,7 @@ struct TodayTab: View {
     @State private var showingAddHomework = false
     @State private var showingAllHomework = false
     @State private var homeworkToEdit: Homework? = nil
+    @State private var showingTimetable = false
 
     private var today: Date { Date() }
     private var todaySessions: [StudySession] { store.sessions(for: today) }
@@ -358,6 +359,10 @@ struct TodayTab: View {
 
                     // Quick-Actions
                     quickActionsRow
+                        .padding(.horizontal)
+
+                    // Stundenplan heute
+                    timetableTodaySection
                         .padding(.horizontal)
 
                     // Hausaufgaben
@@ -430,6 +435,9 @@ struct TodayTab: View {
                             }
                         }
                 }
+            }
+            .sheet(isPresented: $showingTimetable) {
+                TimetableView(store: store)
             }
         }
     }
@@ -537,6 +545,63 @@ struct TodayTab: View {
             configuration.label
                 .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
                 .animation(AppAnimation.snappy, value: configuration.isPressed)
+        }
+    }
+
+    private var timetableTodaySection: some View {
+        let slots = store.todaySlots()
+        let visible = Array(slots.prefix(4))
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Stundenplan heute")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.secondary)
+                if slots.count > visible.count {
+                    Text("\(slots.count - visible.count) weitere")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                Spacer()
+                Button {
+                    showingTimetable = true
+                } label: {
+                    Text(slots.isEmpty ? "Pflegen" : "Woche")
+                        .font(.caption.bold())
+                }
+            }
+            .padding(.horizontal, 4)
+
+            if visible.isEmpty {
+                HStack {
+                    Image(systemName: "calendar")
+                        .foregroundStyle(.tertiary)
+                    Text("Kein Stundenplan für heute. Tippe „Pflegen“, um Stunden anzulegen.")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                    Spacer()
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 14)
+                .background(
+                    Color(.secondarySystemGroupedBackground),
+                    in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+                )
+                .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(visible.enumerated()), id: \.element.id) { idx, slot in
+                        TimetableSlotRow(store: store, slot: slot, compact: true)
+                        if idx < visible.count - 1 {
+                            Divider().padding(.leading, 56)
+                        }
+                    }
+                }
+                .background(
+                    Color(.secondarySystemGroupedBackground),
+                    in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+                )
+                .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
+            }
         }
     }
 
@@ -1089,5 +1154,305 @@ struct HomeworkListView: View {
         .sheet(item: $homeworkToEdit) { hw in
             AddHomeworkView(store: store, editing: hw)
         }
+    }
+}
+
+// MARK: - Timetable Slot Row
+
+struct TimetableSlotRow: View {
+    var store: DataStore
+    let slot: TimetableSlot
+    var compact: Bool = false
+    var onTap: (() -> Void)? = nil
+
+    var body: some View {
+        let color = store.colorForSubject(slot.subject)
+        Button {
+            onTap?()
+        } label: {
+            HStack(spacing: 12) {
+                VStack(spacing: 0) {
+                    Text(slot.startTime)
+                        .font(.caption2.monospacedDigit().bold())
+                    Text(slot.endTime)
+                        .font(.system(size: 9, weight: .regular, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(width: 44)
+
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(color)
+                    .frame(width: 4)
+                    .frame(maxHeight: .infinity)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(slot.subject)
+                        .font(.subheadline.bold())
+                    HStack(spacing: 6) {
+                        if !slot.room.isEmpty {
+                            Label(slot.room, systemImage: "mappin.circle")
+                                .labelStyle(.titleAndIcon)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        if !slot.teacher.isEmpty {
+                            Text(slot.teacher)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
+                Spacer()
+                if !compact {
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, compact ? 10 : 12)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Timetable View (Wochenraster)
+
+struct TimetableView: View {
+    @Environment(\.dismiss) private var dismiss
+    var store: DataStore
+
+    @State private var selectedWeekday: Int = {
+        var wd = Calendar.current.component(.weekday, from: Date())
+        wd = wd == 1 ? 7 : wd - 1
+        return wd
+    }()
+    @State private var showingAddSlot = false
+    @State private var slotToEdit: TimetableSlot? = nil
+
+    private let weekdayNames = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Tag-Picker
+                HStack(spacing: 6) {
+                    ForEach(1...7, id: \.self) { wd in
+                        Button {
+                            withAnimation(AppAnimation.snappy) { selectedWeekday = wd }
+                        } label: {
+                            VStack(spacing: 2) {
+                                Text(weekdayNames[wd - 1])
+                                    .font(.caption.bold())
+                                Circle()
+                                    .fill(store.slotsFor(weekday: wd).isEmpty ? Color.secondary.opacity(0.3) : Color.blue)
+                                    .frame(width: 5, height: 5)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(
+                                selectedWeekday == wd
+                                ? AnyShapeStyle(
+                                    LinearGradient(colors: [.blue, .purple],
+                                                   startPoint: .topLeading, endPoint: .bottomTrailing)
+                                  )
+                                : AnyShapeStyle(Color(.tertiarySystemFill)),
+                                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            )
+                            .foregroundStyle(selectedWeekday == wd ? .white : .primary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+
+                Divider()
+
+                let slots = store.slotsFor(weekday: selectedWeekday)
+                if slots.isEmpty {
+                    VStack(spacing: 12) {
+                        Spacer()
+                        Image(systemName: "calendar.badge.plus")
+                            .font(.system(size: 40))
+                            .foregroundStyle(.tertiary)
+                        Text("Keine Stunden eingetragen")
+                            .foregroundStyle(.secondary)
+                        Button {
+                            showingAddSlot = true
+                        } label: {
+                            Label("Stunde hinzufügen", systemImage: "plus.circle.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 8) {
+                            ForEach(slots) { slot in
+                                TimetableSlotRow(store: store, slot: slot, onTap: { slotToEdit = slot })
+                                    .background(
+                                        Color(.secondarySystemGroupedBackground),
+                                        in: RoundedRectangle(cornerRadius: AppRadius.small, style: .continuous)
+                                    )
+                            }
+                        }
+                        .padding()
+                    }
+                }
+            }
+            .navigationTitle("Stundenplan")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Fertig") { dismiss() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button { showingAddSlot = true } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddSlot) {
+                AddTimetableSlotView(store: store, initialWeekday: selectedWeekday)
+            }
+            .sheet(item: $slotToEdit) { slot in
+                AddTimetableSlotView(store: store, editing: slot)
+            }
+        }
+    }
+}
+
+// MARK: - Add / Edit Timetable Slot
+
+struct AddTimetableSlotView: View {
+    @Environment(\.dismiss) private var dismiss
+    var store: DataStore
+    var editing: TimetableSlot? = nil
+
+    @State private var weekday: Int = 1
+    @State private var lesson: Int = 1
+    @State private var startTime: Date = AddTimetableSlotView.timeAt(8, 0)
+    @State private var endTime: Date = AddTimetableSlotView.timeAt(8, 45)
+    @State private var subject: String = ""
+    @State private var room: String = ""
+    @State private var teacher: String = ""
+
+    private let weekdayNames = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
+
+    init(store: DataStore, editing: TimetableSlot? = nil, initialWeekday: Int? = nil) {
+        self.store = store
+        self.editing = editing
+        if let s = editing {
+            _weekday = State(initialValue: s.weekday)
+            _lesson = State(initialValue: s.lesson)
+            _startTime = State(initialValue: Self.parseTime(s.startTime) ?? Self.timeAt(8, 0))
+            _endTime = State(initialValue: Self.parseTime(s.endTime) ?? Self.timeAt(8, 45))
+            _subject = State(initialValue: s.subject)
+            _room = State(initialValue: s.room)
+            _teacher = State(initialValue: s.teacher)
+        } else if let wd = initialWeekday {
+            _weekday = State(initialValue: wd)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Tag & Stunde") {
+                    Picker("Wochentag", selection: $weekday) {
+                        ForEach(1...7, id: \.self) { wd in
+                            Text(weekdayNames[wd - 1]).tag(wd)
+                        }
+                    }
+                    Stepper("Stunde \(lesson)", value: $lesson, in: 1...12)
+                }
+                Section("Zeit") {
+                    DatePicker("Von", selection: $startTime, displayedComponents: .hourAndMinute)
+                    DatePicker("Bis", selection: $endTime, displayedComponents: .hourAndMinute)
+                }
+                Section("Fach") {
+                    if !store.subjects.isEmpty {
+                        Picker("Fach", selection: $subject) {
+                            Text("Auswählen…").tag("")
+                            ForEach(store.subjects) { sub in
+                                Text(sub.name).tag(sub.name)
+                            }
+                        }
+                    } else {
+                        TextField("Fach", text: $subject)
+                    }
+                    TextField("Raum (optional)", text: $room)
+                    TextField("Lehrer:in (optional)", text: $teacher)
+                }
+                if editing != nil {
+                    Section {
+                        Button(role: .destructive) {
+                            if let s = editing {
+                                store.deleteSlot(s)
+                                dismiss()
+                            }
+                        } label: {
+                            Label("Löschen", systemImage: "trash")
+                        }
+                    }
+                }
+            }
+            .navigationTitle(editing == nil ? "Neue Stunde" : "Stunde")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Abbrechen") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Speichern") { save() }
+                        .disabled(subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func save() {
+        let trimmed = subject.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        if var s = editing {
+            s.weekday = weekday
+            s.lesson = lesson
+            s.startTime = Self.timeString(startTime)
+            s.endTime = Self.timeString(endTime)
+            s.subject = trimmed
+            s.room = room
+            s.teacher = teacher
+            store.updateSlot(s)
+        } else {
+            let s = TimetableSlot(
+                weekday: weekday, lesson: lesson,
+                startTime: Self.timeString(startTime),
+                endTime: Self.timeString(endTime),
+                subject: trimmed, room: room, teacher: teacher
+            )
+            store.addSlot(s)
+        }
+        dismiss()
+    }
+
+    static func timeAt(_ hour: Int, _ minute: Int) -> Date {
+        var comps = DateComponents()
+        comps.hour = hour; comps.minute = minute
+        return Calendar.current.date(from: comps) ?? Date()
+    }
+
+    static func timeString(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f.string(from: date)
+    }
+
+    static func parseTime(_ string: String) -> Date? {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f.date(from: string)
     }
 }

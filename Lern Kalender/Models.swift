@@ -113,6 +113,25 @@ struct Homework: Identifiable, Codable, Equatable {
     var attachmentRelativePaths: [String] = []
 }
 
+// MARK: - Timetable / Stundenplan
+
+/// Eine einzelne Stunde im Stundenplan (fixe Woche, keine A/B-Wochen).
+struct TimetableSlot: Identifiable, Codable, Equatable {
+    var id = UUID()
+    /// 1 = Montag … 7 = Sonntag (ISO).
+    var weekday: Int
+    /// Stundenzahl (1, 2, 3, …) — optional, zur Sortierung & Anzeige.
+    var lesson: Int
+    /// Uhrzeiten als "HH:mm" — Speichern als String, damit nicht jeden Tag neue Date-Komponenten gebaut werden.
+    var startTime: String
+    var endTime: String
+    var subject: String
+    var room: String = ""
+    var teacher: String = ""
+    /// Webuntis-Quellen-ID (für späteren Sync, sonst nil = lokal).
+    var sourceId: String? = nil
+}
+
 // MARK: - Streak State (Freezes, Ferien-Pause, Award-Buchhaltung)
 
 struct StreakState: Codable {

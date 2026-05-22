@@ -72,6 +72,9 @@ final class DataStore {
     var homework: [Homework] = [] {
         didSet { saveHomework() }
     }
+    var timetable: [TimetableSlot] = [] {
+        didSet { saveTimetable() }
+    }
 
     private let entriesKey = "calendarEntries"
     private let recurringKey = "recurringTasks"
@@ -91,6 +94,7 @@ final class DataStore {
     private let sharedEntriesKey = "sharedCalendarEntries"
     private let streakStateKey = "streakState"
     private let homeworkKey = "homework"
+    private let timetableKey = "timetable"
 
     private let store = NSUbiquitousKeyValueStore.default
 
@@ -222,6 +226,10 @@ final class DataStore {
            let decoded = try? JSONDecoder().decode([Homework].self, from: data) {
             homework = decoded
         }
+        if let data = store.data(forKey: timetableKey),
+           let decoded = try? JSONDecoder().decode([TimetableSlot].self, from: data) {
+            timetable = decoded
+        }
     }
 
     private func saveEntries() {
@@ -313,6 +321,29 @@ final class DataStore {
         let until = cal.date(byAdding: .day, value: days, to: now) ?? now
         return homework.filter { !$0.isDone && $0.dueDate <= until }
             .sorted { $0.dueDate < $1.dueDate }
+    }
+
+    private func saveTimetable() {
+        if let data = try? JSONEncoder().encode(timetable) { store.set(data, forKey: timetableKey) }
+    }
+
+    // MARK: Timetable helpers
+
+    func addSlot(_ s: TimetableSlot) { timetable.append(s) }
+    func updateSlot(_ s: TimetableSlot) {
+        if let idx = timetable.firstIndex(where: { $0.id == s.id }) { timetable[idx] = s }
+    }
+    func deleteSlot(_ s: TimetableSlot) { timetable.removeAll { $0.id == s.id } }
+    func slotsFor(weekday: Int) -> [TimetableSlot] {
+        timetable.filter { $0.weekday == weekday }
+            .sorted { ($0.lesson, $0.startTime) < ($1.lesson, $1.startTime) }
+    }
+    func todaySlots() -> [TimetableSlot] {
+        var wd = Calendar.current.component(.weekday, from: Date())
+        // Swift Calendar.weekday: 1 = Sonntag, 2 = Mo, ..., 7 = Sa.
+        // Wir nutzen ISO: 1 = Mo, ..., 7 = So.
+        wd = wd == 1 ? 7 : wd - 1
+        return slotsFor(weekday: wd)
     }
 
     // MARK: Holiday helpers
