@@ -238,12 +238,17 @@ struct SubjectCard: View {
         let minutes = store.studyMinutesFor(subject: subject)
 
         HStack(spacing: 14) {
-            // Icon
+            // Icon mit Gradient-Plakette
             Image(systemName: subject.icon)
                 .font(.title2)
                 .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
-                .background(subject.color, in: RoundedRectangle(cornerRadius: 12))
+                .frame(width: 46, height: 46)
+                .background(
+                    LinearGradient(colors: [subject.color, subject.color.opacity(0.75)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing),
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+                .shadow(color: subject.color.opacity(0.35), radius: 6, x: 0, y: 3)
 
             // Name + Info
             VStack(alignment: .leading, spacing: 4) {
@@ -281,20 +286,27 @@ struct SubjectCard: View {
 
             Spacer()
 
-            // Durchschnittsnote rechts
+            // Durchschnittsnote rechts als Capsule
             if !grades.isEmpty {
                 let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
                 Text(gradeString(avg))
-                    .font(.title2.bold().monospacedDigit())
+                    .font(.title3.bold().monospacedDigit())
                     .foregroundStyle(gradeColor(avg))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(gradeColor(avg).opacity(0.15), in: Capsule())
             }
 
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.tertiary)
         }
-        .padding(12)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .padding(14)
+        .background(
+            Color(.secondarySystemGroupedBackground),
+            in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 2)
     }
 }
 
