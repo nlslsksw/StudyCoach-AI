@@ -459,30 +459,42 @@ struct SubjectDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
-                // Header
-                VStack(spacing: 8) {
+            VStack(spacing: 22) {
+                // Kompakter Hero mit Mesh-Gradient — Icon links, Name + Stats rechts.
+                HStack(spacing: 14) {
                     Image(systemName: subject.icon)
-                        .font(.system(size: 40))
-                        .foregroundStyle(subject.color)
-                        .frame(width: 72, height: 72)
-                        .background(subject.color.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
+                        .font(.title)
+                        .foregroundStyle(.white)
+                        .frame(width: 58, height: 58)
+                        .background(
+                            AppMeshBackground(colors: [
+                                subject.color, subject.color.opacity(0.75), subject.color.opacity(0.9)
+                            ])
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        )
+                        .shadow(color: subject.color.opacity(0.35), radius: 8, x: 0, y: 4)
 
-                    Text(subject.name)
-                        .font(.title2.bold())
-                }
-                .padding(.top, 8)
-
-                // Übersichtskarten
-                HStack(spacing: 12) {
-                    if !grades.isEmpty {
-                        let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
-                        StatCard(title: "Notenschnitt", value: gradeString(avg), icon: "graduationcap.fill", color: gradeColor(avg))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(subject.name)
+                            .font(.title2.bold())
+                        HStack(spacing: 10) {
+                            if !grades.isEmpty {
+                                let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
+                                Label(String(format: "Ø %.1f", avg), systemImage: "graduationcap.fill")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(gradeColor(avg))
+                            }
+                            if totalMinutes > 0 {
+                                Label(formatHoursMinutes(totalMinutes), systemImage: "clock.fill")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(.blue)
+                            }
+                        }
                     }
-                    StatCard(title: "Noten", value: "\(grades.count)", icon: "list.clipboard.fill", color: .blue)
-                    StatCard(title: "Lernzeit", value: formatHoursMinutes(totalMinutes), icon: "clock.fill", color: .green)
+                    Spacer()
                 }
                 .padding(.horizontal)
+                .padding(.top, 8)
 
                 // Noten-Bereich
                 VStack(alignment: .leading, spacing: 12) {
@@ -500,10 +512,6 @@ struct SubjectDetailView: View {
                     .padding(.horizontal)
 
                     if !grades.isEmpty {
-                        // Notenschnitt + Sparkline + Beste/Schlechteste
-                        SubjectGradeOverview(grades: grades)
-                            .padding(.horizontal)
-
                         VStack(spacing: 0) {
                             ForEach(Array(grades.enumerated()), id: \.offset) { index, item in
                                 HStack(spacing: 10) {
@@ -1233,117 +1241,76 @@ struct GradesOverviewView: View {
     }
 
     private var summaryHeader: some View {
-        VStack(spacing: 12) {
-            HStack(alignment: .center, spacing: 18) {
-                VStack(spacing: 2) {
-                    Text(String(format: "%.1f", totalAvg))
-                        .font(.system(size: 52, weight: .heavy, design: .rounded))
-                        .foregroundStyle(gradeColor(totalAvg))
-                        .contentTransition(.numericText())
-                    Text("Gesamtschnitt")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Divider().frame(height: 60)
-
-                VStack(alignment: .leading, spacing: 6) {
-                    if let s = schriftlichAvg {
-                        HStack(spacing: 6) {
-                            Image(systemName: "doc.text.fill")
-                                .font(.caption2)
-                                .foregroundStyle(.blue)
-                            Text("Schriftlich")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text(String(format: "Ø %.1f", s))
-                                .font(.caption.bold().monospacedDigit())
-                                .foregroundStyle(gradeColor(s))
-                        }
-                    }
-                    if let m = muendlichAvg {
-                        HStack(spacing: 6) {
-                            Image(systemName: "bubble.left.fill")
-                                .font(.caption2)
-                                .foregroundStyle(.orange)
-                            Text("Mündlich")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text(String(format: "Ø %.1f", m))
-                                .font(.caption.bold().monospacedDigit())
-                                .foregroundStyle(gradeColor(m))
-                        }
-                    }
-                    HStack(spacing: 6) {
-                        Image(systemName: "number")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                        Text("Anzahl")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Text("\(allGrades.count)")
-                            .font(.caption.bold().monospacedDigit())
-                    }
-                }
+        // Reduziert auf das Wesentliche: großer Schnitt + Anzahl.
+        // Schriftlich/Mündlich-Details sind im Fach-Detail.
+        HStack(alignment: .center, spacing: 20) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Schnitt")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+                Text(String(format: "%.1f", totalAvg))
+                    .font(.system(size: 56, weight: .heavy, design: .rounded))
+                    .foregroundStyle(gradeColor(totalAvg))
+                    .contentTransition(.numericText())
             }
-            .padding(16)
-            .background(
-                AppMeshBackground(colors: [
-                    gradeColor(totalAvg).opacity(0.32),
-                    gradeColor(totalAvg).opacity(0.12),
-                    gradeColor(totalAvg).opacity(0.20)
-                ])
-                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-            )
+            Spacer()
+            VStack(alignment: .trailing, spacing: 4) {
+                Text("\(allGrades.count)")
+                    .font(.title2.bold().monospacedDigit())
+                    .foregroundStyle(.primary)
+                Text(allGrades.count == 1 ? "Note" : "Noten")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
+        .padding(.horizontal, 22)
+        .padding(.vertical, 22)
+        .frame(maxWidth: .infinity)
+        .background(
+            AppMeshBackground(colors: [
+                gradeColor(totalAvg).opacity(0.30),
+                gradeColor(totalAvg).opacity(0.10),
+                gradeColor(totalAvg).opacity(0.20)
+            ])
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.large, style: .continuous))
+        )
     }
 
     private var verlaufCard: some View {
+        // Schlankerer Verlauf: nur Punkte gefärbt nach Fach, ohne Y-Labels,
+        // ohne Schnitt-Linie — die kompakte Info zählt.
         let points = allGrades.map { GradePoint(date: $0.date, grade: $0.grade, subject: $0.subject) }
-        return VStack(alignment: .leading, spacing: 8) {
-            Text("Notenverlauf")
-                .font(.subheadline.bold())
-                .foregroundStyle(.secondary)
-            // Achse gespiegelt: gespeichert wird `7 - grade`, Y-Labels werden
-            // beim Anzeigen zurückgerechnet (Domain bleibt valides 1...6).
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("Verlauf")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("älteste → neueste")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
             Chart {
                 ForEach(points) { p in
-                    LineMark(
-                        x: .value("Datum", p.date),
-                        y: .value("Note", 7 - p.grade),
-                        series: .value("Alle", "alle")
-                    )
-                    .foregroundStyle(.secondary.opacity(0.4))
-                    .interpolationMethod(.monotone)
                     PointMark(
                         x: .value("Datum", p.date),
                         y: .value("Note", 7 - p.grade)
                     )
                     .foregroundStyle(store.colorForSubject(p.subject))
-                    .symbolSize(40)
+                    .symbolSize(45)
                 }
-                RuleMark(y: .value("Schnitt", 7 - totalAvg))
-                    .foregroundStyle(gradeColor(totalAvg).opacity(0.7))
-                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
             }
             .chartYScale(domain: 1...6)
-            .chartYAxis {
-                AxisMarks(values: [1, 2, 3, 4, 5, 6]) { value in
-                    AxisGridLine()
-                    AxisValueLabel {
-                        if let v = value.as(Int.self) {
-                            Text("\(7 - v)")
-                        }
-                    }
-                }
-            }
-            .frame(height: 160)
+            .chartYAxis(.hidden)
+            .chartXAxis(.hidden)
+            .frame(height: 80)
         }
         .padding(14)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+        .background(
+            Color(.secondarySystemGroupedBackground),
+            in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 5, x: 0, y: 2)
     }
 
     private var perSubjectList: some View {
@@ -1380,62 +1347,52 @@ struct GradeSubjectCard: View {
         guard grades.count >= 2 else { return nil }
         return grades[grades.count - 2].grade - grades.last!.grade
     }
-    private var best: Double { grades.map(\.grade).min() ?? 0 }
-    private var worst: Double { grades.map(\.grade).max() ?? 0 }
 
     var body: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 10) {
-                Image(systemName: icon)
-                    .font(.subheadline)
-                    .foregroundStyle(color)
-                    .frame(width: 34, height: 34)
-                    .background(color.opacity(0.15), in: RoundedRectangle(cornerRadius: 9))
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(subjectName)
-                        .font(.subheadline.bold())
-                    Text("\(grades.count) Note\(grades.count == 1 ? "" : "n") · \(gradeString(best))–\(gradeString(worst))")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                if let d = trend, abs(d) > 0.05 {
-                    Image(systemName: d > 0 ? "arrow.up.right" : "arrow.down.right")
-                        .font(.caption.bold())
-                        .foregroundStyle(d > 0 ? .green : .red)
-                }
-                Text(String(format: "%.1f", avg))
-                    .font(.title3.bold().monospacedDigit())
-                    .foregroundStyle(gradeColor(avg))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(gradeColor(avg).opacity(0.15), in: Capsule())
+        // Eine Zeile, ein Blick: Icon · Fach · Anzahl · (Trend) · Schnitt
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.subheadline)
+                .foregroundStyle(.white)
+                .frame(width: 36, height: 36)
+                .background(
+                    LinearGradient(colors: [color, color.opacity(0.75)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing),
+                    in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+                )
+                .shadow(color: color.opacity(0.3), radius: 4, x: 0, y: 2)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(subjectName)
+                    .font(.subheadline.bold())
+                Text("\(grades.count) \(grades.count == 1 ? "Note" : "Noten")")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
 
-            if grades.count >= 2 {
-                Chart {
-                    ForEach(Array(grades.enumerated()), id: \.offset) { idx, item in
-                        LineMark(
-                            x: .value("Idx", idx),
-                            y: .value("Note", 7 - item.grade)
-                        )
-                        .foregroundStyle(color)
-                        .interpolationMethod(.monotone)
-                        PointMark(
-                            x: .value("Idx", idx),
-                            y: .value("Note", 7 - item.grade)
-                        )
-                        .foregroundStyle(gradeColor(item.grade))
-                        .symbolSize(18)
-                    }
-                }
-                .chartYScale(domain: 1...6)
-                .chartXAxis(.hidden)
-                .chartYAxis(.hidden)
-                .frame(height: 30)
+            Spacer()
+
+            if let d = trend, abs(d) > 0.05 {
+                Image(systemName: d > 0 ? "arrow.up.right" : "arrow.down.right")
+                    .font(.caption.bold())
+                    .foregroundStyle(d > 0 ? .green : .red)
             }
+            Text(String(format: "%.1f", avg))
+                .font(.title3.bold().monospacedDigit())
+                .foregroundStyle(gradeColor(avg))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(gradeColor(avg).opacity(0.15), in: Capsule())
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
         }
         .padding(12)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        .background(
+            Color(.secondarySystemGroupedBackground),
+            in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 5, x: 0, y: 2)
     }
 }

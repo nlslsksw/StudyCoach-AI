@@ -341,36 +341,35 @@ struct DayDetailSection: View {
                 )
             }
 
-            // Tages-Header mit Lernzeit-Capsule
-            HStack(alignment: .center, spacing: 10) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(dateString)
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.primary)
-                    let dayMinutes = store.totalMinutes(in: store.sessions(for: date))
-                    if dayMinutes > 0 {
-                        HStack(spacing: 6) {
-                            Image(systemName: "book.fill")
-                                .font(.caption2)
-                                .foregroundStyle(.white)
-                                .frame(width: 18, height: 18)
-                                .background(.purple.gradient, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
-                            Text("\(formatHoursMinutes(dayMinutes)) gelernt")
-                                .font(.caption)
-                                .foregroundStyle(.purple)
-                        }
-                    }
-                }
+            // Kompakter Tages-Header — Datum klein als Sub-Label, Lernzeit
+            // als dezenter Pill rechts. Hauptfokus liegt jetzt auf der Liste
+            // darunter, nicht auf dem Header.
+            HStack(spacing: 8) {
+                Text(dateString)
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+                    .textCase(.uppercase)
                 Spacer()
+                let dayMinutes = store.totalMinutes(in: store.sessions(for: date))
+                if dayMinutes > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock.fill")
+                            .font(.caption2)
+                        Text(formatHoursMinutes(dayMinutes))
+                            .font(.caption.bold().monospacedDigit())
+                    }
+                    .foregroundStyle(.purple)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.purple.opacity(0.12), in: Capsule())
+                }
                 Button {
                     onAddSession()
                 } label: {
-                    Label("Lernzeit", systemImage: "clock.badge.checkmark")
-                        .font(.caption.bold())
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(.purple)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .tint(.purple)
             }
             .padding(.horizontal, 14)
             .padding(.top, 10)
