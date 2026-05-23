@@ -169,6 +169,14 @@ struct ContentView: View {
         }
         triggerWrappedIfDue()
         triggerWebuntisAutoSyncIfDue()
+        triggerWeeklyHealthCheckIfDue()
+    }
+
+    /// Generiert sonntags (oder am ersten Tab-Öffnen einer neuen Woche)
+    /// einmal pro Woche den KI-Wochen-Check.
+    private func triggerWeeklyHealthCheckIfDue() {
+        guard AIService.shared.hasAPIKey else { return }
+        Task { try? await HealthCheckStore.shared.generateWeeklyReport(from: store) }
     }
 
     /// Synchronisiert mit Webuntis im Hintergrund, wenn die App gestartet
@@ -393,6 +401,12 @@ struct TodayTab: View {
                     // Hausaufgaben
                     if !store.homework.isEmpty || !store.openHomework().isEmpty {
                         homeworkSection
+                            .padding(.horizontal)
+                    }
+
+                    // Wöchentlicher KI-Lern-Check (nur wenn vorhanden oder KI bereit)
+                    if HealthCheckStore.shared.latest != nil || AIService.shared.hasAPIKey {
+                        HealthCheckCard(store: store)
                             .padding(.horizontal)
                     }
 
