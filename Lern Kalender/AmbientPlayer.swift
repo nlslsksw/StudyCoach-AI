@@ -124,77 +124,178 @@ final class AmbientPlayer {
 
 struct AmbientPlayerBar: View {
     @Bindable private var player = AmbientPlayer.shared
-    @State private var expanded: Bool = false
+
+    private var isPlaying: Bool { player.sound != .off }
+
+    /// Hintergrund-Farbpalette pro Sound
+    private func gradient(for sound: AmbientPlayer.Sound) -> [Color] {
+        switch sound {
+        case .off: return [.gray, .gray.opacity(0.6)]
+        case .brown: return [.brown, .orange]
+        case .white: return [.cyan, .blue]
+        case .rain: return [.blue, .indigo]
+        case .wind: return [.teal, .mint]
+        }
+    }
 
     var body: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 8) {
-                Image(systemName: player.sound.icon)
-                    .foregroundStyle(player.sound == .off ? Color.secondary : Color.blue)
-                Text(player.sound.rawValue)
-                    .font(.caption.bold())
-                Spacer()
-                Button {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                        expanded.toggle()
+        VStack(spacing: 12) {
+            // "Now Playing"-Header mit animiertem Visualizer
+            HStack(spacing: 12) {
+                ZStack {
+                    if isPlaying {
+                        SoundVisualizer(color: gradient(for: player.sound).first ?? .blue)
+                            .frame(width: 28, height: 22)
+                    } else {
+                        Image(systemName: "speaker.slash.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .frame(width: 28, height: 22)
                     }
-                } label: {
-                    Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                        .font(.caption.weight(.semibold))
+                }
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(isPlaying ? "Läuft" : "Stille")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text(player.sound.rawValue)
+                        .font(.subheadline.bold())
+                        .contentTransition(.opacity)
+                }
+                Spacer()
+                if isPlaying {
+                    Button {
+                        player.stop()
+                    } label: {
+                        Image(systemName: "stop.fill")
+                            .foregroundStyle(.white)
+                            .frame(width: 32, height: 32)
+                            .background(.red.gradient, in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            // Sound-Tiles als großes Grid
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)],
+                spacing: 8
+            ) {
+                ForEach(AmbientPlayer.Sound.allCases.filter { $0 != .off }) { sound in
+                    soundTile(sound)
+                }
+            }
+
+            // Volume — nur sichtbar wenn etwas läuft
+            if isPlaying {
+                HStack(spacing: 10) {
+                    Image(systemName: "speaker.fill")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Slider(value: Binding(
+                        get: { Double(player.volume) },
+                        set: { player.volume = Float($0) }
+                    ), in: 0...1)
+                    Image(systemName: "speaker.wave.3.fill")
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            }
-            if expanded {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(AmbientPlayer.Sound.allCases) { sound in
-                            Button {
-                                if sound == .off {
-                                    player.stop()
-                                } else {
-                                    player.play(sound)
-                                }
-                            } label: {
-                                VStack(spacing: 4) {
-                                    Image(systemName: sound.icon)
-                                        .font(.subheadline)
-                                    Text(sound.rawValue)
-                                        .font(.caption2)
-                                }
-                                .foregroundStyle(player.sound == sound ? .white : .primary)
-                                .frame(width: 70, height: 56)
-                                .background(
-                                    player.sound == sound
-                                    ? AnyShapeStyle(LinearGradient(colors: [.blue, .purple],
-                                                                   startPoint: .topLeading, endPoint: .bottomTrailing))
-                                    : AnyShapeStyle(Color(.tertiarySystemFill)),
-                                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-                if player.sound != .off {
-                    HStack(spacing: 8) {
-                        Image(systemName: "speaker.wave.1.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                        Slider(value: Binding(
-                            get: { Double(player.volume) },
-                            set: { player.volume = Float($0) }
-                        ), in: 0...1)
-                        Image(systemName: "speaker.wave.3.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                }
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
         }
-        .padding(12)
+        .padding(14)
         .background(
-            Color(.secondarySystemGroupedBackground),
-            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            ZStack {
+                Color(.secondarySystemGroupedBackground)
+                if isPlaying {
+                    LinearGradient(
+                        colors: gradient(for: player.sound).map { $0.opacity(0.10) },
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         )
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: player.sound)
+    }
+
+    private func soundTile(_ sound: AmbientPlayer.Sound) -> some View {
+        let isSelected = player.sound == sound
+        let colors = gradient(for: sound)
+        return Button {
+            if isSelected {
+                player.stop()
+            } else {
+                player.play(sound)
+            }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: sound.icon)
+                    .font(.title3)
+                    .foregroundStyle(.white)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        LinearGradient(colors: colors,
+                                       startPoint: .topLeading, endPoint: .bottomTrailing),
+                        in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    )
+                    .shadow(color: colors.first?.opacity(0.35) ?? .clear, radius: 4, x: 0, y: 2)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(sound.rawValue)
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.primary)
+                    Text(isSelected ? "Tippe zum Stoppen" : "Tippen für Start")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 0)
+                if isSelected {
+                    Image(systemName: "waveform")
+                        .font(.caption.bold())
+                        .foregroundStyle(colors.first ?? .blue)
+                        .symbolEffect(.variableColor.iterative.reversing)
+                }
+            }
+            .padding(10)
+            .background(
+                Color(.tertiarySystemFill),
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(
+                        isSelected
+                        ? AnyShapeStyle(LinearGradient(colors: colors,
+                                                      startPoint: .topLeading, endPoint: .bottomTrailing))
+                        : AnyShapeStyle(Color.clear),
+                        lineWidth: 1.5
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// Mini-Sound-Visualizer: 4 animierte Balken (TimelineView).
+struct SoundVisualizer: View {
+    var color: Color = .blue
+    private let bars = 4
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 20.0)) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
+            HStack(alignment: .center, spacing: 3) {
+                ForEach(0..<bars, id: \.self) { i in
+                    let seed = Double(i)
+                    let raw = sin(t * 4 + seed * 1.7) * 0.5 + 0.5
+                    let h = CGFloat(0.3 + raw * 0.7)
+                    RoundedRectangle(cornerRadius: 1.5)
+                        .fill(color)
+                        .frame(width: 3)
+                        .scaleEffect(y: h, anchor: .center)
+                }
+            }
+            .frame(height: 22)
+        }
     }
 }

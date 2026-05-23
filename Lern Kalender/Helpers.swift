@@ -517,73 +517,12 @@ extension View {
     }
 }
 
-// MARK: - Mood Tracker
-
-enum Mood: Int, CaseIterable, Identifiable, Codable {
-    case sleepy = 1, neutral = 2, ok = 3, good = 4, fire = 5
-    var id: Int { rawValue }
-
-    var emoji: String {
-        switch self {
-        case .sleepy: return "🥱"
-        case .neutral: return "😐"
-        case .ok: return "🙂"
-        case .good: return "😄"
-        case .fire: return "🔥"
-        }
-    }
-    var label: String {
-        switch self {
-        case .sleepy: return "Müde"
-        case .neutral: return "Naja"
-        case .ok: return "OK"
-        case .good: return "Gut"
-        case .fire: return "Stark"
-        }
-    }
-    var color: Color {
-        switch self {
-        case .sleepy: return .gray
-        case .neutral: return .blue
-        case .ok: return .teal
-        case .good: return .green
-        case .fire: return .orange
-        }
-    }
-}
-
-enum MoodStore {
-    private static let key = "moodLog"
-
-    /// "yyyy-MM-dd" → Mood.rawValue
-    static func all() -> [String: Int] {
-        UserDefaults.standard.dictionary(forKey: key) as? [String: Int] ?? [:]
-    }
-
-    static func mood(for date: Date) -> Mood? {
-        let key = dateKey(date)
-        guard let raw = all()[key] else { return nil }
-        return Mood(rawValue: raw)
-    }
-
-    static func set(_ mood: Mood, for date: Date = Date()) {
-        var dict = all()
-        dict[dateKey(date)] = mood.rawValue
-        UserDefaults.standard.set(dict, forKey: key)
-    }
-
-    private static func dateKey(_ date: Date) -> String {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f.string(from: date)
-    }
-}
-
 // MARK: - Streak Flame Animation
+//
+// Dramatisches Flammen-Layer: deutlich mehr Partikel, additives Blending
+// für echten Glow-Effekt, mehrere Layer (Basis-Glow, Hauptflamme, Funken),
+// skaliert mit dem Streak-Wert.
 
-/// Animiertes Flammen-Layer auf Basis von SwiftUI Canvas + TimelineView.
-/// Skaliert mit dem Streak-Wert: kleines Funkeln ab 1 Tag, größere
-/// Flamme ab 7, "Inferno" ab 30, leuchtender Effekt ab 100.
 struct StreakFlameView: View {
     let streak: Int
     var baseColor: Color = .orange
@@ -591,40 +530,86 @@ struct StreakFlameView: View {
     private var intensity: Double {
         switch streak {
         case ..<1: return 0
-        case 1..<7: return 0.5
-        case 7..<30: return 0.8
-        case 30..<100: return 1.0
-        default: return 1.3
+        case 1..<3: return 0.55
+        case 3..<7: return 0.8
+        case 7..<30: return 1.1
+        case 30..<100: return 1.45
+        default: return 1.8
         }
     }
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
             let t = timeline.date.timeIntervalSinceReferenceDate
             Canvas { ctx, size in
-                let center = CGPoint(x: size.width / 2, y: size.height / 2)
-                let count = max(0, Int(8 * intensity))
-                for i in 0..<count {
-                    let phase = Double(i) / Double(max(count, 1))
-                    let life = (sin(t * 1.8 + phase * .pi * 2) + 1) / 2
-                    let yOffset = -life * Double(size.height) * 0.6
-                    let xJitter = sin(t * 2.3 + phase * 5) * Double(size.width) * 0.18
-                    let radius = (1 - life) * 6 * intensity + 2
+                let centerX = size.width / 2
+                let bottomY = size.height
+                let baseR = min(size.width, size.height) * 0.45
 
-                    let opacity = (1 - life) * 0.85
-                    var color = baseColor.opacity(opacity)
-                    if life > 0.6 { color = Color.yellow.opacity(opacity * 0.7) }
-                    if life > 0.85 { color = Color.red.opacity(opacity * 0.4) }
+                // 1) Weicher Glow-Sockel unter der Flamme
+                let glowR = baseR * (0.95 + sin(t * 2.5) * 0.05) * intensity
+                let glowOrigin = CGPoint(x: centerX - glowR, y: bottomY - glowR * 0.6)
+                let glowRect = CGRect(
+                    x: glowOrigin.x, y: glowOrigin.y,
+                    width: glowR * 2, height: glowR * 1.2
+                )
+                ctx.fill(
+                    Path(ellipseIn: glowRect),
+                    with: .color(baseColor.opacity(0.18 * intensity))
+                )
+
+                // 2) Hauptflammen-Partikel
+                let count = Int(60 * intensity)
+                for i in 0..<count {
+                    let seed = Double(i)
+                    let phaseOffset = seed * 0.137
+                    let life = (sin(t * 2.0 + phaseOffset * .pi * 4)
+                                + cos(t * 1.3 + phaseOffset)) / 2 + 0.5
+                    let normLife = max(0, min(1, life))
+
+                    let driftX = sin(t * 2.4 + seed * 1.7) * baseR * 0.35
+                    let jitterX = sin(t * 9 + seed * 3) * baseR * 0.08
+                    let yOffset = -normLife * baseR * 1.6
+
+                    let radius = (1 - normLife) * baseR * 0.35 * intensity + baseR * 0.05
+                    let alpha = pow(1 - normLife, 0.75) * 0.85
+
+                    // Farbe je nach Lebensphase: rot/orange → gelb → weiß
+                    let color: Color
+                    if normLife < 0.35 {
+                        color = baseColor.opacity(alpha)
+                    } else if normLife < 0.7 {
+                        color = Color.yellow.opacity(alpha * 0.75)
+                    } else {
+                        color = Color.white.opacity(alpha * 0.55)
+                    }
 
                     let rect = CGRect(
-                        x: center.x + xJitter - radius,
-                        y: center.y + yOffset - radius,
-                        width: radius * 2,
-                        height: radius * 2
+                        x: centerX + driftX + jitterX - radius,
+                        y: bottomY + yOffset - radius,
+                        width: radius * 2, height: radius * 2
                     )
                     ctx.fill(Path(ellipseIn: rect), with: .color(color))
                 }
+
+                // 3) Funken nach oben — kleine helle Punkte
+                let sparkCount = Int(15 * intensity)
+                for i in 0..<sparkCount {
+                    let seed = Double(i)
+                    let life = (sin(t * 1.5 + seed * 0.91) + 1) / 2
+                    let yOffset = -life * baseR * 2.2
+                    let driftX = sin(t * 1.8 + seed * 2.3) * baseR * 0.6
+                    let alpha = (1 - life) * 0.6
+
+                    let rect = CGRect(
+                        x: centerX + driftX - 1.5,
+                        y: bottomY + yOffset - 1.5,
+                        width: 3, height: 3
+                    )
+                    ctx.fill(Path(ellipseIn: rect), with: .color(.yellow.opacity(alpha)))
+                }
             }
+            .blendMode(.plusLighter)
         }
         .allowsHitTesting(false)
     }

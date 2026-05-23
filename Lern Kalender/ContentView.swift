@@ -376,10 +376,6 @@ struct TodayTab: View {
                         .padding(.top, AppSpacing.sm)
                         .tiltCard()
 
-                    // Stimmung des Tages
-                    moodPicker
-                        .padding(.horizontal)
-
                     // Streak-Karte
                     StreakCard(
                         title: "Aktuelle Serie",
@@ -555,7 +551,6 @@ struct TodayTab: View {
 
     @State private var quickActionTapCounters: [String: Int] = [:]
     @State private var heroAppearTrigger: Int = 0
-    @State private var todayMood: Mood? = MoodStore.mood(for: Date())
 
     private func quickActionTile(icon: String, title: String, color: Color, action: @escaping () -> Void) -> some View {
         Button {
@@ -599,42 +594,6 @@ struct TodayTab: View {
             )
         }
         .buttonStyle(QuickActionButtonStyle())
-    }
-
-    private var moodPicker: some View {
-        HStack(spacing: 6) {
-            ForEach(Mood.allCases) { mood in
-                Button {
-                    todayMood = mood
-                    MoodStore.set(mood, for: Date())
-                } label: {
-                    VStack(spacing: 2) {
-                        Text(mood.emoji)
-                            .font(.title3)
-                            .scaleEffect(todayMood == mood ? 1.25 : 1.0)
-                        if todayMood == mood {
-                            Text(mood.label)
-                                .font(.caption2.bold())
-                                .foregroundStyle(mood.color)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(
-                        todayMood == mood
-                        ? AnyShapeStyle(mood.color.opacity(0.18))
-                        : AnyShapeStyle(Color(.secondarySystemGroupedBackground)),
-                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(todayMood == mood ? mood.color : Color.clear, lineWidth: 1.5)
-                    )
-                    .animation(AppAnimation.snappy, value: todayMood)
-                }
-                .buttonStyle(.plain)
-            }
-        }
     }
 
     /// Sanftes Tap-Feedback für Quick-Action-Tiles.

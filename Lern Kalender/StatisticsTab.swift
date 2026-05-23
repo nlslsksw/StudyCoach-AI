@@ -341,12 +341,11 @@ struct StreakCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            ZStack {
+            ZStack(alignment: .bottom) {
                 if icon == "flame.fill" && value > 0 {
                     StreakFlameView(streak: value, baseColor: color)
-                        .frame(width: 60, height: 60)
-                        .offset(y: -8)
-                        .blendMode(.plusLighter)
+                        .frame(width: 72, height: 90)
+                        .offset(y: 12)  // Flammen lecken über die Icon-Plakette hinaus
                 }
                 Image(systemName: icon)
                     .font(.title2)
@@ -358,8 +357,6 @@ struct StreakCard: View {
                         in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                     )
                     .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
-                    // Sprühender Funken-Effekt, sobald die Serie nach oben steigt
-                    // (z.B. wenn man nach dem ersten Eintrag des Tages reinkommt).
                     .changeEffect(
                         .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
                             Image(systemName: "flame.fill").foregroundStyle(color)
@@ -367,7 +364,7 @@ struct StreakCard: View {
                         value: value
                     )
             }
-            .frame(width: 60, height: 60)
+            .frame(width: 72, height: 60)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(value) Tage")
@@ -647,12 +644,11 @@ struct StreakHeroSection: View {
         VStack(spacing: 12) {
             // Hero — Aktuelle Serie
             HStack(spacing: 16) {
-                ZStack {
+                ZStack(alignment: .bottom) {
                     if current > 0 {
                         StreakFlameView(streak: current, baseColor: .orange)
-                            .frame(width: 90, height: 90)
-                            .offset(y: -16)
-                            .blendMode(.plusLighter)
+                            .frame(width: 110, height: 140)
+                            .offset(y: 20)
                     }
                     Image(systemName: "flame.fill")
                         .font(.system(size: 30))
@@ -670,7 +666,7 @@ struct StreakHeroSection: View {
                             value: current
                         )
                 }
-                .frame(width: 90, height: 90)
+                .frame(width: 110, height: 90)
 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
