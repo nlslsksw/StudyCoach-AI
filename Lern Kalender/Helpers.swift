@@ -579,6 +579,57 @@ enum MoodStore {
     }
 }
 
+// MARK: - Streak Flame Animation
+
+/// Animiertes Flammen-Layer auf Basis von SwiftUI Canvas + TimelineView.
+/// Skaliert mit dem Streak-Wert: kleines Funkeln ab 1 Tag, größere
+/// Flamme ab 7, "Inferno" ab 30, leuchtender Effekt ab 100.
+struct StreakFlameView: View {
+    let streak: Int
+    var baseColor: Color = .orange
+
+    private var intensity: Double {
+        switch streak {
+        case ..<1: return 0
+        case 1..<7: return 0.5
+        case 7..<30: return 0.8
+        case 30..<100: return 1.0
+        default: return 1.3
+        }
+    }
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
+            Canvas { ctx, size in
+                let center = CGPoint(x: size.width / 2, y: size.height / 2)
+                let count = max(0, Int(8 * intensity))
+                for i in 0..<count {
+                    let phase = Double(i) / Double(max(count, 1))
+                    let life = (sin(t * 1.8 + phase * .pi * 2) + 1) / 2
+                    let yOffset = -life * Double(size.height) * 0.6
+                    let xJitter = sin(t * 2.3 + phase * 5) * Double(size.width) * 0.18
+                    let radius = (1 - life) * 6 * intensity + 2
+
+                    let opacity = (1 - life) * 0.85
+                    var color = baseColor.opacity(opacity)
+                    if life > 0.6 { color = Color.yellow.opacity(opacity * 0.7) }
+                    if life > 0.85 { color = Color.red.opacity(opacity * 0.4) }
+
+                    let rect = CGRect(
+                        x: center.x + xJitter - radius,
+                        y: center.y + yOffset - radius,
+                        width: radius * 2,
+                        height: radius * 2
+                    )
+                    ctx.fill(Path(ellipseIn: rect), with: .color(color))
+                }
+            }
+        }
+        .allowsHitTesting(false)
+    }
+}
+
 /// Animiert eine Zahl beim Wechsel (Counter-Effekt für Statistiken).
 struct AnimatedNumber: View {
     let value: Int
