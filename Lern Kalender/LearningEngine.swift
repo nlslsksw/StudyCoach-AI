@@ -58,6 +58,14 @@ final class LearningEngine {
         if known {
             earnXP(xpForCardKnown(), subject: spacedCards[idx].subject)
         }
+        Task { @MainActor in
+            WeaknessEngine.shared.recordCardReview(
+                subject: spacedCards[idx].subject,
+                topic: spacedCards[idx].topic,
+                known: known
+            )
+            NotificationCenter.default.post(name: .weaknessUpdated, object: nil)
+        }
         save()
     }
 
@@ -75,11 +83,18 @@ final class LearningEngine {
 
     // MARK: - Quiz Tracking
 
-    func recordQuiz(score: Int, total: Int, subject: String) {
+    func recordQuiz(score: Int, total: Int, subject: String, topic: String = "") {
         quizStats.total += 1
         if score == total { quizStats.perfect += 1 }
         let xp = score * xpForQuizCorrect()
         earnXP(xp, subject: subject)
+        if !topic.isEmpty {
+            Task { @MainActor in
+                WeaknessEngine.shared.recordQuiz(score: score, total: total,
+                                                 subject: subject, topic: topic)
+                NotificationCenter.default.post(name: .weaknessUpdated, object: nil)
+            }
+        }
 
         if score == total { earnBadge("perfect_quiz") }
         if quizStats.total == 1 { earnBadge("first_quiz") }

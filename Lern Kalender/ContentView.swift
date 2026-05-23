@@ -400,6 +400,10 @@ struct TodayTab: View {
                             .padding(.horizontal)
                     }
 
+                    // Schwachstellen vor kommenden Klausuren
+                    WeaknessExamCard(store: store)
+                        .padding(.horizontal)
+
                     // Wöchentlicher KI-Lern-Check (nur wenn vorhanden oder KI bereit)
                     if HealthCheckStore.shared.latest != nil || AIService.shared.hasAPIKey {
                         HealthCheckCard(store: store)

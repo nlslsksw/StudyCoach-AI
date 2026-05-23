@@ -593,6 +593,15 @@ struct QuizPlayView: View {
                                     currentIndex += 1; selectedAnswer = nil
                                 } else {
                                     isFinished = true
+                                    // Quiz fertig → Score in WeaknessEngine + LearningEngine.
+                                    // Topic = quiz.title nach erstem ": "
+                                    let topic = quiz.title.contains(":")
+                                        ? String(quiz.title.split(separator: ":", maxSplits: 1).last ?? "").trimmingCharacters(in: .whitespaces)
+                                        : ""
+                                    LearningEngine.shared.recordQuiz(
+                                        score: score, total: quiz.questions.count,
+                                        subject: quiz.subject, topic: topic
+                                    )
                                 }
                             }
                         }

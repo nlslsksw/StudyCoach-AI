@@ -548,6 +548,9 @@ struct SubjectDetailView: View {
                     }
                 }
 
+                // Schwachstellen
+                WeaknessSubjectSection(subject: subject.name)
+
                 // Hausaufgaben-Bereich
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {

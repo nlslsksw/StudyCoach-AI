@@ -464,6 +464,10 @@ final class DataStore {
 
     func addGrade(_ grade: Grade) {
         grades.append(grade)
+        Task { @MainActor in
+            WeaknessEngine.shared.recordGrade(grade.grade, subject: grade.subject)
+            NotificationCenter.default.post(name: .weaknessUpdated, object: nil)
+        }
         syncToCloudIfNeeded()
         sendGradeNotification(grade)
     }
