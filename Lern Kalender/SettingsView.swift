@@ -20,6 +20,8 @@ struct SettingsView: View {
     @State private var showingWrappedJahr = false
     @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
     @State private var showingWebuntis = false
+    @State private var selectedTheme: AppTheme = ThemeStore.current
+    @State private var selectedAccent: AppAccent = ThemeStore.accent
     @State private var devCode: String = ""
     @State private var devUnlocked: Bool = false
     @State private var devFreezeCount: Double = 0
@@ -108,6 +110,60 @@ struct SettingsView: View {
                     Text("Lern-Erinnerung")
                 } footer: {
                     Text("Du bekommst täglich zur gewählten Zeit eine Mitteilung. Wenn du an dem Tag schon Lernzeit eingetragen hast, wird die Erinnerung für heute übersprungen.")
+                }
+
+                // Erscheinungsbild
+                Section {
+                    Picker("Modus", selection: $selectedTheme) {
+                        ForEach(AppTheme.allCases) { t in
+                            Text(t.label).tag(t)
+                        }
+                    }
+                    .onChange(of: selectedTheme) { _, new in
+                        ThemeStore.current = new
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Akzentfarbe")
+                            .font(.subheadline)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(AppAccent.allCases) { accent in
+                                    Button {
+                                        selectedAccent = accent
+                                        ThemeStore.accent = accent
+                                    } label: {
+                                        Circle()
+                                            .fill(
+                                                LinearGradient(
+                                                    colors: [accent.color, accent.color.opacity(0.7)],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                )
+                                            )
+                                            .frame(width: 34, height: 34)
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(.white, lineWidth: 2)
+                                                    .opacity(selectedAccent == accent ? 1 : 0)
+                                            )
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(accent.color, lineWidth: 2)
+                                                    .padding(-2)
+                                                    .opacity(selectedAccent == accent ? 1 : 0)
+                                            )
+                                            .shadow(color: accent.color.opacity(0.3), radius: 4, x: 0, y: 2)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
+                } header: {
+                    Text("Erscheinungsbild")
+                } footer: {
+                    Text("AMOLED ist ein tiefes Schwarz für OLED-iPhones — spart Akku.")
                 }
 
                 // Webuntis

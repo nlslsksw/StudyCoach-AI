@@ -1,5 +1,7 @@
 import SwiftUI
 import UserNotifications
+import Combine
+import CoreMotion
 
 // MARK: - Notification Helper
 
@@ -372,6 +374,208 @@ extension View {
                      radius: CGFloat = AppRadius.large,
                      padding: CGFloat = AppSpacing.lg) -> some View {
         modifier(AppHeroCardStyle(colors: colors, radius: radius, padding: padding))
+    }
+}
+
+// MARK: - Theme System
+
+enum AppTheme: String, CaseIterable, Identifiable {
+    case system, light, dark, amoled
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .system: return "System"
+        case .light: return "Hell"
+        case .dark: return "Dunkel"
+        case .amoled: return "AMOLED-Schwarz"
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark, .amoled: return .dark
+        }
+    }
+}
+
+enum AppAccent: String, CaseIterable, Identifiable {
+    case blue, purple, pink, orange, green, teal, indigo
+    var id: String { rawValue }
+
+    var color: Color {
+        switch self {
+        case .blue: return .blue
+        case .purple: return .purple
+        case .pink: return .pink
+        case .orange: return .orange
+        case .green: return .green
+        case .teal: return .teal
+        case .indigo: return .indigo
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .blue: return "Blau"
+        case .purple: return "Lila"
+        case .pink: return "Pink"
+        case .orange: return "Orange"
+        case .green: return "Grün"
+        case .teal: return "Türkis"
+        case .indigo: return "Indigo"
+        }
+    }
+}
+
+enum ThemeStore {
+    private static let themeKey = "appTheme"
+    private static let accentKey = "appAccent"
+
+    static var current: AppTheme {
+        get { AppTheme(rawValue: UserDefaults.standard.string(forKey: themeKey) ?? "") ?? .system }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: themeKey)
+            NotificationCenter.default.post(name: .appThemeChanged, object: nil)
+        }
+    }
+    static var accent: AppAccent {
+        get { AppAccent(rawValue: UserDefaults.standard.string(forKey: accentKey) ?? "") ?? .blue }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: accentKey)
+            NotificationCenter.default.post(name: .appThemeChanged, object: nil)
+        }
+    }
+}
+
+extension Notification.Name {
+    static let appThemeChanged = Notification.Name("appThemeChanged")
+}
+
+// MARK: - 3D Tilt Modifier (CoreMotion)
+
+/// Subtiles 3D-Tilt-Effekt für Karten — folgt der Geräte-Neigung.
+/// Nutzt einen geteilten MotionManager, damit nicht jede Karte ihren
+/// eigenen Sensor-Stream startet.
+final class TiltMotion: ObservableObject {
+    static let shared = TiltMotion()
+    @Published var pitch: Double = 0
+    @Published var roll: Double = 0
+
+    private let manager = CMMotionManager()
+    private var subscribers = 0
+
+    private init() {}
+
+    func start() {
+        subscribers += 1
+        guard subscribers == 1, manager.isDeviceMotionAvailable else { return }
+        manager.deviceMotionUpdateInterval = 1.0 / 30.0
+        manager.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
+            guard let self, let attitude = data?.attitude else { return }
+            self.pitch = attitude.pitch
+            self.roll = attitude.roll
+        }
+    }
+
+    func stop() {
+        subscribers = max(0, subscribers - 1)
+        if subscribers == 0 { manager.stopDeviceMotionUpdates() }
+    }
+}
+
+struct TiltCardModifier: ViewModifier {
+    @StateObject private var motion = TiltMotion.shared
+    var maxAngle: Double = 6  // Grad
+
+    func body(content: Content) -> some View {
+        content
+            .rotation3DEffect(
+                .degrees(clamp(motion.roll * 180 / .pi, -maxAngle, maxAngle)),
+                axis: (x: 0, y: 1, z: 0),
+                perspective: 0.6
+            )
+            .rotation3DEffect(
+                .degrees(-clamp(motion.pitch * 180 / .pi, -maxAngle, maxAngle)),
+                axis: (x: 1, y: 0, z: 0),
+                perspective: 0.6
+            )
+            .onAppear { motion.start() }
+            .onDisappear { motion.stop() }
+    }
+
+    private func clamp(_ value: Double, _ minV: Double, _ maxV: Double) -> Double {
+        min(max(value, minV), maxV)
+    }
+}
+
+extension View {
+    func tiltCard(_ maxAngle: Double = 6) -> some View {
+        modifier(TiltCardModifier(maxAngle: maxAngle))
+    }
+}
+
+// MARK: - Mood Tracker
+
+enum Mood: Int, CaseIterable, Identifiable, Codable {
+    case sleepy = 1, neutral = 2, ok = 3, good = 4, fire = 5
+    var id: Int { rawValue }
+
+    var emoji: String {
+        switch self {
+        case .sleepy: return "🥱"
+        case .neutral: return "😐"
+        case .ok: return "🙂"
+        case .good: return "😄"
+        case .fire: return "🔥"
+        }
+    }
+    var label: String {
+        switch self {
+        case .sleepy: return "Müde"
+        case .neutral: return "Naja"
+        case .ok: return "OK"
+        case .good: return "Gut"
+        case .fire: return "Stark"
+        }
+    }
+    var color: Color {
+        switch self {
+        case .sleepy: return .gray
+        case .neutral: return .blue
+        case .ok: return .teal
+        case .good: return .green
+        case .fire: return .orange
+        }
+    }
+}
+
+enum MoodStore {
+    private static let key = "moodLog"
+
+    /// "yyyy-MM-dd" → Mood.rawValue
+    static func all() -> [String: Int] {
+        UserDefaults.standard.dictionary(forKey: key) as? [String: Int] ?? [:]
+    }
+
+    static func mood(for date: Date) -> Mood? {
+        let key = dateKey(date)
+        guard let raw = all()[key] else { return nil }
+        return Mood(rawValue: raw)
+    }
+
+    static func set(_ mood: Mood, for date: Date = Date()) {
+        var dict = all()
+        dict[dateKey(date)] = mood.rawValue
+        UserDefaults.standard.set(dict, forKey: key)
+    }
+
+    private static func dateKey(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: date)
     }
 }
 
