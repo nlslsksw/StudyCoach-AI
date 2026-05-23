@@ -4,9 +4,10 @@ import SwiftUI
 
 // MARK: - Ambient Player
 //
-// Spielt Hintergrund-Geräusche während des Lerntimers. Geräusche werden
-// algorithmisch erzeugt (kein Bundle-Asset nötig) — Brown Noise, White
-// Noise, Regen-ähnliches gefiltertes Rauschen.
+// Spielt Hintergrund-Sound während des Lerntimers. Für die "richtigen"
+// Sounds nutzen wir kuratierte SomaFM-Streams (royalty-free Internet-
+// Radio); zusätzlich gibt's Brown-Noise und Regen, die wir lokal
+// synthetisieren und auch offline funktionieren.
 
 @MainActor
 @Observable
@@ -15,30 +16,72 @@ final class AmbientPlayer {
 
     enum Sound: String, CaseIterable, Identifiable {
         case off = "Aus"
+        case lofi = "Lo-Fi Beats"
+        case ambient = "Ambient"
+        case deepSpace = "Deep Space"
+        case lush = "Lush"
         case brown = "Brown Noise"
-        case white = "White Noise"
         case rain = "Regen"
-        case wind = "Wind"
 
         var id: String { rawValue }
 
         var icon: String {
             switch self {
             case .off: return "speaker.slash"
+            case .lofi: return "music.note"
+            case .ambient: return "circle.hexagongrid.fill"
+            case .deepSpace: return "moon.stars.fill"
+            case .lush: return "leaf.fill"
             case .brown: return "waveform"
-            case .white: return "dot.radiowaves.left.and.right"
             case .rain: return "cloud.rain.fill"
-            case .wind: return "wind"
             }
+        }
+
+        var subtitle: String {
+            switch self {
+            case .off: return ""
+            case .lofi: return "SomaFM · Groove Salad"
+            case .ambient: return "SomaFM · Drone Zone"
+            case .deepSpace: return "SomaFM · Deep Space One"
+            case .lush: return "SomaFM · Lush"
+            case .brown: return "Lokal, ohne Internet"
+            case .rain: return "Lokal, ohne Internet"
+            }
+        }
+
+        var streamURL: URL? {
+            switch self {
+            case .lofi: return URL(string: "https://ice2.somafm.com/groovesalad-128-mp3")
+            case .ambient: return URL(string: "https://ice2.somafm.com/dronezone-128-mp3")
+            case .deepSpace: return URL(string: "https://ice2.somafm.com/deepspaceone-128-mp3")
+            case .lush: return URL(string: "https://ice2.somafm.com/lush-128-mp3")
+            default: return nil
+            }
+        }
+
+        var isSynthesized: Bool {
+            self == .brown || self == .rain
         }
     }
 
     var sound: Sound = .off
-    var volume: Float = 0.35 {
-        didSet { /* volume gilt sofort über nextSample */ }
+    var volume: Float = 0.5 {
+        didSet {
+            player?.volume = volume
+            engineMixer?.outputVolume = volume
+        }
     }
 
+    /// Wird true, sobald ein Stream tatsächlich Audio liefert.
+    var isLoading: Bool = false
+    var lastError: String?
+
+    // Stream-Pfad
+    private var player: AVPlayer?
+
+    // Synthese-Pfad
     private let engine = AVAudioEngine()
+    private weak var engineMixer: AVAudioMixerNode?
     private var source: AVAudioSourceNode?
     private var brownLast: Float = 0
     private var phase: Float = 0
@@ -49,9 +92,67 @@ final class AmbientPlayer {
         stop(silent: true)
         guard sound != .off else { self.sound = .off; return }
         self.sound = sound
+        lastError = nil
 
+        configureSession()
+
+        if sound.isSynthesized {
+            startSynthesis(sound)
+        } else if let url = sound.streamURL {
+            startStream(url: url)
+        }
+    }
+
+    func stop(silent: Bool = false) {
+        player?.pause()
+        player = nil
+
+        if let s = source {
+            engine.detach(s)
+            source = nil
+        }
+        if engine.isRunning { engine.stop() }
+        engineMixer = nil
+
+        isLoading = false
+        if !silent {
+            sound = .off
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
+    }
+
+    private func configureSession() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            lastError = "Audio konnte nicht starten."
+        }
+    }
+
+    // MARK: Streaming
+
+    private func startStream(url: URL) {
+        isLoading = true
+        let p = AVPlayer(url: url)
+        p.volume = volume
+        p.automaticallyWaitsToMinimizeStalling = true
+        p.play()
+        player = p
+        // Loading-Flag zurücksetzen, sobald der Player Items hat
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            await MainActor.run { self?.isLoading = false }
+        }
+    }
+
+    // MARK: Synthese
+
+    private func startSynthesis(_ sound: Sound) {
         let format = engine.outputNode.outputFormat(forBus: 0)
         let sampleRate = Float(format.sampleRate)
+        let mixer = engine.mainMixerNode
+        mixer.outputVolume = volume
 
         let src = AVAudioSourceNode { [weak self] _, _, frameCount, audioBufferList in
             guard let self else { return noErr }
@@ -66,57 +167,33 @@ final class AmbientPlayer {
             return noErr
         }
         engine.attach(src)
-        engine.connect(src, to: engine.mainMixerNode, format: format)
+        engine.connect(src, to: mixer, format: format)
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
-            try AVAudioSession.sharedInstance().setActive(true)
             try engine.start()
             source = src
+            engineMixer = mixer
         } catch {
-            // Audio konnte nicht starten — leise scheitern.
+            lastError = "Synthese konnte nicht starten."
         }
-    }
-
-    func stop(silent: Bool = false) {
-        if let s = source {
-            engine.detach(s)
-            source = nil
-        }
-        if engine.isRunning { engine.stop() }
-        if !silent { sound = .off }
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     private func nextSample(sampleRate: Float) -> Float {
         let white = Float.random(in: -1...1)
-        let value: Float
         switch sound {
-        case .off:
-            value = 0
-        case .white:
-            value = white * 0.3
         case .brown:
-            // Integrator-Filter → tiefe Frequenzen dominieren
             brownLast += white * 0.02
             brownLast = max(-1, min(1, brownLast))
-            value = brownLast * 3.5
+            return brownLast * 3.5
         case .rain:
-            // White-Noise mit Tiefpass und sehr langsamer Amplituden-Modulation
             noiseBuf[noiseIdx] = white
             noiseIdx = (noiseIdx + 1) % noiseBuf.count
             let avg = noiseBuf.reduce(0, +) / Float(noiseBuf.count)
             phase += 1 / sampleRate
             let mod = (sin(phase * 0.7) * 0.15 + 0.85)
-            value = avg * 1.6 * mod
-        case .wind:
-            // Brown Noise + LFO-Schwell-Effekt
-            brownLast += white * 0.015
-            brownLast = max(-1, min(1, brownLast))
-            phase += 1 / sampleRate
-            let swell = (sin(phase * 0.5) + 1) * 0.5  // 0…1
-            value = brownLast * 3.0 * swell
+            return avg * 1.6 * mod
+        default:
+            return 0
         }
-        return value * volume
     }
 }
 
@@ -131,10 +208,12 @@ struct AmbientPlayerBar: View {
     private func gradient(for sound: AmbientPlayer.Sound) -> [Color] {
         switch sound {
         case .off: return [.gray, .gray.opacity(0.6)]
+        case .lofi: return [Color(red: 0.91, green: 0.43, blue: 0.49), Color(red: 0.55, green: 0.20, blue: 0.45)]
+        case .ambient: return [.indigo, .purple]
+        case .deepSpace: return [Color(red: 0.10, green: 0.05, blue: 0.35), .blue]
+        case .lush: return [.green, .teal]
         case .brown: return [.brown, .orange]
-        case .white: return [.cyan, .blue]
         case .rain: return [.blue, .indigo]
-        case .wind: return [.teal, .mint]
         }
     }
 
@@ -233,7 +312,7 @@ struct AmbientPlayerBar: View {
                 Image(systemName: sound.icon)
                     .font(.title3)
                     .foregroundStyle(.white)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 38, height: 38)
                     .background(
                         LinearGradient(colors: colors,
                                        startPoint: .topLeading, endPoint: .bottomTrailing),
@@ -244,16 +323,21 @@ struct AmbientPlayerBar: View {
                     Text(sound.rawValue)
                         .font(.subheadline.bold())
                         .foregroundStyle(.primary)
-                    Text(isSelected ? "Tippe zum Stoppen" : "Tippen für Start")
+                    Text(sound.subtitle)
                         .font(.caption2)
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
                 Spacer(minLength: 0)
                 if isSelected {
-                    Image(systemName: "waveform")
-                        .font(.caption.bold())
-                        .foregroundStyle(colors.first ?? .blue)
-                        .symbolEffect(.variableColor.iterative.reversing)
+                    if player.isLoading {
+                        ProgressView().scaleEffect(0.7)
+                    } else {
+                        Image(systemName: "waveform")
+                            .font(.caption.bold())
+                            .foregroundStyle(colors.first ?? .blue)
+                            .symbolEffect(.variableColor.iterative.reversing)
+                    }
                 }
             }
             .padding(10)

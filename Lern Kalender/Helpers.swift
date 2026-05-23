@@ -517,99 +517,129 @@ extension View {
     }
 }
 
-// MARK: - Streak Flame Animation
+// MARK: - Streak Flame (premium 3-Layer Stack)
 //
-// Dramatisches Flammen-Layer: deutlich mehr Partikel, additives Blending
-// für echten Glow-Effekt, mehrere Layer (Basis-Glow, Hauptflamme, Funken),
-// skaliert mit dem Streak-Wert.
+// Statt Partikel-Chaos: drei überlagerte SF-Symbol-Layer mit
+// Glow-Halo, dunkler Hintergrund-Flamme und heller Vorder-Flamme.
+// Pattern inspired by Duolingo + Snapchat — Look entsteht durch
+// Layering + Gradients + dezenten Puls, nicht durch Bewegung.
 
 struct StreakFlameView: View {
     let streak: Int
-    var baseColor: Color = .orange
+    @State private var pulse = false
+    @State private var wobble = false
 
-    private var intensity: Double {
+    private var tier: Tier {
         switch streak {
-        case ..<1: return 0
-        case 1..<3: return 0.55
-        case 3..<7: return 0.8
-        case 7..<30: return 1.1
-        case 30..<100: return 1.45
-        default: return 1.8
+        case ..<1: return .none
+        case 1..<7: return .orange
+        case 7..<30: return .yellow
+        case 30..<100: return .gold
+        default: return .blue
+        }
+    }
+
+    private enum Tier {
+        case none, orange, yellow, gold, blue
+
+        // Farbpalette pro Tier
+        var foreground: [Color] {
+            switch self {
+            case .none, .orange: return [
+                Color(red: 1.00, green: 0.97, blue: 0.90),  // white-warm
+                Color(red: 1.00, green: 0.78, blue: 0.00),  // gold
+                Color(red: 1.00, green: 0.59, blue: 0.00),  // orange
+                Color(red: 1.00, green: 0.29, blue: 0.00)   // deep orange
+            ]
+            case .yellow: return [
+                Color(red: 1.00, green: 1.00, blue: 0.95),
+                Color(red: 1.00, green: 0.85, blue: 0.20),
+                Color(red: 1.00, green: 0.55, blue: 0.00),
+                Color(red: 0.93, green: 0.25, blue: 0.00)
+            ]
+            case .gold: return [
+                Color(red: 1.00, green: 1.00, blue: 0.95),
+                Color(red: 1.00, green: 0.88, blue: 0.30),
+                Color(red: 1.00, green: 0.50, blue: 0.10),
+                Color(red: 0.85, green: 0.10, blue: 0.00)
+            ]
+            case .blue: return [
+                Color(red: 0.90, green: 0.97, blue: 1.00),
+                Color(red: 0.31, green: 0.76, blue: 0.97),  // sky
+                Color(red: 0.01, green: 0.53, blue: 0.82),
+                Color(red: 0.00, green: 0.34, blue: 0.55)
+            ]
+            }
+        }
+
+        var dark: [Color] {
+            switch self {
+            case .none, .orange, .yellow, .gold: return [
+                Color(red: 0.70, green: 0.13, blue: 0.00),
+                Color(red: 0.40, green: 0.05, blue: 0.00)
+            ]
+            case .blue: return [
+                Color(red: 0.00, green: 0.34, blue: 0.55),
+                Color(red: 0.00, green: 0.20, blue: 0.35)
+            ]
+            }
+        }
+
+        var halo: Color {
+            switch self {
+            case .none, .orange, .yellow, .gold:
+                return Color(red: 1.00, green: 0.78, blue: 0.00).opacity(0.55)
+            case .blue:
+                return Color(red: 0.31, green: 0.76, blue: 0.97).opacity(0.55)
+            }
         }
     }
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
-            let t = timeline.date.timeIntervalSinceReferenceDate
-            Canvas { ctx, size in
-                let centerX = size.width / 2
-                let bottomY = size.height
-                let baseR = min(size.width, size.height) * 0.45
-
-                // 1) Weicher Glow-Sockel unter der Flamme
-                let glowR = baseR * (0.95 + sin(t * 2.5) * 0.05) * intensity
-                let glowOrigin = CGPoint(x: centerX - glowR, y: bottomY - glowR * 0.6)
-                let glowRect = CGRect(
-                    x: glowOrigin.x, y: glowOrigin.y,
-                    width: glowR * 2, height: glowR * 1.2
-                )
-                ctx.fill(
-                    Path(ellipseIn: glowRect),
-                    with: .color(baseColor.opacity(0.18 * intensity))
-                )
-
-                // 2) Hauptflammen-Partikel
-                let count = Int(60 * intensity)
-                for i in 0..<count {
-                    let seed = Double(i)
-                    let phaseOffset = seed * 0.137
-                    let life = (sin(t * 2.0 + phaseOffset * .pi * 4)
-                                + cos(t * 1.3 + phaseOffset)) / 2 + 0.5
-                    let normLife = max(0, min(1, life))
-
-                    let driftX = sin(t * 2.4 + seed * 1.7) * baseR * 0.35
-                    let jitterX = sin(t * 9 + seed * 3) * baseR * 0.08
-                    let yOffset = -normLife * baseR * 1.6
-
-                    let radius = (1 - normLife) * baseR * 0.35 * intensity + baseR * 0.05
-                    let alpha = pow(1 - normLife, 0.75) * 0.85
-
-                    // Farbe je nach Lebensphase: rot/orange → gelb → weiß
-                    let color: Color
-                    if normLife < 0.35 {
-                        color = baseColor.opacity(alpha)
-                    } else if normLife < 0.7 {
-                        color = Color.yellow.opacity(alpha * 0.75)
-                    } else {
-                        color = Color.white.opacity(alpha * 0.55)
-                    }
-
-                    let rect = CGRect(
-                        x: centerX + driftX + jitterX - radius,
-                        y: bottomY + yOffset - radius,
-                        width: radius * 2, height: radius * 2
+        ZStack {
+            if tier != .none {
+                // Layer 1: weicher Glow-Halo dahinter
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [tier.halo, .clear],
+                            center: .center,
+                            startRadius: 4,
+                            endRadius: 40
+                        )
                     )
-                    ctx.fill(Path(ellipseIn: rect), with: .color(color))
-                }
+                    .blur(radius: 12)
+                    .scaleEffect(pulse ? 1.18 : 1.0)
 
-                // 3) Funken nach oben — kleine helle Punkte
-                let sparkCount = Int(15 * intensity)
-                for i in 0..<sparkCount {
-                    let seed = Double(i)
-                    let life = (sin(t * 1.5 + seed * 0.91) + 1) / 2
-                    let yOffset = -life * baseR * 2.2
-                    let driftX = sin(t * 1.8 + seed * 2.3) * baseR * 0.6
-                    let alpha = (1 - life) * 0.6
-
-                    let rect = CGRect(
-                        x: centerX + driftX - 1.5,
-                        y: bottomY + yOffset - 1.5,
-                        width: 3, height: 3
+                // Layer 2: dunkle Hintergrund-Flamme (größer, leicht versetzt)
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(
+                        LinearGradient(colors: tier.dark,
+                                       startPoint: .top, endPoint: .bottom)
                     )
-                    ctx.fill(Path(ellipseIn: rect), with: .color(.yellow.opacity(alpha)))
-                }
+                    .scaleEffect(1.18)
+                    .offset(y: wobble ? -1.5 : 1.5)
+                    .blur(radius: 0.5)
+
+                // Layer 3: helle Vorder-Flamme mit Weiß-Glühkern
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(
+                        LinearGradient(colors: tier.foreground,
+                                       startPoint: .top, endPoint: .bottom)
+                    )
+                    .scaleEffect(pulse ? 1.04 : 1.00)
             }
-            .blendMode(.plusLighter)
+        }
+        .compositingGroup()
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                pulse = true
+            }
+            withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
+                wobble = true
+            }
         }
         .allowsHitTesting(false)
     }

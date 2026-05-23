@@ -341,30 +341,30 @@ struct StreakCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            ZStack(alignment: .bottom) {
+            Group {
                 if icon == "flame.fill" && value > 0 {
-                    StreakFlameView(streak: value, baseColor: color)
-                        .frame(width: 72, height: 90)
-                        .offset(y: 12)  // Flammen lecken über die Icon-Plakette hinaus
+                    StreakFlameView(streak: value)
+                        .frame(width: 50, height: 50)
+                        .changeEffect(
+                            .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
+                                Image(systemName: "flame.fill").foregroundStyle(.orange)
+                            },
+                            value: value
+                        )
+                } else {
+                    Image(systemName: icon)
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                        .background(
+                            LinearGradient(colors: [color, color.opacity(0.75)],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing),
+                            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        )
+                        .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
                 }
-                Image(systemName: icon)
-                    .font(.title2)
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background(
-                        LinearGradient(colors: [color, color.opacity(0.75)],
-                                       startPoint: .topLeading, endPoint: .bottomTrailing),
-                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    )
-                    .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
-                    .changeEffect(
-                        .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
-                            Image(systemName: "flame.fill").foregroundStyle(color)
-                        },
-                        value: value
-                    )
             }
-            .frame(width: 72, height: 60)
+            .frame(width: 50, height: 50)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(value) Tage")
@@ -644,29 +644,29 @@ struct StreakHeroSection: View {
         VStack(spacing: 12) {
             // Hero — Aktuelle Serie
             HStack(spacing: 16) {
-                ZStack(alignment: .bottom) {
+                Group {
                     if current > 0 {
-                        StreakFlameView(streak: current, baseColor: .orange)
-                            .frame(width: 110, height: 140)
-                            .offset(y: 20)
+                        StreakFlameView(streak: current)
+                            .frame(width: 80, height: 80)
+                            .changeEffect(
+                                .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
+                                    Image(systemName: "flame.fill").foregroundStyle(.orange)
+                                },
+                                value: current
+                            )
+                    } else {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 30))
+                            .foregroundStyle(.white)
+                            .frame(width: 64, height: 64)
+                            .background(
+                                AppMeshBackground(colors: [.orange, .red, .pink])
+                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            )
+                            .shadow(color: .orange.opacity(0.45), radius: 10, x: 0, y: 4)
                     }
-                    Image(systemName: "flame.fill")
-                        .font(.system(size: 30))
-                        .foregroundStyle(.white)
-                        .frame(width: 64, height: 64)
-                        .background(
-                            AppMeshBackground(colors: [.orange, .red, .pink])
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        )
-                        .shadow(color: .orange.opacity(0.45), radius: 10, x: 0, y: 4)
-                        .changeEffect(
-                            .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
-                                Image(systemName: "flame.fill").foregroundStyle(.orange)
-                            },
-                            value: current
-                        )
                 }
-                .frame(width: 110, height: 90)
+                .frame(width: 80, height: 80)
 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
