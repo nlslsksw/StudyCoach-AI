@@ -445,6 +445,11 @@ struct StudyTimerView: View {
                 }
 
                 Spacer()
+
+                // Ambient-Soundtrack-Bar — schmiegt sich unten an.
+                AmbientPlayerBar()
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
             }
             .navigationTitle("Lerntimer")
             .navigationBarTitleDisplayMode(.inline)
@@ -453,6 +458,7 @@ struct StudyTimerView: View {
                     Button("Schließen") {
                         pauseTimer()
                         endLiveActivity()
+                        AmbientPlayer.shared.stop()
                         dismiss()
                     }
                 }
