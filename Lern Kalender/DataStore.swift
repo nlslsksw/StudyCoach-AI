@@ -615,6 +615,10 @@ final class DataStore {
         if isDuplicate { return }
 
         studySessions.append(session)
+        // Wenn die Session auf einen Tag fällt, der bereits per Eis überbrückt
+        // wurde, geben wir das Eis zurück — der Tag ist ja nun ein echter
+        // Lerntag, das Eis war unnötig.
+        refundFreezeIfBridged(for: session.date)
         // Streak-State pflegen: erst Lücken überbrücken, dann neue Freezes vergeben
         recomputeAndConsumeFreezes()
         processFreezeAwards()
@@ -644,6 +648,9 @@ final class DataStore {
 
     func deleteSession(_ session: StudySession) {
         studySessions.removeAll { $0.id == session.id }
+        // Streak neu prüfen: vielleicht hat der gelöschte Tag eine Lücke
+        // hinterlassen, die nun mit Eis überbrückt werden müsste.
+        recomputeAndConsumeFreezes()
         syncToCloudIfNeeded()
     }
 
@@ -714,6 +721,39 @@ final class DataStore {
             if let stop = stopBefore, checkDate <= stop { break }
         }
         return streak
+    }
+
+    /// Gibt ein Eis zurück, wenn das gegebene Datum bereits mit einem
+    /// Eis überbrückt wurde — wir brauchen es ja nicht mehr.
+    func refundFreezeIfBridged(for date: Date) {
+        let cal = Calendar.current
+        let day = cal.startOfDay(for: date)
+        guard let idx = streakState.freezeUsedOnDays.firstIndex(where: {
+            cal.isDate($0, inSameDayAs: day)
+        }) else { return }
+        var state = streakState
+        state.freezeUsedOnDays.remove(at: idx)
+        state.freezeCount += 1
+        streakState = state
+    }
+
+    /// Verbraucht aktiv ein Eis, um den HEUTIGEN Tag zu überbrücken.
+    /// Sinnvoll für „Ich skippe heute bewusst — schütze meine Serie jetzt".
+    @discardableResult
+    func consumeFreezeForToday() -> Bool {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        // Wenn heute schon gelernt wurde oder schon überbrückt: kein Eis nötig.
+        if !sessions(for: today).isEmpty { return false }
+        if streakState.freezeUsedOnDays.contains(where: { cal.isDate($0, inSameDayAs: today) }) {
+            return false
+        }
+        guard streakState.freezeCount > 0 else { return false }
+        var state = streakState
+        state.freezeCount -= 1
+        state.freezeUsedOnDays.append(today)
+        streakState = state
+        return true
     }
 
     /// Geht von gestern aus rückwärts und schließt offene Lücken automatisch mit Freezes,

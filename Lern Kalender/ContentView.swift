@@ -382,7 +382,8 @@ struct TodayTab: View {
                         value: store.currentStreak(),
                         icon: "flame.fill",
                         color: .orange,
-                        freezeCount: store.streakState.freezeCount
+                        freezeCount: store.streakState.freezeCount,
+                        store: store
                     )
                     .padding(.horizontal)
 

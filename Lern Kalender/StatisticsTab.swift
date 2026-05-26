@@ -334,6 +334,8 @@ struct StreakCard: View {
     let color: Color
     /// Wenn gesetzt: zeigt klein das Eis-Symbol als Button oben rechts (öffnet Info-Sheet).
     var freezeCount: Int? = nil
+    /// Optionaler DataStore — wenn übergeben, ermöglicht das Skip-Eis im Info-Sheet.
+    var store: DataStore? = nil
 
     @State private var showFreezeInfo = false
     /// Trigger für Milestone-Effekt (steigt nur bei 7/30/100/365 etc.).
@@ -431,8 +433,8 @@ struct StreakCard: View {
                 .padding(.top, 6)
                 .padding(.trailing, 6)
                 .sheet(isPresented: $showFreezeInfo) {
-                    FreezeInfoSheet(count: freezeCount)
-                        .presentationDetents([.medium])
+                    FreezeInfoSheet(count: freezeCount, store: store)
+                        .presentationDetents([.medium, .large])
                 }
             }
         }
@@ -441,37 +443,72 @@ struct StreakCard: View {
 
 struct FreezeInfoSheet: View {
     let count: Int
+    var store: DataStore? = nil
     @Environment(\.dismiss) private var dismiss
+    @State private var didSkip = false
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                Image(systemName: "snowflake")
-                    .font(.system(size: 56))
-                    .foregroundStyle(.cyan)
-                    .padding(.top, 8)
+            ScrollView {
+                VStack(spacing: 16) {
+                    Image(systemName: "snowflake")
+                        .font(.system(size: 56))
+                        .foregroundStyle(.cyan)
+                        .padding(.top, 8)
 
-                Text("\(count) Eis im Vorrat")
-                    .font(.title2.bold())
+                    Text("\(count) Eis im Vorrat")
+                        .font(.title2.bold())
+                        .contentTransition(.numericText())
 
-                Text("Wenn du einen Tag nicht lernst, wird automatisch ein Eis verbraucht und deine Serie läuft weiter. In den Schulferien (Bundesland in den Einstellungen) pausiert die Serie ohne Eis-Verbrauch.")
+                    Text("Wenn du einen Tag nicht lernst, wird automatisch ein Eis verbraucht und deine Serie läuft weiter. In den Schulferien (Bundesland in den Einstellungen) pausiert die Serie ohne Eis-Verbrauch.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+
+                    // Aktiv-Skippen für HEUTE
+                    if let store, canSkipToday(store) {
+                        Button {
+                            withAnimation(AppAnimation.snappy) {
+                                _ = store.consumeFreezeForToday()
+                                didSkip = true
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "snowflake")
+                                Text("Heute pausieren (1 Eis)")
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(
+                                LinearGradient(colors: [.cyan, .blue],
+                                               startPoint: .leading, endPoint: .trailing),
+                                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            )
+                            .foregroundStyle(.white)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal)
+                    } else if didSkip {
+                        Label("Heute wurde mit Eis überbrückt.", systemImage: "checkmark.circle.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(.green)
+                            .padding(.horizontal)
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Alle 7 Tage Serie → +1 Eis", systemImage: "flame.fill")
+                        Label("Alle 300 Minuten Lernzeit → +1 Eis", systemImage: "clock.fill")
+                        Label("Wochenziel erreicht → +1 Eis", systemImage: "target")
+                    }
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
                     .padding(.horizontal)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Label("Alle 7 Tage Serie → +1 Eis", systemImage: "flame.fill")
-                    Label("Alle 300 Minuten Lernzeit → +1 Eis", systemImage: "clock.fill")
-                    Label("Wochenziel erreicht → +1 Eis", systemImage: "target")
                 }
-                .font(.subheadline)
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
-                .padding(.horizontal)
-
-                Spacer()
+                .padding(.vertical)
             }
             .navigationTitle("Streak-Eis")
             .navigationBarTitleDisplayMode(.inline)
@@ -481,6 +518,16 @@ struct FreezeInfoSheet: View {
                 }
             }
         }
+    }
+
+    /// Skip nur möglich, wenn Eis vorhanden, heute nichts gelernt und nicht
+    /// schon überbrückt.
+    private func canSkipToday(_ store: DataStore) -> Bool {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        if !store.sessions(for: today).isEmpty { return false }
+        if store.streakState.freezeUsedOnDays.contains(where: { cal.isDate($0, inSameDayAs: today) }) { return false }
+        return store.streakState.freezeCount > 0
     }
 }
 
@@ -742,8 +789,8 @@ struct StreakHeroSection: View {
         }
         .onAppear { heroAppearTrigger += 1 }
         .sheet(isPresented: $showFreezeInfo) {
-            FreezeInfoSheet(count: freezes)
-                .presentationDetents([.medium])
+            FreezeInfoSheet(count: freezes, store: store)
+                .presentationDetents([.medium, .large])
         }
     }
 
