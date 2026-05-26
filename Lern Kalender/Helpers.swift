@@ -645,23 +645,91 @@ struct StreakFlameView: View {
     }
 }
 
-/// Animiert eine Zahl beim Wechsel (Counter-Effekt für Statistiken).
+/// Zählt von 0 auf den Zielwert hoch (ease-out), tickt jede Zahl
+/// dazwischen mit. Beim Wechsel zur neuen Zahl wieder von 0 los.
+/// Wenn der Wert nur leicht zur Folgezahl wechselt, ohne Re-Mount,
+/// macht sie eine kurze 0.4s-Übergangs-Animation.
 struct AnimatedNumber: View {
     let value: Int
     var font: Font = .title2.bold().monospacedDigit()
     var color: Color = .primary
-    @State private var displayed: Int = 0
+    /// Initiale Ramp-Dauer beim ersten Erscheinen.
+    var rampDuration: TimeInterval = 1.4
+
+    @State private var startTime: Date?
+    @State private var startValue: Int = 0
+    @State private var targetValue: Int = 0
+    @State private var animDuration: TimeInterval = 1.4
 
     var body: some View {
-        Text("\(displayed)")
-            .font(font)
-            .foregroundStyle(color)
-            .contentTransition(.numericText())
-            .onAppear { animate(to: value) }
-            .onChange(of: value) { _, newValue in animate(to: newValue) }
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+            let displayed = currentDisplayed(at: timeline.date)
+            Text("\(displayed)")
+                .font(font)
+                .foregroundStyle(color)
+                .contentTransition(.numericText())
+        }
+        .onAppear {
+            startTime = Date()
+            startValue = 0
+            targetValue = value
+            animDuration = rampDuration
+        }
+        .onChange(of: value) { old, new in
+            startTime = Date()
+            startValue = old
+            targetValue = new
+            animDuration = 0.45
+        }
     }
 
-    private func animate(to target: Int) {
-        withAnimation(AppAnimation.smooth) { displayed = target }
+    private func currentDisplayed(at now: Date) -> Int {
+        guard let start = startTime else { return startValue }
+        let elapsed = now.timeIntervalSince(start)
+        if elapsed >= animDuration { return targetValue }
+        let t = elapsed / animDuration
+        // Ease-out cubic
+        let eased = 1 - pow(1 - t, 3)
+        let interp = Double(startValue) + Double(targetValue - startValue) * eased
+        return Int(round(interp))
+    }
+}
+
+/// Wie AnimatedNumber, aber für Double (z.B. Notenschnitt 2.3 → 1.5).
+struct AnimatedDecimal: View {
+    let value: Double
+    var format: String = "%.1f"
+    var font: Font = .system(size: 38, weight: .heavy, design: .rounded)
+    var color: Color = .primary
+    var rampDuration: TimeInterval = 1.4
+
+    @State private var startTime: Date?
+    @State private var startValue: Double = 0
+    @State private var targetValue: Double = 0
+    @State private var animDuration: TimeInterval = 1.4
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+            Text(String(format: format, current(at: timeline.date)))
+                .font(font)
+                .foregroundStyle(color)
+        }
+        .onAppear {
+            startTime = Date(); startValue = 0; targetValue = value
+            animDuration = rampDuration
+        }
+        .onChange(of: value) { old, new in
+            startTime = Date(); startValue = old; targetValue = new
+            animDuration = 0.5
+        }
+    }
+
+    private func current(at now: Date) -> Double {
+        guard let start = startTime else { return startValue }
+        let elapsed = now.timeIntervalSince(start)
+        if elapsed >= animDuration { return targetValue }
+        let t = elapsed / animDuration
+        let eased = 1 - pow(1 - t, 3)
+        return startValue + (targetValue - startValue) * eased
     }
 }

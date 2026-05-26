@@ -1251,16 +1251,19 @@ struct GradesOverviewView: View {
                 Text("Schnitt")
                     .font(.caption.bold())
                     .foregroundStyle(.secondary)
-                Text(String(format: "%.1f", totalAvg))
-                    .font(.system(size: 56, weight: .heavy, design: .rounded))
-                    .foregroundStyle(gradeColor(totalAvg))
-                    .contentTransition(.numericText())
+                AnimatedDecimal(
+                    value: totalAvg,
+                    font: .system(size: 56, weight: .heavy, design: .rounded),
+                    color: gradeColor(totalAvg),
+                    rampDuration: 1.4
+                )
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 4) {
-                Text("\(allGrades.count)")
-                    .font(.title2.bold().monospacedDigit())
-                    .foregroundStyle(.primary)
+                AnimatedNumber(
+                    value: allGrades.count,
+                    font: .title2.bold().monospacedDigit()
+                )
                 Text(allGrades.count == 1 ? "Note" : "Noten")
                     .font(.caption)
                     .foregroundStyle(.secondary)

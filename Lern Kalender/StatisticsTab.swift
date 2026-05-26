@@ -369,9 +369,15 @@ struct StreakCard: View {
             .frame(width: 50, height: 50)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("\(value) Tage")
-                    .font(.title2.bold().monospacedDigit())
-                    .contentTransition(.numericText())
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    AnimatedNumber(
+                        value: value,
+                        font: .title2.bold().monospacedDigit(),
+                        color: .primary
+                    )
+                    Text("Tage")
+                        .font(.title2.bold().monospacedDigit())
+                }
                 Text(title)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -717,10 +723,12 @@ struct StreakHeroSection: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
-                        Text("\(current)")
-                            .font(.system(size: 44, weight: .heavy, design: .rounded))
-                            .foregroundStyle(.primary)
-                            .contentTransition(.numericText())
+                        AnimatedNumber(
+                            value: current,
+                            font: .system(size: 44, weight: .heavy, design: .rounded),
+                            color: .primary,
+                            rampDuration: 1.6
+                        )
                         Text(current == 1 ? "Tag" : "Tage")
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(.secondary)
