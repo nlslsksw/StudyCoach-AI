@@ -13,6 +13,14 @@ struct ContentView: View {
     @State private var wrappedSchoolYear: SchoolYear?
     @State private var showingMotivation = false
     @State private var showingOnboarding = !OnboardingTracker.hasCompleted
+    /// Start-Tab; per Launch-Argument `-tab 0…3` vorwählbar (Demo/Screenshots).
+    @State private var selectedStudentTab: Int = {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-tab"), i + 1 < args.count, let n = Int(args[i + 1]) { return n }
+        #endif
+        return 0
+    }()
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @State private var currentTheme: AppTheme = ThemeStore.current
@@ -28,6 +36,12 @@ struct ContentView: View {
         }
         .fullScreenCover(isPresented: $showingOnboarding) {
             OnboardingView()
+        }
+        .onAppear {
+            #if DEBUG
+            DemoData.applyIfRequested(store: store)
+            showingOnboarding = !OnboardingTracker.hasCompleted
+            #endif
         }
         .preferredColorScheme(currentTheme.colorScheme)
         .tint(currentAccent.color)
@@ -109,15 +123,19 @@ struct ContentView: View {
                 }
             } else {
                 // iPhone: TabView
-                TabView {
+                TabView(selection: $selectedStudentTab) {
                     TodayTab(store: store)
                         .tabItem { Label("Heute", systemImage: "sun.max.fill") }
+                        .tag(0)
                     CalendarTab(store: store)
                         .tabItem { Label("Kalender", systemImage: "calendar") }
+                        .tag(1)
                     SubjectsTab(store: store)
                         .tabItem { Label("Fächer", systemImage: "book.fill") }
+                        .tag(2)
                     StatisticsTab(store: store)
                         .tabItem { Label("Statistik", systemImage: "chart.bar.fill") }
+                        .tag(3)
                 }
             }
         }

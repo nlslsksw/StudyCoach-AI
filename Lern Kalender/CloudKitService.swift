@@ -58,6 +58,9 @@ final class CloudKitService {
     // MARK: - Student Data Sync (Kind → Cloud)
 
     func syncStudentData(from store: DataStore) async {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-demo") { return }   // Demo: keine Cloud
+        #endif
         guard let link = store.familyLink, link.isActive else { return }
         isSyncing = true
         defer { isSyncing = false }
@@ -104,6 +107,9 @@ final class CloudKitService {
     // MARK: - Fetch Student Data (Eltern ← Cloud)
 
     func fetchStudentData(pairingCode: String) async {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-demo") { return }   // Demo: keine Cloud
+        #endif
         isSyncing = true
         defer { isSyncing = false }
 

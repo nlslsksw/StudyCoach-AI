@@ -7,6 +7,10 @@ import CoreMotion
 
 struct NotificationHelper {
     static func requestPermission() {
+        #if DEBUG
+        // Demo-Modus (Screenshots): keinen System-Dialog zeigen
+        if ProcessInfo.processInfo.arguments.contains("-demo") { return }
+        #endif
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
             if granted {
                 DispatchQueue.main.async {
