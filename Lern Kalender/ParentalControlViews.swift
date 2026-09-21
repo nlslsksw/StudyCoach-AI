@@ -417,6 +417,7 @@ struct ParentDashboardView: View {
                 }
 
                 if let child = selectedChild, let data = cloudKit.remoteData[child.pairingCode] {
+                    ScrollViewReader { proxy in
                     ScrollView {
                         VStack(spacing: 16) {
                             if cloudKit.isSyncing {
@@ -453,6 +454,7 @@ struct ParentDashboardView: View {
                                 .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
                             examsSection(data: data, pairingCode: child.pairingCode)
                                 .emojiReaction { emoji in sendReaction(emoji: emoji, pairingCode: child.pairingCode) }
+                                .id("exams")
                             goalSettingSection(pairingCode: child.pairingCode)
 
                             // Rückblick (nur im 30-Tage-Fenster sichtbar)
@@ -491,6 +493,16 @@ struct ParentDashboardView: View {
                         .padding(.top, 8)
                     }
                     .refreshable { refreshData() }
+                    .onAppear {
+                        #if DEBUG
+                        // Demo/Screenshots: `-scroll exams` springt zu den Klassenarbeiten
+                        let args = ProcessInfo.processInfo.arguments
+                        if let i = args.firstIndex(of: "-scroll"), i + 1 < args.count, args[i + 1] == "exams" {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { proxy.scrollTo("exams", anchor: .top) }
+                        }
+                        #endif
+                    }
+                    }
                 } else if selectedChild != nil {
                     VStack(spacing: 12) {
                         if cloudKit.isSyncing {

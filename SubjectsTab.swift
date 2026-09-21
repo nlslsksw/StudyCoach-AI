@@ -10,6 +10,7 @@ struct SubjectsTab: View {
     @State private var mode: SubjectsMode = .subjects
     @State private var showingAddGrade = false
     @State private var showingCopiedAlert = false
+    @State private var demoSubject: Subject? = nil
     @State private var copiedCount = 0
 
     enum SubjectsMode: String, CaseIterable, Identifiable {
@@ -77,6 +78,19 @@ struct SubjectsTab: View {
                         }
                     }
                 }
+            }
+            .navigationDestination(item: $demoSubject) { subject in
+                SubjectDetailView(store: store, subject: subject)
+            }
+            .onAppear {
+                #if DEBUG
+                // Demo/Screenshots: `-open Mathe` öffnet direkt das Fach-Detail
+                let args = ProcessInfo.processInfo.arguments
+                if let i = args.firstIndex(of: "-open"), i + 1 < args.count,
+                   let subject = store.subjects.first(where: { $0.name == args[i + 1] }) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { demoSubject = subject }
+                }
+                #endif
             }
             .sheet(isPresented: $showingAddSubject) { AddSubjectView(store: store) }
             .sheet(isPresented: $showingManageSchoolYears) { ManageSchoolYearsView(store: store) }

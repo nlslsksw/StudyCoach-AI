@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy Policy — StudyCoach AI</title>
+<title>Privacy Policy — Lern Kalender</title>
 <link rel="icon" type="image/png" href="app-icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -12,8 +12,8 @@
     <header>
         <div class="header-top">
             <a href="index-en.html" class="brand">
-            <img src="app-icon.png" alt="StudyCoach AI" class="brand-icon">
-            StudyCoach AI
+            <img src="app-icon.png" alt="Lern Kalender" class="brand-icon">
+            Lern Kalender
         </a>
             <div class="lang-switch">
                 <a href="privacy-de.html">DE</a>
@@ -30,9 +30,9 @@
 
     <main>
         <h1>Privacy Policy</h1>
-        <p class="subtitle">Last updated: 9 April 2026</p>
+        <p class="subtitle">Last updated: 21 September 2026</p>
 
-        <p>This Privacy Policy explains what data the <strong>StudyCoach AI</strong> app processes, where it is stored, and who has access.</p>
+        <p>This Privacy Policy explains what data the <strong>Lern Kalender</strong> app processes, where it is stored, and who has access.</p>
 
         <h2>1. Data controller</h2>
         <p>
@@ -52,8 +52,7 @@
             <li>Subjects and school years</li>
             <li>Study sessions and statistics</li>
             <li>Grades</li>
-            <li>Flashcards and quiz results</li>
-            <li>Topics and study feed content from the Hivemind area</li>
+            <li>Timetable, homework and attachments</li>
             <li>App settings</li>
         </ul>
 
@@ -64,33 +63,17 @@
         <p>If you enable the family feature and connect a parent device with a child device:</p>
         <ul>
             <li>Connecting generates a 6-digit <strong>pairing code</strong>.</li>
-            <li>Specific child study data (study time, grades, streak, topics, exams) is written to the <strong>public CloudKit database</strong> of the app provider so the parent device can fetch it.</li>
+            <li>Specific child study data (study time, grades, streak, exams, timetable events) is written to the <strong>public CloudKit database</strong> of the app provider so the parent device can fetch it.</li>
             <li>This data is only retrievable using the secret pairing code — other users have no access.</li>
-            <li>Parents can send <strong>topics</strong>, <strong>study goals</strong>, and <strong>motivation messages</strong> to the child, which are also transmitted via CloudKit.</li>
+            <li>Parents can send <strong>study goals</strong>, <strong>exam dates</strong>, and <strong>motivation messages</strong> to the child, which are also transmitted via CloudKit.</li>
         </ul>
         <p>You can disconnect the family link at any time in settings.</p>
 
-        <h3>2.4 AI features</h3>
-        <p>The AI features of the app (AI assistant, study feed generation, quiz/flashcard creation, photo-based study plan) use external AI providers. By default, <strong>Groq, Inc.</strong> (<a href="https://groq.com">https://groq.com</a>) is used via our backend server. You can optionally configure your own API key for one of the following providers in settings:</p>
-        <ul>
-            <li><strong>Groq, Inc.</strong> — <a href="https://groq.com/privacy-policy/">Privacy Policy</a></li>
-            <li><strong>OpenAI, Inc.</strong> — <a href="https://openai.com/privacy/">Privacy Policy</a></li>
-            <li><strong>Google (Gemini)</strong> — <a href="https://ai.google.dev/terms">Terms of Service</a></li>
-            <li><strong>Anthropic, PBC (Claude)</strong> — <a href="https://www.anthropic.com/privacy">Privacy Policy</a></li>
-        </ul>
-        <p>When you use the AI, the following data is transmitted to the selected provider:</p>
-        <ul>
-            <li>Your <strong>input texts</strong> (question, topic name, OCR text)</li>
-            <li>For photo study plans: the <strong>text recognized</strong> by the Vision framework (the image itself never leaves your device)</li>
-            <li>Optionally: instructions such as language, response style</li>
-        </ul>
-        <p><strong>Important:</strong> Do <strong>not</strong> store or send any sensitive personal data through the AI features.</p>
+        <h3>2.4 Photo attachments</h3>
+        <p>You can attach photos or files to homework. These are stored <strong>locally on your device only</strong> and are never transmitted to us.</p>
 
-        <h3>2.5 Voice input</h3>
-        <p>When you use voice input (in the AI assistant or Feynman mode), the <strong>Apple Speech Recognition Framework</strong> is used. Apple processes voice input according to its own privacy policy.</p>
-
-        <h3>2.6 Photo selection</h3>
-        <p>When creating a study plan or topic from a photo, the selected image is processed <strong>locally with the Apple Vision Framework</strong> (OCR). The image never leaves your device. Only the recognized text is sent to the AI.</p>
+        <h3>2.5 WebUntis connection (optional)</h3>
+        <p>If you connect your timetable to WebUntis, the app communicates directly with your school's WebUntis server (Untis GmbH). Your credentials are stored encrypted in your device keychain and are never sent to us. Your school's and Untis GmbH's privacy policies apply.</p>
 
         <h2>3. What we do NOT do</h2>
         <ul>
@@ -105,9 +88,7 @@
         <h2>4. Permissions</h2>
         <p>The app only requests the following permissions — and only when you actually use the corresponding feature:</p>
         <ul>
-            <li><strong>Microphone</strong> — for voice input</li>
-            <li><strong>Speech recognition</strong> — for the same feature</li>
-            <li><strong>Photos</strong> — when you pick an image</li>
+            <li><strong>Photos</strong> — when attaching an image to homework</li>
             <li><strong>Notifications</strong> — for reminders and parent notifications</li>
         </ul>
 
@@ -116,7 +97,6 @@
             <li><strong>Local data</strong> stays on your device until you delete it or uninstall the app.</li>
             <li><strong>iCloud data</strong> stays in your iCloud account until you delete it.</li>
             <li><strong>CloudKit data of the family feature</strong> is removed when you disconnect the family link.</li>
-            <li><strong>AI inputs at Groq</strong> are subject to Groq's retention policies.</li>
         </ul>
 
         <h2>6. Your rights (GDPR)</h2>

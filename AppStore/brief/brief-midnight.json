@@ -1,0 +1,44 @@
+{
+  "name": "Lern Kalender – Midnight",
+  "locale": "de",
+  "sizes": [
+    "iphone-6.9"
+  ],
+  "screenshots": [
+    "eltern-countdown.png",
+    "eltern-dashboard.png",
+    "kind-notenziel.png",
+    "lockscreen.png",
+    "kind-heute.png",
+    "kind-faecher.png",
+    "kind-statistik.png"
+  ],
+  "headlines": [
+    "Nie wieder\n*nachfragen*.",
+    "Sieh, wie dein Kind\n*lernt*.",
+    "Welche Note\nfür die *2*?",
+    "Bescheid wissen –\n*ohne* zu fragen.",
+    "Stundenplan & HA\n*automatisch* drin.",
+    "Alle Fächer,\nalle *Noten*.",
+    "*Motivation*\nstatt Streit."
+  ],
+  "subtitles": [
+    "Klassenarbeit in 3 Tagen – und du siehst, ob dafür gelernt wurde",
+    "Lernzeit, Noten, Streak und Wochenübersicht für jedes Kind",
+    "Notenziel setzen – die App rechnet aus, was als Nächstes nötig ist",
+    "Push aufs Eltern-Handy: gelernt, neue Note, Wochenbericht",
+    "WebUntis-Sync für Stundenplan, Hausaufgaben und Vertretungen",
+    "Schnitt pro Fach, getrennt nach Schuljahr",
+    "Lern-Serie und Statistik – dein Kind bleibt von selbst dran"
+  ],
+  "badges": [
+    "FÜR ELTERN",
+    "",
+    "NEU",
+    "PUSH",
+    "WEBUNTIS",
+    "",
+    ""
+  ],
+  "template": "Midnight"
+}

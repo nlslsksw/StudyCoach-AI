@@ -186,7 +186,7 @@ struct SchoolYear: Identifiable, Codable {
     var isArchived: Bool = false
 }
 
-struct Subject: Identifiable, Codable {
+struct Subject: Identifiable, Codable, Hashable {
     var id = UUID()
     var name: String
     var icon: String = "book.fill"

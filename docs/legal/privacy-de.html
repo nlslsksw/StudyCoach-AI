@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Datenschutz — StudyCoach AI</title>
+<title>Datenschutz — Lern Kalender</title>
 <link rel="icon" type="image/png" href="app-icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -12,8 +12,8 @@
     <header>
         <div class="header-top">
             <a href="index.html" class="brand">
-            <img src="app-icon.png" alt="StudyCoach AI" class="brand-icon">
-            StudyCoach AI
+            <img src="app-icon.png" alt="Lern Kalender" class="brand-icon">
+            Lern Kalender
         </a>
             <div class="lang-switch">
                 <a href="privacy-de.html">DE</a>
@@ -30,9 +30,9 @@
 
     <main>
         <h1>Datenschutzerklärung</h1>
-        <p class="subtitle">Stand: 9. April 2026</p>
+        <p class="subtitle">Stand: 21. September 2026</p>
 
-        <p>Diese Datenschutzerklärung informiert dich darüber, welche Daten die App <strong>StudyCoach AI</strong> verarbeitet, wo sie gespeichert werden und wer Zugriff hat.</p>
+        <p>Diese Datenschutzerklärung informiert dich darüber, welche Daten die App <strong>Lern Kalender</strong> verarbeitet, wo sie gespeichert werden und wer Zugriff hat.</p>
 
         <h2>1. Verantwortlich</h2>
         <p>
@@ -52,8 +52,7 @@
             <li>Fächer und Schuljahre</li>
             <li>Lernzeiten und Lernstatistiken</li>
             <li>Noten</li>
-            <li>Karteikarten und Quiz-Ergebnisse</li>
-            <li>Topics und Lern-Feed-Inhalte des Hivemind-Bereichs</li>
+            <li>Stundenplan, Hausaufgaben und Anhänge</li>
             <li>App-Einstellungen</li>
         </ul>
 
@@ -64,33 +63,17 @@
         <p>Wenn du die Familien-Funktion aktivierst und ein Eltern- mit einem Kind-Gerät verbindest:</p>
         <ul>
             <li>Beim Verbinden wird ein 6-stelliger <strong>Pairing-Code</strong> generiert.</li>
-            <li>Bestimmte Lerndaten des Kindes (Lernzeit, Noten, Streak, Topics, Klassenarbeiten) werden in die <strong>öffentliche CloudKit-Datenbank</strong> des App-Anbieters geschrieben, damit das Eltern-Gerät sie abrufen kann.</li>
+            <li>Bestimmte Lerndaten des Kindes (Lernzeit, Noten, Streak, Klassenarbeiten, Stundenplan-Termine) werden in die <strong>öffentliche CloudKit-Datenbank</strong> des App-Anbieters geschrieben, damit das Eltern-Gerät sie abrufen kann.</li>
             <li>Diese Daten sind nur über den geheimen Pairing-Code abrufbar — andere Nutzer haben keinen Zugriff.</li>
-            <li>Eltern können <strong>Topics</strong>, <strong>Lernziele</strong> und <strong>Motivationsnachrichten</strong> an das Kind senden, die ebenfalls über CloudKit übertragen werden.</li>
+            <li>Eltern können <strong>Lernziele</strong>, <strong>Klassenarbeits-Termine</strong> und <strong>Motivationsnachrichten</strong> an das Kind senden, die ebenfalls über CloudKit übertragen werden.</li>
         </ul>
         <p>Du kannst die Familien-Verbindung jederzeit in den Einstellungen wieder trennen.</p>
 
-        <h3>2.4 KI-Funktionen</h3>
-        <p>Die KI-Funktionen der App (KI-Assistent, Lern-Feed-Generierung, Quiz-/Karteikarten-Erstellung, Lernplan aus Foto) verwenden externe KI-Anbieter. Standardmäßig wird <strong>Groq, Inc.</strong> (<a href="https://groq.com">https://groq.com</a>) über unseren Backend-Server verwendet. Optional kannst du in den Einstellungen einen eigenen API-Key für einen der folgenden Anbieter hinterlegen:</p>
-        <ul>
-            <li><strong>Groq, Inc.</strong> — <a href="https://groq.com/privacy-policy/">Datenschutzbestimmungen</a></li>
-            <li><strong>OpenAI, Inc.</strong> — <a href="https://openai.com/privacy/">Datenschutzbestimmungen</a></li>
-            <li><strong>Google (Gemini)</strong> — <a href="https://ai.google.dev/terms">Nutzungsbedingungen</a></li>
-            <li><strong>Anthropic, PBC (Claude)</strong> — <a href="https://www.anthropic.com/privacy">Datenschutzbestimmungen</a></li>
-        </ul>
-        <p>Wenn du die KI nutzt, werden die folgenden Daten an den gewählten Anbieter übertragen:</p>
-        <ul>
-            <li>Deine <strong>Eingabetexte</strong> (Frage, Topic-Name, OCR-Text)</li>
-            <li>Bei Foto-Lernplänen: der per Vision-Framework <strong>erkannte Text</strong> (das Bild selbst verlässt dein Gerät nicht)</li>
-            <li>Optional: Anweisungen wie Sprache, Antwort-Stil</li>
-        </ul>
-        <p><strong>Wichtig:</strong> Speichere oder sende <strong>keine sensiblen persönlichen Daten</strong> über die KI-Funktionen.</p>
+        <h3>2.4 Foto-Anhänge</h3>
+        <p>Du kannst Hausaufgaben Fotos oder Dateien anhängen. Diese werden <strong>ausschließlich lokal</strong> auf deinem Gerät gespeichert und nicht an uns übertragen.</p>
 
-        <h3>2.5 Spracheingabe</h3>
-        <p>Wenn du die Spracheingabe nutzt (im KI-Assistenten oder im Feynman-Modus), wird das <strong>Apple Speech Recognition Framework</strong> verwendet. Apple verarbeitet die Spracheingabe gemäß seinen Datenschutzbestimmungen.</p>
-
-        <h3>2.6 Foto-Auswahl</h3>
-        <p>Beim Erstellen eines Lernplans oder Topics aus einem Foto wird das ausgewählte Bild <strong>lokal mit dem Apple Vision Framework</strong> verarbeitet (OCR). Das Bild verlässt dein Gerät nicht. Nur der erkannte Text wird an die KI gesendet.</p>
+        <h3>2.5 WebUntis-Anbindung (optional)</h3>
+        <p>Wenn du deinen Stundenplan mit WebUntis verbindest, kommuniziert die App direkt mit dem WebUntis-Server deiner Schule (Untis GmbH). Deine Zugangsdaten werden verschlüsselt im Schlüsselbund deines Geräts gespeichert und nicht an uns übertragen. Es gelten die Datenschutzbestimmungen deiner Schule bzw. der Untis GmbH.</p>
 
         <h2>3. Was wir NICHT tun</h2>
         <ul>
@@ -105,9 +88,7 @@
         <h2>4. Berechtigungen</h2>
         <p>Die App fragt nur folgende Berechtigungen ab — und nur wenn du die jeweilige Funktion verwendest:</p>
         <ul>
-            <li><strong>Mikrofon</strong> — für die Spracheingabe</li>
-            <li><strong>Spracherkennung</strong> — für dieselbe Funktion</li>
-            <li><strong>Fotos</strong> — beim Auswählen eines Bildes</li>
+            <li><strong>Fotos</strong> — beim Anhängen eines Bildes an eine Hausaufgabe</li>
             <li><strong>Mitteilungen</strong> — für Erinnerungen und Eltern-Benachrichtigungen</li>
         </ul>
 
@@ -116,7 +97,6 @@
             <li><strong>Lokale Daten</strong> bleiben auf deinem Gerät, bis du sie löschst oder die App deinstallierst.</li>
             <li><strong>iCloud-Daten</strong> bleiben in deinem iCloud-Account, bis du sie löschst.</li>
             <li><strong>CloudKit-Daten der Familien-Funktion</strong> werden gelöscht, wenn du die Familien-Verbindung trennst.</li>
-            <li><strong>KI-Eingaben bei Groq</strong> unterliegen den Speicherrichtlinien von Groq.</li>
         </ul>
 
         <h2>6. Deine Rechte (DSGVO)</h2>
