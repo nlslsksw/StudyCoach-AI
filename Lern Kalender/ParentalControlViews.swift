@@ -842,17 +842,8 @@ struct ParentDashboardView: View {
             if upcomingExams.isEmpty {
                 Text("Keine anstehenden Klassenarbeiten").font(.subheadline).foregroundStyle(.secondary)
             } else {
-                ForEach(upcomingExams.prefix(5)) { entry in
-                    HStack {
-                        Image(systemName: "doc.text.fill").foregroundStyle(.red)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.title).font(.subheadline.bold())
-                            Text(entry.date, format: .dateTime.day().month().hour().minute())
-                                .font(.caption).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                    }
-                    .padding(.vertical, 2)
+                ForEach(Array(upcomingExams.prefix(5))) { entry in
+                    ExamCountdownRow(entry: entry, data: data)
                 }
             }
         }
@@ -896,6 +887,9 @@ struct ParentDashboardView: View {
             await cloudKit.fetchStudentData(pairingCode: child.pairingCode)
             if let goal = await cloudKit.fetchStudyGoal(pairingCode: child.pairingCode) {
                 store.studyGoals[child.pairingCode] = goal
+            }
+            if let data = cloudKit.remoteData[child.pairingCode] {
+                ExamCountdown.scheduleReminders(for: child, data: data)
             }
         }
     }
@@ -1235,5 +1229,108 @@ private struct GoalBar: View {
             }
             .frame(height: 8)
         }
+    }
+}
+
+
+// MARK: - Klassenarbeits-Countdown (Eltern)
+
+/// Rechnet für die Eltern aus, wie nah eine Klassenarbeit ist und wie viel das
+/// Kind in den letzten 14 Tagen dafür gelernt hat – und plant lokale
+/// Erinnerungen 3 Tage vorher (18 Uhr) auf dem Eltern-Gerät.
+enum ExamCountdown {
+    static let lookbackDays = 14
+    static let reminderDaysBefore = 3
+
+    static func daysUntil(_ date: Date, from now: Date = Date()) -> Int {
+        let cal = Calendar.current
+        return cal.dateComponents([.day], from: cal.startOfDay(for: now), to: cal.startOfDay(for: date)).day ?? 0
+    }
+
+    static func label(days: Int) -> String {
+        switch days {
+        case ..<0: return "vorbei"
+        case 0: return "heute"
+        case 1: return "morgen"
+        default: return "in \(days) Tagen"
+        }
+    }
+
+    /// Fach der Klassenarbeit: das Fach, dessen Name im Titel vorkommt.
+    static func subjectName(for entry: CalendarEntry, subjects: [Subject]) -> String? {
+        subjects
+            .map(\.name)
+            .sorted { $0.count > $1.count }   // längster Treffer zuerst ("Mathe" vs "Mathematik")
+            .first { entry.title.localizedCaseInsensitiveContains($0) }
+    }
+
+    static func minutesStudied(for entry: CalendarEntry, data: CloudKitService.ChildRemoteData, now: Date = Date()) -> Int {
+        guard let subject = subjectName(for: entry, subjects: data.subjects),
+              let since = Calendar.current.date(byAdding: .day, value: -lookbackDays, to: now) else { return 0 }
+        return data.sessions
+            .filter { $0.subject.localizedCaseInsensitiveCompare(subject) == .orderedSame && $0.date >= since && $0.date <= entry.date }
+            .reduce(0) { $0 + $1.minutes }
+    }
+
+    static func scheduleReminders(for child: FamilyLink, data: CloudKitService.ChildRemoteData, now: Date = Date()) {
+        let center = UNUserNotificationCenter.current()
+        let cal = Calendar.current
+        let upcoming = data.entries.filter { $0.type == .klassenarbeit && $0.date > now }
+        let prefix = "examReminder.\(child.pairingCode)."
+
+        // Alte Erinnerungen dieses Kindes verwerfen, dann neu planen
+        center.getPendingNotificationRequests { pending in
+            let stale = pending.map(\.identifier).filter { $0.hasPrefix(prefix) }
+            center.removePendingNotificationRequests(withIdentifiers: stale)
+
+            let name = child.childName.isEmpty ? "Dein Kind" : child.childName
+            for entry in upcoming {
+                guard let day = cal.date(byAdding: .day, value: -reminderDaysBefore, to: cal.startOfDay(for: entry.date)) else { continue }
+                var comps = cal.dateComponents([.year, .month, .day], from: day)
+                comps.hour = 18
+                guard let fireDate = cal.date(from: comps), fireDate > now else { continue }
+
+                let minutes = minutesStudied(for: entry, data: data, now: fireDate)
+                let content = UNMutableNotificationContent()
+                content.title = "\(entry.title) in \(reminderDaysBefore) Tagen"
+                content.body = minutes > 0
+                    ? "\(name) hat dafür bisher \(formatHoursMinutes(minutes)) gelernt."
+                    : "\(name) hat dafür noch nicht gelernt – vielleicht mal nachfragen?"
+                content.sound = .default
+                let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+                center.add(UNNotificationRequest(identifier: prefix + entry.id.uuidString, content: content, trigger: trigger))
+            }
+        }
+    }
+}
+
+struct ExamCountdownRow: View {
+    let entry: CalendarEntry
+    let data: CloudKitService.ChildRemoteData
+
+    var body: some View {
+        let days = ExamCountdown.daysUntil(entry.date)
+        let minutes = ExamCountdown.minutesStudied(for: entry, data: data)
+        let tint: Color = days <= 3 ? .red : .orange
+        HStack {
+            Image(systemName: "doc.text.fill").foregroundStyle(tint)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(entry.title).font(.subheadline.bold())
+                Text(entry.date, format: .dateTime.day().month().hour().minute())
+                    .font(.caption).foregroundStyle(.secondary)
+                Text(minutes > 0
+                     ? "Dafür gelernt (14 Tage): \(formatHoursMinutes(minutes))"
+                     : "Dafür noch nicht gelernt")
+                    .font(.caption2)
+                    .foregroundStyle(minutes > 0 ? Color.secondary : Color.orange)
+            }
+            Spacer()
+            Text(ExamCountdown.label(days: days))
+                .font(.caption.bold())
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(tint.opacity(0.15), in: Capsule())
+                .foregroundStyle(tint)
+        }
+        .padding(.vertical, 2)
     }
 }
