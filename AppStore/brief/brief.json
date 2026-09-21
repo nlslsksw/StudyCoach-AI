@@ -1,0 +1,22 @@
+{
+  "name": "Lern Kalender",
+  "template": "Ocean",
+  "locale": "de",
+  "screenshots": ["eltern-dashboard.png", "kind-heute.png", "kind-faecher.png", "kind-statistik.png", "kind-kalender.png"],
+  "headlines": [
+    "Sieh, wie dein Kind\n*lernt*.",
+    "Stundenplan & Hausaufgaben\n*automatisch* drin.",
+    "Noten mit\n*Ziel*.",
+    "Dranbleiben\nmacht *Spaß*.",
+    "Alles im\n*Blick*."
+  ],
+  "subtitles": [
+    "Eltern-Dashboard: Lernzeit, Noten, Klassenarbeiten – ohne nachzufragen",
+    "WebUntis-Sync für Stundenplan, Hausaufgaben und Vertretungen",
+    "Wunsch-Schnitt setzen – die App sagt, welche Note als Nächstes nötig ist",
+    "Lern-Serie, Wochenstatistik und Belohnungen",
+    "Lernzeiten, Klassenarbeiten und Termine im Kalender"
+  ],
+  "badges": ["FÜR ELTERN", "WEBUNTIS", "NEU", "", ""],
+  "sizes": ["iphone-6.9"]
+}
