@@ -4,7 +4,7 @@
 Lern Kalender – Schule im Blick
 
 ## Untertitel (max. 30 Zeichen)
-Für Eltern & Schüler, WebUntis
+Schule im Blick für Eltern
 
 ## Keywords (max. 100 Zeichen, mit Komma, ohne Leerzeichen)
 webuntis,stundenplan,hausaufgaben,noten,eltern,schule,lerntimer,streak,schulplaner,klassenarbeit,lernen
@@ -26,7 +26,7 @@ FÜR ELTERN
 • Mehrere Kinder, verbunden per 6-stelligem Code, gesichert über iCloud
 
 FÜR SCHÜLER
-• Stundenplan & Hausaufgaben automatisch aus WebUntis – inklusive Vertretungen, Ausfällen und Push bei Änderungen
+• Stundenplan & Hausaufgaben automatisch aus WebUntis (kompatibel mit WebUntis) – inklusive Vertretungen, Ausfällen und Push bei Änderungen
 • Lerntimer mit Live Activity auf dem Sperrbildschirm und Hintergrund-Sound (Regen, Brown Noise)
 • Lern-Serie mit Streak-Eis – Motivation, die ohne Druck funktioniert
 • Noten mit Ziel: Wunsch-Schnitt setzen, die App rechnet aus, welche Note als Nächstes nötig ist
@@ -41,6 +41,8 @@ DATENSCHUTZ
 • Familien-Funktion nur über deinen geheimen Code – niemand sonst sieht die Daten
 
 Lern Kalender ist von einem Schüler für Schüler und Eltern gebaut. Fragen oder Wünsche? Schreib uns – wir antworten selbst.
+
+Lern Kalender ist ein unabhängiges Produkt und steht in keiner Verbindung zur Untis GmbH. WebUntis ist eine Marke der Untis GmbH.
 
 ## Neuerungen in dieser Version (Was ist neu)
 • Notenziel pro Fach – die App sagt, welche Note als Nächstes nötig ist

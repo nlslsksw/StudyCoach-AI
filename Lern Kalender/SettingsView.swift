@@ -427,6 +427,12 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                             .font(.subheadline.monospacedDigit())
                     }
+                    Link(destination: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/")!) {
+                        Label("Website", systemImage: "globe")
+                    }
+                    Link(destination: URL(string: "mailto:geldtracker.contact@gmail.com?subject=Lern%20Kalender")!) {
+                        Label("Support & Feedback", systemImage: "envelope")
+                    }
                     HStack {
                         Label("Copyright", systemImage: "c.circle")
                         Spacer()
@@ -436,6 +442,8 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Über die App")
+                } footer: {
+                    Text("Lern Kalender ist ein unabhängiges Produkt und steht in keiner Verbindung zur Untis GmbH. WebUntis ist eine Marke der Untis GmbH.")
                 }
             }
             .sheet(isPresented: $showingPINSetup) {

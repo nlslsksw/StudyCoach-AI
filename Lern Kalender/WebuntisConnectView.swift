@@ -98,7 +98,10 @@ struct WebuntisConnectView: View {
                 } header: {
                     Text("Zugangsdaten")
                 } footer: {
-                    Text("Server findest du in der Webuntis-App unter „Konto > Profil“. Der Schulname steht oft im URL deiner Schul-Webuntis-Seite (Parameter ?school=…).")
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Server findest du in der Webuntis-App unter „Konto > Profil“. Der Schulname steht oft im URL deiner Schul-Webuntis-Seite (Parameter ?school=…).")
+                        Text("Lern Kalender ist ein unabhängiges Produkt und steht in keiner Verbindung zur Untis GmbH. WebUntis ist eine Marke der Untis GmbH. Deine Zugangsdaten bleiben auf diesem Gerät.")
+                    }
                 }
 
                 Section {
