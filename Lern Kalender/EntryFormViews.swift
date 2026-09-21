@@ -38,10 +38,10 @@ struct EditEntryView: View {
                 Section("Was?") {
                     TextField("z.B. Mathe, Englisch...", text: $title)
 
-                    if !store.subjects.isEmpty {
+                    if !store.activeSubjects().isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(store.subjects) { subject in
+                                ForEach(store.activeSubjects()) { subject in
                                     Button {
                                         title = subject.name
                                     } label: {
@@ -167,10 +167,10 @@ struct AddEntryView: View {
                 Section("Was?") {
                     TextField("z.B. Mathe, Englisch...", text: $title)
 
-                    if !store.subjects.isEmpty {
+                    if !store.activeSubjects().isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(store.subjects) { subject in
+                                ForEach(store.activeSubjects()) { subject in
                                     Button {
                                         title = subject.name
                                     } label: {

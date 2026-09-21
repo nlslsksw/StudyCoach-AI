@@ -243,7 +243,7 @@ struct SubjectComparisonView: View {
     }
 
     private var stats: [SubjectStat] {
-        store.subjects.map { subject in
+        store.activeSubjects().map { subject in
             let grades = store.gradesFor(subject: subject)
             let avg = grades.isEmpty ? nil : grades.map(\.grade).reduce(0, +) / Double(grades.count)
             return SubjectStat(

@@ -872,10 +872,10 @@ struct AddHomeworkView: View {
         NavigationStack {
             Form {
                 Section("Fach") {
-                    if !store.subjects.isEmpty {
+                    if !store.activeSubjects().isEmpty {
                         Picker("Fach", selection: $subject) {
                             Text("Auswählen…").tag("")
-                            ForEach(store.subjects) { sub in
+                            ForEach(store.activeSubjects()) { sub in
                                 Text(sub.name).tag(sub.name)
                             }
                         }
@@ -1722,10 +1722,10 @@ struct AddTimetableSlotView: View {
                     DatePicker("Bis", selection: $endTime, displayedComponents: .hourAndMinute)
                 }
                 Section("Fach") {
-                    if !store.subjects.isEmpty {
+                    if !store.activeSubjects().isEmpty {
                         Picker("Fach", selection: $subject) {
                             Text("Auswählen…").tag("")
-                            ForEach(store.subjects) { sub in
+                            ForEach(store.activeSubjects()) { sub in
                                 Text(sub.name).tag(sub.name)
                             }
                         }

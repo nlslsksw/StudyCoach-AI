@@ -213,10 +213,10 @@ struct AddGradeView: View {
                 Section("Fach") {
                     TextField("z.B. Mathe, Englisch...", text: $subject)
 
-                    if !store.subjects.isEmpty {
+                    if !store.activeSubjects().isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(store.subjects) { sub in
+                                ForEach(store.activeSubjects()) { sub in
                                     Button {
                                         subject = sub.name
                                     } label: {

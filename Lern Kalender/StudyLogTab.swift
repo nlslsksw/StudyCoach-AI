@@ -348,10 +348,10 @@ struct StudyTimerView: View {
                             .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
                             .padding(.horizontal, 40)
 
-                        if !store.subjects.isEmpty {
+                        if !store.activeSubjects().isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
-                                    ForEach(store.subjects) { sub in
+                                    ForEach(store.activeSubjects()) { sub in
                                         Button {
                                             subject = sub.name
                                         } label: {
@@ -580,10 +580,10 @@ struct AddStudySessionView: View {
                 Section("Was hast du gelernt?") {
                     TextField("Fach (z.B. Mathe, Englisch...)", text: $subject)
 
-                    if !store.subjects.isEmpty {
+                    if !store.activeSubjects().isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(store.subjects) { sub in
+                                ForEach(store.activeSubjects()) { sub in
                                     Button {
                                         subject = sub.name
                                     } label: {
@@ -688,10 +688,10 @@ struct EditStudySessionView: View {
                 Section("Was hast du gelernt?") {
                     TextField("Fach", text: $subject)
 
-                    if !store.subjects.isEmpty {
+                    if !store.activeSubjects().isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(store.subjects) { sub in
+                                ForEach(store.activeSubjects()) { sub in
                                     Button {
                                         subject = sub.name
                                     } label: {

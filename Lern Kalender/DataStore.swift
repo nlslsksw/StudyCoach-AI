@@ -390,6 +390,12 @@ final class DataStore {
 
     func subjectsFor(schoolYear: SchoolYear) -> [Subject] { subjects.filter { $0.schoolYearId == schoolYear.id } }
     func unassignedSubjects() -> [Subject] { subjects.filter { $0.schoolYearId == nil } }
+    /// Fächer des aktiven Schuljahres plus nicht zugeordnete – für Statistiken,
+    /// damit alte Schuljahre nicht mitgezählt werden.
+    func activeSubjects() -> [Subject] {
+        guard let active = activeSchoolYear() else { return subjects }
+        return subjects.filter { $0.schoolYearId == active.id || $0.schoolYearId == nil }
+    }
     /// Aktives Schuljahr: das nicht-archivierte, in dessen Zeitraum heute liegt;
     /// sonst das neueste nicht-archivierte.
     func activeSchoolYear() -> SchoolYear? {
