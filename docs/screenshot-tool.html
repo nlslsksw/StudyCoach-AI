@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyCoach AI — Screenshot Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Outfit', sans-serif; background: #0a0a0b; color: #fff; min-height: 100vh; }
+
+.toolbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,11,0.9); backdrop-filter: blur(16px);
+    border-bottom: 1px solid #222;
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.toolbar h1 { font-size: 15px; font-weight: 600; }
+.toolbar h1 em { font-style: normal; color: #f43f5e; }
+.toolbar-actions { display: flex; gap: 8px; }
+.btn {
+    font-family: 'Outfit'; font-size: 13px; font-weight: 500;
+    padding: 8px 16px; border-radius: 8px; border: 1px solid #333;
+    background: #1a1a1d; color: #fff; cursor: pointer;
+}
+.btn:hover { background: #252528; }
+.btn-pink { background: #e11d48; border-color: #e11d48; }
+.btn-pink:hover { background: #be123c; }
+
+.grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px; padding: 24px; max-width: 1400px; margin: 0 auto;
+}
+
+.card {
+    background: #141416; border: 1px solid #222; border-radius: 14px; overflow: hidden;
+}
+.card-head {
+    padding: 10px 14px; font-size: 11px; color: #666;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.card-head .dl-btn {
+    font-family: 'Outfit'; font-size: 11px; color: #f43f5e; background: none;
+    border: 1px solid rgba(244,63,94,0.3); padding: 3px 10px; border-radius: 6px; cursor: pointer;
+}
+.card-head .dl-btn:hover { background: rgba(244,63,94,0.1); }
+
+/* THE SCREENSHOT */
+.ss {
+    position: relative; width: 100%; aspect-ratio: 1290 / 2796;
+    overflow: hidden; display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+}
+
+/* BACKGROUNDS */
+.ss .bg { position: absolute; inset: 0; z-index: 0; }
+.ss > :not(.bg) { position: relative; z-index: 2; }
+
+.bg-1 { background: linear-gradient(160deg, #4c1d95 0%, #be185d 50%, #f43f5e 100%); }
+.bg-2 { background: linear-gradient(150deg, #7c3aed 0%, #db2777 60%, #fb923c 100%); }
+.bg-3 { background: linear-gradient(165deg, #1d4ed8 0%, #7c3aed 50%, #c026d3 100%); }
+.bg-4 { background: linear-gradient(155deg, #0369a1 0%, #4f46e5 55%, #7c3aed 100%); }
+.bg-5 { background: linear-gradient(160deg, #be123c 0%, #a21caf 50%, #6d28d9 100%); }
+.bg-6 { background: linear-gradient(145deg, #9333ea 0%, #e11d48 55%, #ea580c 100%); }
+
+/* DECORATIVE ELEMENTS */
+.deco { position: absolute; z-index: 1; pointer-events: none; }
+
+/* Floating circles */
+.deco-circle {
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(1px);
+}
+
+/* Glass cards */
+.deco-glass {
+    border-radius: 16px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+}
+
+/* Emoji objects */
+.deco-emoji {
+    font-size: 40px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    opacity: 0.7;
+}
+
+/* Dot grid pattern */
+.deco-dots {
+    background-image: radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.4;
+}
+
+/* TEXT */
+.ss-title {
+    padding-top: 11%;
+    font-size: min(28px, 7cqi);
+    font-weight: 800; color: #fff;
+    text-align: center; line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.25);
+    outline: none; cursor: text;
+}
+.ss-sub {
+    font-size: min(13px, 3.2cqi);
+    font-weight: 300; color: rgba(255,255,255,0.75);
+    text-align: center; line-height: 1.4;
+    margin-top: 2%; margin-bottom: 5%;
+    outline: none; cursor: text;
+}
+
+@supports (container-type: inline-size) {
+    .card { container-type: inline-size; }
+    .ss-title { font-size: 7cqi; }
+    .ss-sub { font-size: 3.2cqi; }
+    .deco-emoji { font-size: 10cqi; }
+}
+
+/* iPHONE */
+.phone {
+    width: 64%; aspect-ratio: 393 / 852;
+    background: #000; border-radius: 12% / 5.5%;
+    position: relative; overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 0 0 2.5px #222, 0 0 0 4px #444, 0 16px 48px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4);
+}
+.phone::before {
+    content: ''; position: absolute; top: 2.5%; left: 50%;
+    transform: translateX(-50%); width: 26%; height: 3.5%;
+    background: #000; border-radius: 100px; z-index: 10;
+}
+.phone-inner {
+    position: absolute; inset: 0; background: #1c1c1e;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.phone-inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.phone-ph {
+    color: #444; font-size: min(11px, 3cqi); text-align: center;
+    padding: 20%; line-height: 1.6; pointer-events: none;
+}
+.has-img .phone-ph { display: none; }
+
+.upload-click {
+    position: absolute; inset: 0; z-index: 5; cursor: pointer;
+    border-radius: 12% / 5.5%;
+}
+.upload-click:hover { background: rgba(255,255,255,0.03); }
+
+input[type="file"] { display: none; }
+
+/* OVERLAY */
+.overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px); z-index: 200;
+    align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+}
+.overlay.on { display: flex; }
+.spinner { width: 32px; height: 32px; border: 3px solid #333; border-top-color: #f43f5e; border-radius: 50%; animation: sp .6s linear infinite; }
+@keyframes sp { to { transform: rotate(360deg); } }
+.overlay p { font-size: 14px; color: #888; }
+
+@media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; padding: 16px; gap: 14px; } }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+    <h1>Screenshot Studio — <em>StudyCoach AI</em></h1>
+    <div class="toolbar-actions">
+        <button class="btn" onclick="resetAll()">Reset</button>
+        <button class="btn btn-pink" id="dlAll" onclick="downloadAll()">Download All</button>
+    </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="overlay" id="ov">
+    <div class="spinner"></div>
+    <p id="ovTxt">Exporting...</p>
+</div>
+
+<script>
+const T = [
+    {
+        title: "Your AI\nStudy Tutor",
+        sub: "Ask anything. Get clear explanations.",
+        bg: "bg-1",
+        decos: [
+            { type:'circle', css:'width:35%;aspect-ratio:1;top:-8%;right:-12%;background:rgba(255,255,255,0.06)' },
+            { type:'circle', css:'width:18%;aspect-ratio:1;bottom:25%;left:-6%;background:rgba(255,255,255,0.05)' },
+            { type:'glass', css:'width:28%;height:5%;top:6%;right:5%;transform:rotate(12deg)' },
+            { type:'emoji', css:'top:3%;left:6%', txt:'🧠' },
+            { type:'emoji', css:'top:8%;right:8%', txt:'💡' },
+            { type:'dots', css:'inset:0;width:100%;height:100%' },
+        ]
+    },
+    {
+        title: "Smart\nStudy Plans",
+        sub: "AI builds your perfect schedule.",
+        bg: "bg-2",
+        decos: [
+            { type:'circle', css:'width:40%;aspect-ratio:1;top:-10%;left:-15%;background:rgba(255,255,255,0.05)' },
+            { type:'circle', css:'width:22%;aspect-ratio:1;bottom:20%;right:-8%;background:rgba(255,255,255,0.04)' },
+            { type:'glass', css:'width:20%;height:4%;top:4%;left:8%;transform:rotate(-8deg)' },
+            { type:'emoji', css:'top:4%;right:6%', txt:'📋' },
+            { type:'emoji', css:'top:1%;left:12%', txt:'✨' },
+            { type:'dots', css:'inset:0;width:100%;height:100%' },
+        ]
+    },
+    {
+        title: "Quizzes &\nFlashcards",
+        sub: "Practice smarter, not harder.",
+        bg: "bg-3",
+        decos: [
+            { type:'circle', css:'width:30%;aspect-ratio:1;top:2%;right:-10%;background:rgba(255,255,255,0.06)' },
+            { type:'circle', css:'width:25%;aspect-ratio:1;bottom:30%;left:-10%;background:rgba(255,255,255,0.04)' },
+            { type:'glass', css:'width:24%;height:4.5%;bottom:22%;right:4%;transform:rotate(6deg)' },
+            { type:'emoji', css:'top:3%;left:5%', txt:'🃏' },
+            { type:'emoji', css:'top:7%;right:6%', txt:'🎯' },
+            { type:'dots', css:'inset:0;width:100%;height:100%' },
+        ]
+    },
+    {
+        title: "School\nCalendar",
+        sub: "Never miss a deadline.",
+        bg: "bg-4",
+        decos: [
+            { type:'circle', css:'width:45%;aspect-ratio:1;bottom:-15%;right:-15%;background:rgba(255,255,255,0.05)' },
+            { type:'circle', css:'width:20%;aspect-ratio:1;top:2%;left:-5%;background:rgba(255,255,255,0.05)' },
+            { type:'glass', css:'width:22%;height:4%;top:5%;right:6%;transform:rotate(10deg)' },
+            { type:'emoji', css:'top:2%;left:8%', txt:'📅' },
+            { type:'emoji', css:'top:6%;right:5%', txt:'🔔' },
+            { type:'dots', css:'inset:0;width:100%;height:100%' },
+        ]
+    },
+    {
+        title: "Track Your\nProgress",
+        sub: "See how far you've come.",
+        bg: "bg-5",
+        decos: [
+            { type:'circle', css:'width:35%;aspect-ratio:1;top:-5%;left:-12%;background:rgba(255,255,255,0.06)' },
+            { type:'circle', css:'width:28%;aspect-ratio:1;bottom:18%;right:-10%;background:rgba(255,255,255,0.04)' },
+            { type:'glass', css:'width:26%;height:5%;top:3%;left:5%;transform:rotate(-5deg)' },
+            { type:'emoji', css:'top:4%;right:7%', txt:'📊' },
+            { type:'emoji', css:'top:1%;left:6%', txt:'🔥' },
+            { type:'dots', css:'inset:0;width:100%;height:100%' },
+        ]
+    },
+    {
+        title: "Parental\nControls",
+        sub: "Parents stay in the loop.",
+        bg: "bg-6",
+        decos: [
+            { type:'circle', css:'width:38%;aspect-ratio:1;top:-8%;right:-10%;background:rgba(255,255,255,0.05)' },
+            { type:'circle', css:'width:20%;aspect-ratio:1;bottom:25%;left:-8%;background:rgba(255,255,255,0.05)' },
+            { type:'glass', css:'width:24%;height:4%;top:6%;left:6%;transform:rotate(8deg)' },
+            { type:'emoji', css:'top:3%;right:5%', txt:'👨‍👩‍👦' },
+            { type:'emoji', css:'top:7%;left:8%', txt:'🔒' },
+            { type:'dots', css:'inset:0;width:100%;height:100%' },
+        ]
+    },
+];
+
+const grid = document.getElementById('grid');
+
+T.forEach((t, i) => {
+    const titleHtml = t.title.replace(/\n/g, '<br>');
+    let decoHtml = '';
+    t.decos.forEach(d => {
+        if (d.type === 'emoji') {
+            decoHtml += `<div class="deco deco-emoji" style="${d.css}">${d.txt}</div>`;
+        } else {
+            decoHtml += `<div class="deco deco-${d.type}" style="${d.css}"></div>`;
+        }
+    });
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+        <div class="card-head">
+            <span>Screenshot ${i+1}/6</span>
+            <button class="dl-btn" onclick="downloadOne(${i})">Download</button>
+        </div>
+        <div class="ss" id="ss-${i}">
+            <div class="bg ${t.bg}"></div>
+            ${decoHtml}
+            <div class="ss-title" contenteditable="true" spellcheck="false">${titleHtml}</div>
+            <div class="ss-sub" contenteditable="true" spellcheck="false">${t.sub}</div>
+            <div class="phone" id="ph-${i}">
+                <div class="phone-inner">
+                    <div class="phone-ph">Click to add<br>screenshot</div>
+                </div>
+                <div class="upload-click" onclick="document.getElementById('f-${i}').click()"></div>
+            </div>
+            <input type="file" id="f-${i}" accept="image/*" onchange="onFile(${i},this)">
+        </div>
+    `;
+    grid.appendChild(card);
+});
+
+function onFile(i, input) {
+    if (!input.files[0]) return;
+    const r = new FileReader();
+    r.onload = e => {
+        const ph = document.getElementById(`ph-${i}`);
+        const inner = ph.querySelector('.phone-inner');
+        let img = inner.querySelector('img');
+        if (!img) { img = document.createElement('img'); inner.appendChild(img); }
+        img.src = e.target.result;
+        ph.classList.add('has-img');
+    };
+    r.readAsDataURL(input.files[0]);
+}
+
+async function exportSS(i) {
+    const el = document.getElementById(`ss-${i}`);
+    const canvas = await html2canvas(el, {
+        width: 1290, height: 2796, scale: 1,
+        useCORS: true, backgroundColor: null, logging: false,
+        onclone: (doc) => {
+            const c = doc.getElementById(`ss-${i}`);
+            c.style.width = '1290px';
+            c.style.height = '2796px';
+            const ti = c.querySelector('.ss-title');
+            const su = c.querySelector('.ss-sub');
+            if (ti) { ti.style.fontSize = '90px'; ti.style.paddingTop = '142px'; }
+            if (su) su.style.fontSize = '42px';
+            const emojis = c.querySelectorAll('.deco-emoji');
+            emojis.forEach(e => e.style.fontSize = '130px');
+            c.querySelectorAll('.phone-ph').forEach(p => p.style.display = 'none');
+        }
+    });
+    return canvas;
+}
+
+async function downloadOne(i) {
+    const ov = document.getElementById('ov');
+    const txt = document.getElementById('ovTxt');
+    ov.classList.add('on');
+    txt.textContent = `Exporting screenshot ${i+1}...`;
+    try {
+        const canvas = await exportSS(i);
+        const a = document.createElement('a');
+        a.download = `StudyCoachAI_${i+1}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+    } catch(e) { console.error(e); alert('Export failed. Try in Chrome.'); }
+    setTimeout(() => ov.classList.remove('on'), 500);
+}
+
+async function downloadAll() {
+    const ov = document.getElementById('ov');
+    const txt = document.getElementById('ovTxt');
+    ov.classList.add('on');
+    for (let i = 0; i < 6; i++) {
+        txt.textContent = `Exporting ${i+1}/6...`;
+        try {
+            const canvas = await exportSS(i);
+            const a = document.createElement('a');
+            a.download = `StudyCoachAI_${i+1}.png`;
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+            await new Promise(r => setTimeout(r, 600));
+        } catch(e) { console.error(e); }
+    }
+    txt.textContent = 'Done!';
+    setTimeout(() => ov.classList.remove('on'), 800);
+}
+
+function resetAll() {
+    T.forEach((t, i) => {
+        const ph = document.getElementById(`ph-${i}`);
+        const inner = ph.querySelector('.phone-inner');
+        const img = inner.querySelector('img');
+        if (img) img.remove();
+        ph.classList.remove('has-img');
+        document.querySelector(`#ss-${i} .ss-title`).innerHTML = t.title.replace(/\n/g,'<br>');
+        document.querySelector(`#ss-${i} .ss-sub`).textContent = t.sub;
+        document.getElementById(`f-${i}`).value = '';
+    });
+}
+</script>
+</body>
+</html>

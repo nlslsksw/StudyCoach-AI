@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7274D5072FC093710088D2E9 /* Pow in Frameworks */ = {isa = PBXBuildFile; productRef = 7274D5062FC093710088D2E9 /* Pow */; };
 		727C21012F7D1BD80007BE42 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727C21002F7D1BD80007BE42 /* WidgetKit.framework */; };
 		727C21032F7D1BD80007BE42 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727C21022F7D1BD80007BE42 /* SwiftUI.framework */; };
 		727C21142F7D1BD90007BE42 /* StudyTimerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 727C20FE2F7D1BD80007BE42 /* StudyTimerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -85,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7274D5072FC093710088D2E9 /* Pow in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,6 +166,7 @@
 			);
 			name = "Lern Kalender";
 			packageProductDependencies = (
+				7274D5062FC093710088D2E9 /* Pow */,
 			);
 			productName = "Lern Kalender";
 			productReference = 72E0E1DE2F51CFD800ABD87A /* Lern Kalender.app */;
@@ -197,6 +200,9 @@
 			);
 			mainGroup = 72E0E1D52F51CFD800ABD87A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7274D5052FC092BE0088D2E9 /* XCRemoteSwiftPackageReference "Pow" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 72E0E1DF2F51CFD800ABD87A /* Products */;
 			projectDirPath = "";
@@ -544,6 +550,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7274D5052FC092BE0088D2E9 /* XCRemoteSwiftPackageReference "Pow" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/movingparts-io/Pow";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7274D5062FC093710088D2E9 /* Pow */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7274D5052FC092BE0088D2E9 /* XCRemoteSwiftPackageReference "Pow" */;
+			productName = Pow;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 72E0E1D62F51CFD800ABD87A /* Project object */;
 }

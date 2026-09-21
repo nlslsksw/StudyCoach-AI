@@ -4,13 +4,13 @@
     "" : {
 
     },
+    "·" : {
+
+    },
     "\"%@\" und alle generierten Posts werden gelöscht." : {
 
     },
     "\"%@\" wirklich löschen?" : {
-
-    },
-    "%@" : {
 
     },
     "%@ - %@ speichern?" : {
@@ -33,6 +33,16 @@
         }
       }
     },
+    "%@ – %@ · Stunde %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ – %2$@ · Stunde %3$lld"
+          }
+        }
+      }
+    },
     "%@ / %@" : {
       "localizations" : {
         "de" : {
@@ -46,8 +56,15 @@
     "%@ fragen" : {
 
     },
-    "%@ gelernt" : {
-
+    "%@%@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@%2$@"
+          }
+        }
+      }
     },
     "%@%lld%%" : {
       "localizations" : {
@@ -61,6 +78,16 @@
     },
     "%lld" : {
 
+    },
+    "%lld %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
     },
     "%lld angeschaut · %lld richtig" : {
       "localizations" : {
@@ -102,6 +129,9 @@
     "%lld Tage" : {
 
     },
+    "%lld Treffer" : {
+
+    },
     "%lld von %lld gewusst" : {
       "localizations" : {
         "de" : {
@@ -121,6 +151,9 @@
           }
         }
       }
+    },
+    "%lld weitere" : {
+
     },
     "%lld XP" : {
 
@@ -164,6 +197,12 @@
 
     },
     "+%lld%% mehr gelernt" : {
+
+    },
+    "+10" : {
+
+    },
+    "+100" : {
 
     },
     "000000" : {
@@ -252,6 +291,12 @@
     "Aktivieren" : {
 
     },
+    "Aktivität in %@" : {
+
+    },
+    "Aktivitäten und KI für %@" : {
+
+    },
     "Aktualisieren" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -263,6 +308,9 @@
         }
       }
     },
+    "Aktualisiert %@" : {
+
+    },
     "Aktuelle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -273,6 +321,15 @@
           }
         }
       }
+    },
+    "Aktuelle Lernserie" : {
+
+    },
+    "Akzentfarbe" : {
+
+    },
+    "Alle" : {
+
     },
     "Alle 7 Tage Serie → +1 Eis" : {
 
@@ -338,10 +395,25 @@
         }
       }
     },
+    "älteste → neueste" : {
+
+    },
+    "AMOLED ist ein tiefes Schwarz für OLED-iPhones — spart Akku." : {
+
+    },
     "Anbieter" : {
 
     },
+    "Andere Schule wählen" : {
+
+    },
     "Anderes Foto" : {
+
+    },
+    "Änderungen wirken sofort — auch über iCloud auf anderen Geräten." : {
+
+    },
+    "Anhänge" : {
 
     },
     "Anmerkung" : {
@@ -391,6 +463,9 @@
         }
       }
     },
+    "Anzahl Eis" : {
+
+    },
     "API-Key" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -430,6 +505,9 @@
         }
       }
     },
+    "Aufgabe" : {
+
+    },
     "Aufgaben fotografieren und analysieren" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -444,6 +522,12 @@
     "Aufnahme stoppen" : {
 
     },
+    "Aus Webuntis aktualisieren" : {
+
+    },
+    "Aus Webuntis laden" : {
+
+    },
     "Auswählen..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -454,6 +538,9 @@
           }
         }
       }
+    },
+    "Auswählen…" : {
+
     },
     "Backup importieren" : {
       "extractionState" : "manual",
@@ -477,7 +564,7 @@
         }
       }
     },
-    "Beste: %@" : {
+    "Benutzer" : {
 
     },
     "BETA" : {
@@ -511,6 +598,12 @@
     "Bild wählen" : {
 
     },
+    "Bilder oder Dokumente (PDF, Text, …). Werden lokal auf deinem Gerät gespeichert." : {
+
+    },
+    "Bis" : {
+
+    },
     "Bitte fülle die Quelle aus (Thema, Foto, PDF oder Link)." : {
 
     },
@@ -518,6 +611,9 @@
 
     },
     "Bitte gib einen Topic-Titel ein." : {
+
+    },
+    "Bitte gib Fach und Aufgabe an." : {
 
     },
     "Bitte wähle ein Fach aus." : {
@@ -650,6 +746,9 @@
         }
       }
     },
+    "Datei" : {
+
+    },
     "Daten werden geladen..." : {
 
     },
@@ -721,6 +820,9 @@
       }
     },
     "Dein Kind darf die KI nutzen." : {
+
+    },
+    "Dein Lern-Check" : {
 
     },
     "Dein Pairing-Code:" : {
@@ -1005,6 +1107,21 @@
         }
       }
     },
+    "Entfernt nur die Zugangsdaten. Bereits importierte Stunden und Hausaufgaben bleiben erhalten." : {
+
+    },
+    "Entwickler" : {
+
+    },
+    "Entwickler-Code" : {
+
+    },
+    "Entwickler-Modus" : {
+
+    },
+    "Entwicklermodus sperren" : {
+
+    },
     "Erfolge" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1087,6 +1204,12 @@
           }
         }
       }
+    },
+    "Erledigte anzeigen" : {
+
+    },
+    "Erscheinungsbild" : {
+
     },
     "Erstelle Backups oder Berichte deiner Daten." : {
       "extractionState" : "manual",
@@ -1187,6 +1310,9 @@
         }
       }
     },
+    "Fach (z.B. Mathe)" : {
+
+    },
     "Fach eingeben" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1233,6 +1359,9 @@
           }
         }
       }
+    },
+    "Fällig" : {
+
     },
     "Familie" : {
       "extractionState" : "manual",
@@ -1298,6 +1427,9 @@
         }
       }
     },
+    "Ferien" : {
+
+    },
     "Ferien im Kalender anzeigen" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1319,6 +1451,9 @@
           }
         }
       }
+    },
+    "Foto" : {
+
     },
     "Foto auswählen" : {
 
@@ -1486,9 +1621,6 @@
     "Gleich viel gelernt" : {
 
     },
-    "Gleichgeblieben" : {
-
-    },
     "Groq API-Key einfügen" : {
 
     },
@@ -1517,6 +1649,15 @@
     "HALBJAHRES-RÜCKBLICK" : {
 
     },
+    "Hausaufgabe" : {
+
+    },
+    "Hausaufgabe hinzufügen" : {
+
+    },
+    "Hausaufgaben" : {
+
+    },
     "Heute" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1542,17 +1683,7 @@
         }
       }
     },
-    "Heute gelernt · %lld %@" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Heute gelernt · %1$lld %2$@"
-          }
-        }
-      }
-    },
-    "Heute noch nichts gelernt" : {
+    "Heute noch nichts" : {
 
     },
     "Hilfe & Rückblick" : {
@@ -1579,6 +1710,9 @@
           }
         }
       }
+    },
+    "Holt Stundenplan und Hausaufgaben automatisch aus Webuntis. Zugangsdaten werden lokal im Gerät gespeichert (Passwort im Keychain)." : {
+
     },
     "https://…" : {
       "extractionState" : "manual",
@@ -1612,6 +1746,9 @@
           }
         }
       }
+    },
+    "Idx" : {
+
     },
     "Im Kalender speichern" : {
       "extractionState" : "manual",
@@ -1665,6 +1802,9 @@
           }
         }
       }
+    },
+    "Jetzt synchronisieren" : {
+
     },
     "JSON-Backup erstellen" : {
       "extractionState" : "manual",
@@ -1779,6 +1919,15 @@
         }
       }
     },
+    "Kein Stundenplan für heute. Tippe „Pflegen“, um Stunden anzulegen." : {
+
+    },
+    "Kein Stundenplan vorhanden" : {
+
+    },
+    "Keine Anhänge" : {
+
+    },
     "Keine anstehenden Klassenarbeiten" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1804,6 +1953,9 @@
     "Keine Fächer in diesem Schuljahr" : {
 
     },
+    "Keine Hausaufgaben" : {
+
+    },
     "Keine Kinder verbunden" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1814,6 +1966,9 @@
           }
         }
       }
+    },
+    "Keine offenen Hausaufgaben — gut gemacht!" : {
+
     },
     "Keine persönlichen Daten übertragen" : {
       "extractionState" : "manual",
@@ -1894,9 +2049,6 @@
           }
         }
       }
-    },
-    "KI für %@" : {
-
     },
     "KI ist für dein Kind gesperrt." : {
 
@@ -2105,6 +2257,16 @@
     "Kostenlos — kein eigener API-Key nötig. Powered by Groq." : {
 
     },
+    "KW %lld · %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "KW %1$lld · %2$@"
+          }
+        }
+      }
+    },
     "Lass dir etwas verständlich erklären" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2115,6 +2277,12 @@
           }
         }
       }
+    },
+    "Läuft" : {
+
+    },
+    "Lehrer:in (optional)" : {
+
     },
     "Lern Kalender" : {
       "extractionState" : "manual",
@@ -2351,6 +2519,9 @@
     "Lese PDF…" : {
 
     },
+    "Letzte Aktivität" : {
+
+    },
     "Llama 3.1 8B (Schnell)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2372,6 +2543,12 @@
           }
         }
       }
+    },
+    "Login testen" : {
+
+    },
+    "Login-Name" : {
+
     },
     "Los geht's" : {
       "extractionState" : "manual",
@@ -2412,6 +2589,9 @@
         }
       }
     },
+    "Manuell anlegen" : {
+
+    },
     "Manuell eintragen" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2434,6 +2614,9 @@
         }
       }
     },
+    "min" : {
+
+    },
     "Minderjährige: Nur mit Eltern-Zustimmung" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2455,6 +2638,12 @@
           }
         }
       }
+    },
+    "Mit der KI über %@ sprechen" : {
+
+    },
+    "Mit Webuntis verbinden" : {
+
     },
     "Mixtral 8x7B" : {
       "extractionState" : "manual",
@@ -2489,15 +2678,8 @@
         }
       }
     },
-    "Mündlich: Ø %@ (%lldx)" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Mündlich: Ø %1$@ (%2$lldx)"
-          }
-        }
-      }
+    "Modus" : {
+
     },
     "Nach Fach" : {
       "extractionState" : "manual",
@@ -2554,6 +2736,9 @@
         }
       }
     },
+    "Neue Hausaufgabe" : {
+
+    },
     "Neue Karteikarten" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2575,6 +2760,9 @@
           }
         }
       }
+    },
+    "Neue Stunde" : {
+
     },
     "Neuer Chat" : {
       "extractionState" : "manual",
@@ -2734,6 +2922,9 @@
         }
       }
     },
+    "Noch nicht verbunden" : {
+
+    },
     "Noch nichts eingetragen" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2825,9 +3016,6 @@
         }
       }
     },
-    "Note: %@" : {
-
-    },
     "Noten" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2894,6 +3082,9 @@
         }
       }
     },
+    "Notizen (optional)" : {
+
+    },
     "Nur ein Elternteil kann die Verbindung trennen." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2904,6 +3095,9 @@
           }
         }
       }
+    },
+    "Nur für Entwicklungstests. Wenn du den Code nicht kennst, ignorier diesen Abschnitt." : {
+
     },
     "Nutzungsbedingungen" : {
 
@@ -2977,6 +3171,9 @@
         }
       }
     },
+    "Passwort" : {
+
+    },
     "PDF-Bericht erstellen" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3009,6 +3206,9 @@
           }
         }
       }
+    },
+    "Pflegen" : {
+
     },
     "PIN aktiv" : {
       "extractionState" : "manual",
@@ -3145,7 +3345,13 @@
         }
       }
     },
+    "Raum (optional)" : {
+
+    },
     "Rechtliches" : {
+
+    },
+    "Reset" : {
 
     },
     "Richtig!" : {
@@ -3173,15 +3379,14 @@
         }
       }
     },
-    "Schriftlich: Ø %@ (%lldx)" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Schriftlich: Ø %1$@ (%2$lldx)"
-          }
-        }
-      }
+    "Schnitt" : {
+
+    },
+    "Schule" : {
+
+    },
+    "Schule suchen" : {
+
     },
     "Schüler-Code" : {
       "extractionState" : "manual",
@@ -3253,6 +3458,12 @@
     "SCHULJAHRES-RÜCKBLICK" : {
 
     },
+    "Schulname" : {
+
+    },
+    "Schulname oder Ort eingeben…" : {
+
+    },
     "Schützt die Einstellungen mit einem 4-stelligen PIN." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3280,6 +3491,12 @@
           }
         }
       }
+    },
+    "Server" : {
+
+    },
+    "Server findest du in der Webuntis-App unter „Konto > Profil“. Der Schulname steht oft im URL deiner Schul-Webuntis-Seite (Parameter ?school=…)." : {
+
     },
     "Sicherheit" : {
       "extractionState" : "manual",
@@ -3361,6 +3578,12 @@
         }
       }
     },
+    "statt %@" : {
+
+    },
+    "Stille" : {
+
+    },
     "Streak halten 🎯" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3375,10 +3598,34 @@
     "Streak-Eis" : {
 
     },
+    "Stunde" : {
+
+    },
+    "Stunde %lld" : {
+
+    },
+    "Stunde hinzufügen" : {
+
+    },
+    "Stundenplan" : {
+
+    },
+    "Stundenplan heute" : {
+
+    },
+    "Suche fragt direkt bei Webuntis. Mindestens 3 Zeichen tippen, dann ↩ drücken." : {
+
+    },
+    "Suchen" : {
+
+    },
     "Symbol" : {
 
     },
     "Tag" : {
+
+    },
+    "Tag & Stunde" : {
 
     },
     "Tage" : {
@@ -3512,6 +3759,15 @@
         }
       }
     },
+    "Tippe ↻, um deinen ersten Wochen-Check zu generieren." : {
+
+    },
+    "Tippe die KI-Schaltfläche unten für eine Zusammenfassung." : {
+
+    },
+    "Tippe oben rechts auf +, um eine Note hinzuzufügen." : {
+
+    },
     "Tippe zum Umdrehen" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3584,7 +3840,10 @@
         }
       }
     },
-    "Trage im \"Lernzeit\"-Tab ein, wann du gelernt hast." : {
+    "Trag im Heute-Tab ein, wann du gelernt hast." : {
+
+    },
+    "Trennen" : {
 
     },
     "Tutorial erneut anzeigen" : {
@@ -3635,9 +3894,6 @@
     "und %lld weitere Einträge" : {
 
     },
-    "Verbessert um %@" : {
-
-    },
     "Verbinde das Gerät eines Elternteils mit dieser App, um Lernfortschritte zu teilen." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3682,6 +3938,12 @@
         }
       }
     },
+    "Verbindung trennen" : {
+
+    },
+    "Verbindung trennen?" : {
+
+    },
     "Verbunden" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3692,6 +3954,9 @@
           }
         }
       }
+    },
+    "Verbunden seit %@" : {
+
     },
     "Verbundene Kinder" : {
       "extractionState" : "manual",
@@ -3736,9 +4001,6 @@
           }
         }
       }
-    },
-    "Verschlechtert um %@" : {
-
     },
     "Version" : {
 
@@ -3800,6 +4062,9 @@
           }
         }
       }
+    },
+    "Von" : {
+
     },
     "Von deinen Eltern" : {
       "extractionState" : "manual",
@@ -3887,6 +4152,9 @@
         }
       }
     },
+    "Was ist zu tun?" : {
+
+    },
     "Was möchtest du lernen?" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3908,6 +4176,18 @@
           }
         }
       }
+    },
+    "Webuntis" : {
+
+    },
+    "Webuntis verbinden" : {
+
+    },
+    "Webuntis verbunden" : {
+
+    },
+    "Webuntis-Zugangsdaten werden vom Gerät gelöscht." : {
+
     },
     "Weiter" : {
 
@@ -4004,6 +4284,9 @@
     "Woche" : {
 
     },
+    "Woche %@" : {
+
+    },
     "Wochenbericht" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4014,6 +4297,9 @@
           }
         }
       }
+    },
+    "Wochentag" : {
+
     },
     "Wöchentlich: %lld min" : {
 
@@ -4123,6 +4409,9 @@
         }
       }
     },
+    "z.B. hepta" : {
+
+    },
     "z.B. Mathe, Englisch..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4135,6 +4424,9 @@
       }
     },
     "z.B. Mathematik, Deutsch..." : {
+
+    },
+    "Zeit" : {
 
     },
     "Zeitraum" : {
@@ -4169,6 +4461,9 @@
           }
         }
       }
+    },
+    "Zugangsdaten" : {
+
     },
     "Zuordnung entfernen" : {
 
