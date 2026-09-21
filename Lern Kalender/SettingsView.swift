@@ -361,7 +361,8 @@ struct SettingsView: View {
                     Text("Datenschutz, Nutzungsbedingungen und Impressum direkt in der App.")
                 }
 
-                // Entwickler — versteckt hinter Code 222
+                // Entwickler — nur in Debug-Builds, versteckt hinter Code 222
+                #if DEBUG
                 Section {
                     if !devUnlocked {
                         HStack {
@@ -415,6 +416,7 @@ struct SettingsView: View {
                         Text("Änderungen wirken sofort — auch über iCloud auf anderen Geräten.")
                     }
                 }
+                #endif
 
                 // App-Info
                 Section {
