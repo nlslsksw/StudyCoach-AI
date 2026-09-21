@@ -393,10 +393,12 @@ final class DataStore {
     /// Aktives Schuljahr: das nicht-archivierte, in dessen Zeitraum heute liegt;
     /// sonst das neueste nicht-archivierte.
     func activeSchoolYear() -> SchoolYear? {
-        let candidates = schoolYears.filter { !$0.isArchived }
+        // Neuestes zuerst: überlappen sich altes und neues Jahr (z. B. altes
+        // endet erst Ende September), gewinnt das später gestartete.
+        let candidates = schoolYears.filter { !$0.isArchived }.sorted { $0.startDate > $1.startDate }
         let now = Date()
         if let current = candidates.first(where: { dateRange(of: $0).contains(now) }) { return current }
-        return candidates.sorted { $0.startDate > $1.startDate }.first
+        return candidates.first
     }
 
     // MARK: Entry helpers
@@ -475,9 +477,11 @@ final class DataStore {
         return range.contains(date)
     }
 
-    func allGradeSubjects() -> [String] {
-        var subjects = Set(entries.filter { $0.type == .klassenarbeit && $0.grade != nil }.map { $0.title })
-        for g in grades { subjects.insert(g.subject) }
+    /// Fächer, zu denen es Noten gibt – ohne Zeitraum nur im aktiven Schuljahr.
+    func allGradeSubjects(in range: ClosedRange<Date>? = nil) -> [String] {
+        let range = range ?? activeSchoolYear().map(dateRange(of:))
+        var subjects = Set(entries.filter { $0.type == .klassenarbeit && $0.grade != nil && inRange($0.date, range) }.map { $0.title })
+        for g in grades where inRange(g.date, range) { subjects.insert(g.subject) }
         return subjects.sorted()
     }
 

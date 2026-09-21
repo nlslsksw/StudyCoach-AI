@@ -466,8 +466,10 @@ struct AddSubjectView: View {
 // MARK: - Subject Detail View
 
 struct SubjectDetailView: View {
+    @Environment(\.dismiss) private var dismiss
     var store: DataStore
     let subject: Subject
+    @State private var showingDeleteConfirm = false
     @State private var showingAddGrade = false
     @State private var showingAddSession = false
     @State private var showingActivityForSubject = false
@@ -725,11 +727,28 @@ struct SubjectDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { showingActivityForSubject = true } label: {
-                    Image(systemName: "list.bullet.rectangle")
+                Menu {
+                    Button { showingActivityForSubject = true } label: {
+                        Label("Aktivitäten", systemImage: "list.bullet.rectangle")
+                    }
+                    Divider()
+                    Button(role: .destructive) { showingDeleteConfirm = true } label: {
+                        Label("Fach löschen", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
                 }
-                .accessibilityLabel("Aktivitäten für \(subject.name)")
+                .accessibilityLabel("Optionen für \(subject.name)")
             }
+        }
+        .alert("\(subject.name) löschen?", isPresented: $showingDeleteConfirm) {
+            Button("Abbrechen", role: .cancel) { }
+            Button("Löschen", role: .destructive) {
+                store.deleteSubject(subject)
+                dismiss()
+            }
+        } message: {
+            Text("Das Fach wird aus diesem Schuljahr entfernt. Eingetragene Noten und Lernzeiten bleiben erhalten.")
         }
         .sheet(isPresented: $showingAddGrade) {
             SubjectAddGradeView(store: store, subjectName: subject.name)
