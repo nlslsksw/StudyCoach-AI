@@ -733,3 +733,50 @@ struct AnimatedDecimal: View {
         return startValue + (targetValue - startValue) * eased
     }
 }
+
+
+// MARK: - Notenziel
+
+/// Was für das Notenziel eines Fachs nötig ist – reine Rechnung, keine UI.
+enum GradeGoalStatus: Equatable {
+    case noGrades
+    case reached(average: Double)            // Schnitt liegt im Ziel
+    case nextAtMost(Double)                  // nächste Note darf höchstens so schlecht sein
+    case needsMultipleOnes(Int)              // erst nach k Einsen wieder im Ziel
+    case unreachable                         // rechnerisch nicht mehr erreichbar
+
+    var text: String {
+        switch self {
+        case .noGrades: return "Noch keine Note – das Ziel wartet."
+        case .reached(let avg): return "Ziel erreicht (Ø \(String(format: "%.1f", avg))). Weiter so!"
+        case .nextAtMost(let g): return "Nächste Note höchstens \(gradeString(g)), dann bleibt's im Ziel."
+        case .needsMultipleOnes(let k): return "Du bräuchtest \(k)× die 1, um das Ziel zu erreichen."
+        case .unreachable: return "Rechnerisch dieses Jahr nicht mehr erreichbar."
+        }
+    }
+
+    var isOnTrack: Bool {
+        switch self {
+        case .reached, .noGrades: return true
+        case .nextAtMost(let g): return g >= 3.0
+        default: return false
+        }
+    }
+}
+
+func gradeGoalStatus(target: Double, grades: [Double]) -> GradeGoalStatus {
+    let n = Double(grades.count)
+    guard n > 0 else { return .noGrades }
+    let sum = grades.reduce(0, +)
+    let avg = sum / n
+    if avg <= target + 0.0001 { return .reached(average: avg) }
+    // Note x, mit der der Schnitt nach der nächsten Note genau das Ziel trifft
+    let next = target * (n + 1) - sum
+    if next >= 1.0 {
+        return .nextAtMost((next * 2).rounded(.down) / 2)   // auf halbe Noten abrunden
+    }
+    guard target > 1.0 else { return .unreachable }
+    // k Einsen nötig: (sum + k) / (n + k) <= target
+    let k = Int(((sum - target * n) / (target - 1.0)).rounded(.up))
+    return k <= 10 ? .needsMultipleOnes(max(k, 2)) : .unreachable
+}

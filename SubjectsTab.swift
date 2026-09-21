@@ -581,6 +581,9 @@ struct SubjectDetailView: View {
                     }
                 }
 
+                // Notenziel
+                GradeGoalCard(store: store, subject: subject, grades: grades.map(\.grade))
+
                 // Schwachstellen
                 WeaknessSubjectSection(subject: subject.name)
 
@@ -1406,5 +1409,79 @@ struct GradeSubjectCard: View {
             in: RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
         )
         .shadow(color: .black.opacity(0.04), radius: 5, x: 0, y: 2)
+    }
+}
+
+
+// MARK: - Notenziel-Karte (Fach-Detail)
+
+struct GradeGoalCard: View {
+    var store: DataStore
+    let subject: Subject
+    let grades: [Double]
+
+    private static let options: [Double] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+
+    private var current: Subject {
+        store.subjects.first(where: { $0.id == subject.id }) ?? subject
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("Notenziel", systemImage: "target")
+                    .font(.headline)
+                Spacer()
+                Menu {
+                    ForEach(Self.options, id: \.self) { value in
+                        Button {
+                            var updated = current
+                            updated.targetGrade = value
+                            store.updateSubject(updated)
+                        } label: {
+                            if current.targetGrade == value {
+                                Label("Ø \(gradeString(value))", systemImage: "checkmark")
+                            } else {
+                                Text("Ø \(gradeString(value))")
+                            }
+                        }
+                    }
+                    if current.targetGrade != nil {
+                        Divider()
+                        Button(role: .destructive) {
+                            var updated = current
+                            updated.targetGrade = nil
+                            store.updateSubject(updated)
+                        } label: {
+                            Label("Ziel entfernen", systemImage: "xmark.circle")
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(current.targetGrade.map { "Ø \(gradeString($0))" } ?? "Ziel setzen")
+                        Image(systemName: "chevron.up.chevron.down").font(.caption2)
+                    }
+                    .font(.subheadline.bold())
+                }
+            }
+
+            if let target = current.targetGrade {
+                let status = gradeGoalStatus(target: target, grades: grades)
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: status.isOnTrack ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                        .foregroundStyle(status.isOnTrack ? .green : .orange)
+                    Text(status.text)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                Text("Setz dir einen Wunsch-Schnitt – die App sagt dir, welche Note du als Nächstes brauchst.")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
     }
 }

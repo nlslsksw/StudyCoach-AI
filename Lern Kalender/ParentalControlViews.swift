@@ -797,10 +797,25 @@ struct ParentDashboardView: View {
                 ForEach(gradesBySubject.keys.sorted(), id: \.self) { subject in
                     let grades = gradesBySubject[subject] ?? []
                     let avg = grades.map(\.grade).reduce(0, +) / Double(grades.count)
-                    HStack {
-                        Text(subject).font(.caption)
-                        Spacer()
-                        Text("Ø \(gradeString(avg))").font(.caption.bold()).foregroundStyle(gradeColor(avg))
+                    let target = data.subjects.first { $0.name.localizedCaseInsensitiveCompare(subject) == .orderedSame }?.targetGrade
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack {
+                            Text(subject).font(.caption)
+                            Spacer()
+                            if let target {
+                                let status = gradeGoalStatus(target: target, grades: grades.map(\.grade))
+                                Image(systemName: status.isOnTrack ? "target" : "exclamationmark.triangle.fill")
+                                    .font(.caption2)
+                                    .foregroundStyle(status.isOnTrack ? .green : .orange)
+                                Text("Ziel \(gradeString(target))")
+                                    .font(.caption2).foregroundStyle(.secondary)
+                            }
+                            Text("Ø \(gradeString(avg))").font(.caption.bold()).foregroundStyle(gradeColor(avg))
+                        }
+                        if let target {
+                            Text(gradeGoalStatus(target: target, grades: grades.map(\.grade)).text)
+                                .font(.caption2).foregroundStyle(.tertiary)
+                        }
                     }
                 }
             }

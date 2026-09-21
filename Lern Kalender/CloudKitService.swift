@@ -70,16 +70,22 @@ final class CloudKitService {
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
 
-            if let gradesData = try? encoder.encode(store.grades) {
+            // Eltern sehen nur das aktive Schuljahr – sonst tauchen alte Noten
+            // im neuen Jahr wieder auf.
+            let range = store.activeSchoolYear().map(store.dateRange(of:))
+            func inYear(_ date: Date) -> Bool { range?.contains(date) ?? true }
+            let subjects = store.activeSchoolYear().map(store.subjectsFor(schoolYear:)) ?? store.subjects
+
+            if let gradesData = try? encoder.encode(store.grades.filter { inYear($0.date) }) {
                 record["gradesJSON"] = gradesData as CKRecordValue
             }
-            if let sessionsData = try? encoder.encode(store.studySessions) {
+            if let sessionsData = try? encoder.encode(store.studySessions.filter { inYear($0.date) }) {
                 record["sessionsJSON"] = sessionsData as CKRecordValue
             }
-            if let subjectsData = try? encoder.encode(store.subjects) {
+            if let subjectsData = try? encoder.encode(subjects) {
                 record["subjectsJSON"] = subjectsData as CKRecordValue
             }
-            if let entriesData = try? encoder.encode(store.entries) {
+            if let entriesData = try? encoder.encode(store.entries.filter { inYear($0.date) }) {
                 record["entriesJSON"] = entriesData as CKRecordValue
             }
 

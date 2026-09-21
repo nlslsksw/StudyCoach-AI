@@ -192,6 +192,8 @@ struct Subject: Identifiable, Codable {
     var icon: String = "book.fill"
     var colorName: String = "blue"
     var schoolYearId: UUID? = nil
+    /// Wunsch-Schnitt fürs Schuljahr (z. B. 2.5); nil = kein Ziel gesetzt.
+    var targetGrade: Double? = nil
 
     var color: Color {
         switch colorName {
