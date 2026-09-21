@@ -390,8 +390,13 @@ final class DataStore {
 
     func subjectsFor(schoolYear: SchoolYear) -> [Subject] { subjects.filter { $0.schoolYearId == schoolYear.id } }
     func unassignedSubjects() -> [Subject] { subjects.filter { $0.schoolYearId == nil } }
+    /// Aktives Schuljahr: das nicht-archivierte, in dessen Zeitraum heute liegt;
+    /// sonst das neueste nicht-archivierte.
     func activeSchoolYear() -> SchoolYear? {
-        schoolYears.filter { !$0.isArchived }.sorted { $0.startDate > $1.startDate }.first
+        let candidates = schoolYears.filter { !$0.isArchived }
+        let now = Date()
+        if let current = candidates.first(where: { dateRange(of: $0).contains(now) }) { return current }
+        return candidates.sorted { $0.startDate > $1.startDate }.first
     }
 
     // MARK: Entry helpers
@@ -430,17 +435,44 @@ final class DataStore {
         if let idx = entries.firstIndex(where: { $0.id == entry.id }) { entries[idx].grade = grade }
     }
 
-    func gradesForSubject(_ subject: String) -> [(date: Date, grade: Double, type: GradeType)] {
+    /// Noten für einen Fach-Namen. Ohne expliziten Zeitraum wird auf das
+    /// aktive Schuljahr eingeschränkt, damit alte Noten nicht ins neue Jahr
+    /// durchrutschen (Fächer werden nur über den Namen zugeordnet).
+    func gradesForSubject(_ subject: String, in range: ClosedRange<Date>? = nil) -> [(date: Date, grade: Double, type: GradeType)] {
+        let range = range ?? activeSchoolYear().map(dateRange(of:))
         var result: [(date: Date, grade: Double, type: GradeType)] = entries
             .filter { $0.type == .klassenarbeit && $0.grade != nil && $0.title.localizedCaseInsensitiveContains(subject) }
+            .filter { inRange($0.date, range) }
             .compactMap { entry in
                 guard let grade = entry.grade else { return nil }
                 return (date: entry.date, grade: grade, type: GradeType.schriftlich)
             }
         result += grades
-            .filter { $0.subject.localizedCaseInsensitiveContains(subject) }
+            .filter { $0.subject.localizedCaseInsensitiveContains(subject) && inRange($0.date, range) }
             .map { (date: $0.date, grade: $0.grade, type: $0.type) }
         return result.sorted { $0.date < $1.date }
+    }
+
+    // MARK: School year ranges
+
+    /// Zeitraum eines Schuljahres, jeweils auf ganze Tage gerundet.
+    func dateRange(of schoolYear: SchoolYear) -> ClosedRange<Date> {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: schoolYear.startDate)
+        let endDay = cal.startOfDay(for: schoolYear.endDate)
+        let end = cal.date(byAdding: DateComponents(day: 1, second: -1), to: endDay) ?? schoolYear.endDate
+        return start...max(start, end)
+    }
+
+    /// Zeitraum des Schuljahres, dem ein Fach zugeordnet ist (nil = kein Schuljahr → alles).
+    func dateRange(for subject: Subject) -> ClosedRange<Date>? {
+        guard let id = subject.schoolYearId, let sy = schoolYears.first(where: { $0.id == id }) else { return nil }
+        return dateRange(of: sy)
+    }
+
+    private func inRange(_ date: Date, _ range: ClosedRange<Date>?) -> Bool {
+        guard let range else { return true }
+        return range.contains(date)
     }
 
     func allGradeSubjects() -> [String] {
@@ -507,18 +539,26 @@ final class DataStore {
         if let idx = subjects.firstIndex(where: { $0.id == subject.id }) { subjects[idx] = subject }
     }
 
-    func gradesFor(subject: Subject) -> [(date: Date, grade: Double, type: GradeType)] { gradesForSubject(subject.name) }
+    func gradesFor(subject: Subject) -> [(date: Date, grade: Double, type: GradeType)] {
+        gradesForSubject(subject.name, in: dateRange(for: subject))
+    }
 
     func studyMinutesFor(subject: Subject) -> Int {
-        studySessions.filter { $0.subject.localizedCaseInsensitiveCompare(subject.name) == .orderedSame }.reduce(0) { $0 + $1.minutes }
+        sessionsFor(subject: subject).reduce(0) { $0 + $1.minutes }
     }
 
     func sessionsFor(subject: Subject) -> [StudySession] {
-        studySessions.filter { $0.subject.localizedCaseInsensitiveCompare(subject.name) == .orderedSame }.sorted { $0.date > $1.date }
+        let range = dateRange(for: subject)
+        return studySessions
+            .filter { $0.subject.localizedCaseInsensitiveCompare(subject.name) == .orderedSame && inRange($0.date, range) }
+            .sorted { $0.date > $1.date }
     }
 
     func entriesFor(subject: Subject) -> [CalendarEntry] {
-        entries.filter { $0.title.localizedCaseInsensitiveContains(subject.name) }.sorted { $0.date > $1.date }
+        let range = dateRange(for: subject)
+        return entries
+            .filter { $0.title.localizedCaseInsensitiveContains(subject.name) && inRange($0.date, range) }
+            .sorted { $0.date > $1.date }
     }
 
     // MARK: Recurring helpers

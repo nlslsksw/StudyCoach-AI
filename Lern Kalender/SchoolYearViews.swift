@@ -129,21 +129,37 @@ struct AddSchoolYearView: View {
     var store: DataStore
 
     @State private var name = ""
-    @State private var startDate = Date()
-    @State private var endDate = Calendar.current.date(byAdding: .year, value: 1, to: Date()) ?? Date()
+    @State private var startDate = AddSchoolYearView.suggestedStart()
+    @State private var endDate = AddSchoolYearView.suggestedEnd()
+
+    /// Vorschlag: 1. September des laufenden Schuljahres (ab August zählt
+    /// bereits das neue Jahr) bis 31. Juli des Folgejahres.
+    static func suggestedStart(now: Date = Date()) -> Date {
+        let cal = Calendar.current
+        let year = cal.component(.year, from: now)
+        let month = cal.component(.month, from: now)
+        let startYear = month >= 8 ? year : year - 1
+        return cal.date(from: DateComponents(year: startYear, month: 9, day: 1)) ?? now
+    }
+
+    static func suggestedEnd(now: Date = Date()) -> Date {
+        let cal = Calendar.current
+        let startYear = cal.component(.year, from: suggestedStart(now: now))
+        return cal.date(from: DateComponents(year: startYear + 1, month: 7, day: 31)) ?? now
+    }
 
     private var autoName: String {
         let cal = Calendar.current
         let startYear = cal.component(.year, from: startDate)
         let endYear = cal.component(.year, from: endDate)
-        return "\(startYear)/\(endYear)"
+        return "\(startYear)/\(String(endYear).suffix(2))"
     }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Name") {
-                    TextField("z.B. 2025/2026", text: $name)
+                    TextField("z.B. 2026/27", text: $name)
                     if name.isEmpty {
                         Text("Vorschlag: \(autoName)")
                             .font(.caption)
