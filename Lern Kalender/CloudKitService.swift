@@ -200,11 +200,29 @@ final class CloudKitService {
             options: [.firesOnRecordCreation]
         )
         let actInfo = CKSubscription.NotificationInfo()
-        actInfo.alertBody = "Dein Kind hat gelernt! Öffne die App für Details. 📚"
+        // Text kommt aus dem Record ("message"), damit Eltern z. B.
+        // "Mathe – 45 min gelernt" oder den Wochenbericht sehen.
+        actInfo.titleLocalizationKey = "PUSH_ACTIVITY_TITLE"
+        actInfo.alertLocalizationKey = "PUSH_ACTIVITY_BODY"
+        actInfo.alertLocalizationArgs = ["message"]
         actInfo.soundName = "default"
         actInfo.shouldSendContentAvailable = true
         actSubscription.notificationInfo = actInfo
+        // Bestehende Subscription (alter fester Text) ersetzen
+        try? await publicDB.deleteSubscription(withID: actSubscription.subscriptionID)
         try? await publicDB.save(actSubscription)
+    }
+
+    /// Einmalig pro Version: Subscriptions aller verbundenen Kinder neu anlegen,
+    /// damit bereits gekoppelte Eltern den dynamischen Push-Text bekommen.
+    func refreshSubscriptionsIfNeeded(for links: [FamilyLink]) async {
+        let key = "activitySubscriptionVersion"
+        let version = 2
+        guard UserDefaults.standard.integer(forKey: key) < version else { return }
+        for link in links where link.isActive {
+            await subscribeToStudentDataChanges(pairingCode: link.pairingCode)
+        }
+        UserDefaults.standard.set(version, forKey: key)
     }
 
     func sendActivityNotification(type: String, message: String, pairingCode: String) async {

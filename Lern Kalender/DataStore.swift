@@ -687,6 +687,32 @@ final class DataStore {
         LearningEngine.shared.checkChallenges(store: self)
     }
 
+    /// Schickt am Wochenende einmal pro Woche einen Wochenbericht als Push
+    /// an die Eltern (über den ActivityNotification-Record). Läuft beim
+    /// App-Start des Kindes – ohne Öffnen der App gibt es keinen Bericht.
+    func sendWeeklyParentReportIfDue(now: Date = Date()) {
+        guard appMode == .student, let link = familyLink, link.isActive else { return }
+        let cal = Calendar.current
+        let weekday = cal.component(.weekday, from: now)
+        guard weekday == 7 || weekday == 1 else { return }   // Samstag oder Sonntag
+        let comps = cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)
+        let weekKey = "\(comps.yearForWeekOfYear ?? 0)-\(comps.weekOfYear ?? 0)"
+        let sentKey = "lastWeeklyParentReportWeek"
+        guard store.string(forKey: sentKey) != weekKey else { return }
+        store.set(weekKey, forKey: sentKey)
+
+        let minutes = weeklyTotalMinutes(weekOffset: 0)
+        let gradeCount = gradesForWeek(weekOffset: 0).count
+        let streak = currentStreak()
+        var parts = ["Wochenbericht: \(formatHoursMinutes(minutes)) gelernt"]
+        if gradeCount > 0 { parts.append("\(gradeCount) \(gradeCount == 1 ? "neue Note" : "neue Noten")") }
+        if streak > 0 { parts.append("Streak \(streak) 🔥") }
+        let message = parts.joined(separator: " · ")
+        Task {
+            await CloudKitService.shared.sendActivityNotification(type: "weekly", message: message, pairingCode: link.pairingCode)
+        }
+    }
+
     private func sendSessionNotification(_ session: StudySession) {
         guard appMode == .student, let link = familyLink, link.isActive else { return }
         Task {

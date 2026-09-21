@@ -69,6 +69,7 @@ struct ContentView: View {
                 ParentSettingsTab(store: store)
                     .tabItem { Label("Einstellungen", systemImage: "gearshape.fill") }
             }
+            .task { await CloudKitService.shared.refreshSubscriptionsIfNeeded(for: store.familyLinks) }
         }
     }
 
@@ -169,6 +170,7 @@ struct ContentView: View {
         }
         triggerWrappedIfDue()
         triggerWebuntisAutoSyncIfDue()
+        store.sendWeeklyParentReportIfDue()
     }
 
     /// Synchronisiert mit Webuntis im Hintergrund, wenn die App gestartet
