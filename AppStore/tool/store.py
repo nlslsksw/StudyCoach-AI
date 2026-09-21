@@ -130,10 +130,9 @@ def status():
         n = sum(len(get(f"/appScreenshotSets/{s['id']}/appScreenshots")["data"]) for s in get(f"/appStoreVersionLocalizations/{l['id']}/appScreenshotSets")["data"])
         print(f"  {l['attributes']['locale']}: {n} Screenshots, Keywords: {l['attributes'].get('keywords')}")
     try:
-        p = get(f"/apps/{app_id()}/appPriceSchedule?include=manualPrices,baseTerritory")
-        prices = [i for i in p.get("included", []) if i["type"] == "appPrices"]
-        pts = [get(f"/appPrices/{x['id']}/appPricePoint")["data"]["attributes"]["customerPrice"] for x in prices]
-        print("Preis:", pts or "— keiner —", "| Basisland:", [i["id"] for i in p.get("included", []) if i["type"] == "territories"])
+        sched = get(f"/apps/{app_id()}/appPriceSchedule")["data"]
+        p = get(f"/appPriceSchedules/{sched['id']}/manualPrices?include=appPricePoint&limit=5")
+        print("Preis:", [f"{x['attributes']['customerPrice']} (du bekommst {x['attributes']['proceeds']})" for x in p.get("included", []) if x["type"] == "appPricePoints"])
     except SystemExit: print("Preis: — keiner —")
 
 def submit():
