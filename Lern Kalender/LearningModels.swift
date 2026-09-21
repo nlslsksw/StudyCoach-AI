@@ -78,7 +78,6 @@ struct Badge: Identifiable, Codable {
         Badge(id: "cards_100", name: "Karten-Meister", icon: "rectangle.stack.fill", description: "100 Karteikarten gelernt"),
         Badge(id: "perfect_quiz", name: "Perfekt!", icon: "star.fill", description: "Ein Quiz mit 100% abgeschlossen"),
         Badge(id: "all_subjects", name: "Allrounder", icon: "books.vertical.fill", description: "In jedem Fach mindestens 1h gelernt"),
-        Badge(id: "ai_chat", name: "KI-Nutzer", icon: "cpu.fill", description: "Erste Frage an die KI gestellt"),
     ]
 }
 

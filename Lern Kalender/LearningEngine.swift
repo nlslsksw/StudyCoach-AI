@@ -39,19 +39,6 @@ final class LearningEngine {
         spacedCards.filter(\.isDueToday)
     }
 
-    func addCards(_ cards: [Flashcard], subject: String, topic: String) {
-        for card in cards {
-            let spacedCard = SpacedCard(
-                front: card.front,
-                back: card.back,
-                subject: subject,
-                topic: topic
-            )
-            spacedCards.append(spacedCard)
-        }
-        save()
-    }
-
     func reviewCard(id: UUID, known: Bool) {
         guard let idx = spacedCards.firstIndex(where: { $0.id == id }) else { return }
         spacedCards[idx].review(known: known)
@@ -233,30 +220,6 @@ final class LearningEngine {
         }
     }
 
-    // MARK: - KI Integration
-
-    func learningContext() -> String {
-        var parts: [String] = []
-        parts.append("Schüler-Level: \(profile.level) (\(profile.levelTitle))")
-        parts.append("Gesamt-XP: \(profile.totalXP)")
-        parts.append("Lernserie: \(profile.streakDays) Tage")
-
-        if !profile.xpPerSubject.isEmpty {
-            let subjectLevels = profile.xpPerSubject.map { "\($0.key): Level \(profile.subjectLevel(for: $0.key))" }
-            parts.append("Fach-Level: \(subjectLevels.joined(separator: ", "))")
-        }
-
-        let due = cardsDueToday.count
-        if due > 0 { parts.append("Fällige Karteikarten: \(due)") }
-
-        let incompleteChallenges = dailyChallenges.filter { !$0.isCompleted }
-        if !incompleteChallenges.isEmpty {
-            parts.append("Offene Challenges: \(incompleteChallenges.map(\.title).joined(separator: ", "))")
-        }
-
-        return parts.joined(separator: "\n")
-    }
-
     // MARK: - Persistence
 
     private func load() {
@@ -278,7 +241,7 @@ final class LearningEngine {
             quizStats = (total, perfect)
         }
 
-        // One-time migration: drop legacy learningPaths data (Hivemind replaces them)
+        // One-time migration: drop legacy learningPaths data (feature removed)
         if ud.object(forKey: "learningPaths") != nil {
             ud.removeObject(forKey: "learningPaths")
         }

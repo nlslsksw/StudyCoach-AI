@@ -93,7 +93,6 @@ struct PrivacyPolicyView: View {
                         "Lernzeiten und Lernstatistiken",
                         "Noten",
                         "Karteikarten und Quiz-Ergebnisse",
-                        "Topics und Lern-Feed-Inhalte des Hivemind-Bereichs",
                         "App-Einstellungen"
                     ]
                 ),
@@ -106,17 +105,9 @@ struct PrivacyPolicyView: View {
                     paragraphs: ["Wenn du die Familien-Funktion aktivierst und ein Eltern- mit einem Kind-Gerät verbindest:"],
                     bullets: [
                         "Beim Verbinden wird ein 6-stelliger Pairing-Code generiert.",
-                        "Bestimmte Lerndaten des Kindes (Lernzeit, Noten, Streak, Topics, Klassenarbeiten) werden in die öffentliche CloudKit-Datenbank des App-Anbieters geschrieben, damit das Eltern-Gerät sie abrufen kann.",
+                        "Bestimmte Lerndaten des Kindes (Lernzeit, Noten, Streak, Klassenarbeiten) werden in die öffentliche CloudKit-Datenbank des App-Anbieters geschrieben, damit das Eltern-Gerät sie abrufen kann.",
                         "Diese Daten sind nur über den geheimen Pairing-Code abrufbar.",
-                        "Eltern können Topics, Lernziele und Motivationsnachrichten an das Kind senden."
-                    ]
-                ),
-                LegalSection(
-                    title: "2.4 KI-Funktionen",
-                    paragraphs: [
-                        "Die KI-Funktionen der App verwenden externe KI-Anbieter. Standardmäßig wird Groq, Inc. über unseren Backend-Server verwendet. Optional kannst du in den Einstellungen einen eigenen API-Key für Groq, OpenAI, Google Gemini oder Anthropic Claude hinterlegen.",
-                        "Wenn du die KI nutzt, werden Eingabetexte, OCR-Text aus Fotos (das Bild selbst bleibt auf deinem Gerät) und optionale Anweisungen an den gewählten Anbieter übertragen. Der jeweilige Anbieter verarbeitet diese Daten gemäß seiner eigenen Datenschutzbestimmungen.",
-                        "Wichtig: Speichere oder sende keine sensiblen persönlichen Daten über die KI-Funktionen."
+                        "Eltern können Lernziele und Motivationsnachrichten an das Kind senden."
                     ]
                 ),
                 LegalSection(
@@ -134,8 +125,6 @@ struct PrivacyPolicyView: View {
                     title: "4. Berechtigungen",
                     paragraphs: ["Die App fragt nur folgende Berechtigungen ab — und nur wenn du die jeweilige Funktion verwendest:"],
                     bullets: [
-                        "Mikrofon — für die Spracheingabe",
-                        "Spracherkennung — für die Spracheingabe",
                         "Fotos — wenn du ein Bild auswählst",
                         "Mitteilungen — für Erinnerungen und Eltern-Benachrichtigungen"
                     ]
@@ -145,8 +134,7 @@ struct PrivacyPolicyView: View {
                     bullets: [
                         "Lokale Daten bleiben, bis du sie löschst oder die App deinstallierst.",
                         "iCloud-Daten bleiben in deinem iCloud-Account.",
-                        "CloudKit-Daten der Familien-Funktion werden beim Trennen gelöscht.",
-                        "KI-Eingaben unterliegen den Datenschutzrichtlinien des gewählten Anbieters (Groq, OpenAI, Google oder Anthropic)."
+                        "CloudKit-Daten der Familien-Funktion werden beim Trennen gelöscht."
                     ]
                 ),
                 LegalSection(
@@ -198,7 +186,7 @@ struct TermsView: View {
                         "Kalender und Lernzeit-Tracking",
                         "Fächer- und Notenverwaltung",
                         "Statistiken und Auswertungen",
-                        "Optionale KI-Funktionen (Lernassistent, Lernpläne, Quiz, Karteikarten, Lern-Feed)",
+                        "Stundenplan- und Hausaufgaben-Sync mit WebUntis",
                         "Familien-Funktion zur Verbindung von Eltern- und Kind-Geräten"
                     ]
                 ),
@@ -210,55 +198,43 @@ struct TermsView: View {
                     title: "4. Pflichten der Nutzer",
                     paragraphs: ["Du verpflichtest dich, die App ausschließlich zu rechtmäßigen Zwecken und im Einklang mit den geltenden Gesetzen zu nutzen."],
                     bullets: [
-                        "Keine sensiblen oder gesetzlich geschützten persönlichen Daten an die KI senden.",
                         "Die App nicht missbräuchlich verwenden, um andere zu schädigen.",
-                        "Du bist allein verantwortlich für die Inhalte, die du in die App eingibst.",
-                        "Du bist für die Sicherheit deiner API-Schlüssel selbst verantwortlich."
+                        "Du bist allein verantwortlich für die Inhalte, die du in die App eingibst."
                     ]
                 ),
                 LegalSection(
-                    title: "5. KI-Funktionen",
-                    paragraphs: ["Folgendes ist bei der Nutzung der KI-Funktionen zu beachten:"],
-                    bullets: [
-                        "KI-Antworten können fehlerhaft, unvollständig oder irreführend sein.",
-                        "KI-Antworten dürfen nicht ungeprüft in Hausaufgaben oder Klassenarbeiten übernommen werden.",
-                        "Der Anbieter übernimmt keine Verantwortung für die Richtigkeit der KI-Inhalte.",
-                        "Die App unterstützt verschiedene KI-Anbieter: Groq, OpenAI, Google Gemini und Anthropic Claude."
-                    ]
-                ),
-                LegalSection(
-                    title: "6. Familien-Funktion",
+                    title: "5. Familien-Funktion",
                     bullets: [
                         "Bei Minderjährigen ist die Zustimmung eines Erziehungsberechtigten erforderlich.",
-                        "Eltern können den Lernfortschritt einsehen und Topics zuweisen.",
+                        "Eltern können den Lernfortschritt einsehen und Lernziele setzen.",
                         "Beide Seiten können die Verbindung jederzeit trennen."
                     ]
                 ),
                 LegalSection(
-                    title: "7. Verfügbarkeit",
+                    title: "6. Verfügbarkeit",
                     paragraphs: ["Der Anbieter ist bemüht, die App ohne Unterbrechungen verfügbar zu halten. Es besteht jedoch kein Anspruch auf eine ununterbrochene Verfügbarkeit."]
                 ),
                 LegalSection(
-                    title: "8. Haftungsausschluss",
+                    title: "7. Haftungsausschluss",
                     paragraphs: [
                         "Der Anbieter haftet nur für Schäden, die durch grobe Fahrlässigkeit oder Vorsatz verursacht wurden. Die Haftung für mittelbare Schäden, entgangenen Gewinn oder Folgeschäden ist ausgeschlossen, soweit dies gesetzlich zulässig ist.",
                         "Die App stellt keine Garantie für schulischen Erfolg dar."
                     ]
                 ),
                 LegalSection(
-                    title: "9. Datenschutz",
+                    title: "8. Datenschutz",
                     paragraphs: ["Es gilt die separate Datenschutzerklärung, die in dieser App verlinkt ist."]
                 ),
                 LegalSection(
-                    title: "10. Änderungen",
+                    title: "9. Änderungen",
                     paragraphs: ["Der Anbieter behält sich vor, diese Nutzungsbedingungen bei Bedarf anzupassen. Wesentliche Änderungen werden dir in der App angezeigt."]
                 ),
                 LegalSection(
-                    title: "11. Anwendbares Recht",
+                    title: "10. Anwendbares Recht",
                     paragraphs: ["Es gilt das Recht der Bundesrepublik Deutschland. Sofern du Verbraucher mit Wohnsitz in der EU bist, gelten zusätzlich die zwingenden verbraucherschutzrechtlichen Bestimmungen deines Wohnsitzlandes."]
                 ),
                 LegalSection(
-                    title: "12. Kontakt",
+                    title: "11. Kontakt",
                     paragraphs: ["Bei Fragen: geldtracker.contact@gmail.com"]
                 )
             ]

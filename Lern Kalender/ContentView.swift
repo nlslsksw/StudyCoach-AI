@@ -169,14 +169,6 @@ struct ContentView: View {
         }
         triggerWrappedIfDue()
         triggerWebuntisAutoSyncIfDue()
-        triggerWeeklyHealthCheckIfDue()
-    }
-
-    /// Generiert sonntags (oder am ersten Tab-Öffnen einer neuen Woche)
-    /// einmal pro Woche den KI-Wochen-Check.
-    private func triggerWeeklyHealthCheckIfDue() {
-        guard AIService.shared.hasAPIKey else { return }
-        Task { try? await HealthCheckStore.shared.generateWeeklyReport(from: store) }
     }
 
     /// Synchronisiert mit Webuntis im Hintergrund, wenn die App gestartet
@@ -220,17 +212,6 @@ struct ContentView: View {
         Task {
             let shared = await CloudKitService.shared.fetchSharedCalendarEntries(pairingCode: link.pairingCode)
             await MainActor.run { store.sharedCalendarEntries = shared }
-        }
-        Task {
-            let (remoteTopics, remoteProgress) = await CloudKitService.shared.fetchTopics(pairingCode: link.pairingCode)
-            await MainActor.run {
-                TopicStore.shared.mergeRemote(topics: remoteTopics, progress: remoteProgress)
-            }
-        }
-        Task {
-            if let allowed = await CloudKitService.shared.fetchAIAllowed(pairingCode: link.pairingCode) {
-                await MainActor.run { store.aiAllowed = allowed }
-            }
         }
     }
 
@@ -330,14 +311,13 @@ struct ParentSettingsTab: View {
 // MARK: - Today Tab (Dashboard)
 
 /// Startseite mit Streak, heutiger Lernzeit, anstehenden Terminen und Quick-Actions.
-/// Ersetzt den separaten "Lernzeit"-Tab und den "KI"-Tab.
+/// Ersetzt den separaten "Lernzeit"-Tab.
 struct TodayTab: View {
     var store: DataStore
 
     @State private var showingAddSession = false
     @State private var showingTimer = false
     @State private var showingAllSessions = false
-    @State private var showingAI = false
     @State private var showingSettings = false
     @State private var showingProfile = false
     @State private var showingAddHomework = false
@@ -405,12 +385,6 @@ struct TodayTab: View {
                     WeaknessExamCard(store: store)
                         .padding(.horizontal)
 
-                    // Wöchentlicher KI-Lern-Check (nur wenn vorhanden oder KI bereit)
-                    if HealthCheckStore.shared.latest != nil || AIService.shared.hasAPIKey {
-                        HealthCheckCard(store: store)
-                            .padding(.horizontal)
-                    }
-
                     // Anstehende Termine heute
                     if !todayEntries.isEmpty {
                         todayEntriesSection
@@ -453,9 +427,6 @@ struct TodayTab: View {
                             }
                         }
                 }
-            }
-            .sheet(isPresented: $showingAI) {
-                AIAssistantTab(store: store)
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView(store: store)
@@ -545,11 +516,6 @@ struct TodayTab: View {
             }
             quickActionTile(icon: "checklist", title: "HA", color: .orange) {
                 showingAddHomework = true
-            }
-            if store.aiAllowed {
-                quickActionTile(icon: "sparkles", title: "KI", color: .purple) {
-                    showingAI = true
-                }
             }
         }
     }

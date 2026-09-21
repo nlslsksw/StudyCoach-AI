@@ -10,7 +10,7 @@ struct OnboardingView: View {
         OnboardingPage(
             kind: .image("onboarding-calendar"),
             accent: .blue,
-            title: "Willkommen bei StudiCoach AI",
+            title: "Willkommen beim Lern Kalender",
             subtitle: "Plane deine Schule. Trag deine Lernzeiten ein. Behalte den Überblick über alle Klassenarbeiten."
         ),
         OnboardingPage(
@@ -26,22 +26,10 @@ struct OnboardingView: View {
             subtitle: "Sieh deine Fortschritte. Halte deine Lern-Serie. Schau, wo du diese Woche stehst."
         ),
         OnboardingPage(
-            kind: .image("onboarding-ai"),
-            accent: .pink,
-            title: "KI-Lern-Assistent",
-            subtitle: "Sag der KI 'trag 90 Minuten Englisch ein' — sie macht es. Frage Themen ab. Lass dir Lernpläne erstellen. (Beta)"
-        ),
-        OnboardingPage(
-            kind: .image("onboarding-hivemind"),
-            accent: .purple,
-            title: "Lern-Feed (Hivemind)",
-            subtitle: "Scroll dich schlauer. Kurze Lektionen, Quiz, Karteikarten und Sprach-Übungen — wie ein Feed, nur lehrreich."
-        ),
-        OnboardingPage(
             kind: .icon("person.2.fill", colors: [.orange, .red]),
             accent: .red,
             title: "Familie & Eltern",
-            subtitle: "Eltern können Lernfortschritte einsehen, Topics zuweisen und motivieren. Sicher über iCloud verbunden."
+            subtitle: "Eltern können Lernfortschritte einsehen, Lernziele setzen und motivieren. Sicher über iCloud verbunden."
         )
     ]
 

@@ -9,7 +9,6 @@ struct CalendarTab: View {
     @State private var showingAddEntry = false
     @State private var showingAddSession = false
     @State private var showingDeleteAll = false
-    @State private var showingStudyPlan = false
 
     var body: some View {
         NavigationStack {
@@ -64,9 +63,6 @@ struct CalendarTab: View {
             }
             .sheet(isPresented: $showingAddSession) {
                 AddStudySessionView(initialDate: selectedDate, store: store)
-            }
-            .sheet(isPresented: $showingStudyPlan) {
-                StudyPlanView(store: store)
             }
             .alert("Alles löschen?", isPresented: $showingDeleteAll) {
                 Button("Abbrechen", role: .cancel) { }

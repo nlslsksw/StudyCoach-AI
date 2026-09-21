@@ -18,7 +18,6 @@ struct SettingsView: View {
     @State private var showingOnboarding = false
     @State private var showingWrappedHalbjahr = false
     @State private var showingWrappedJahr = false
-    @State private var feedCloseGesture: FeedCloseGesture = FeedCloseGesture.current
     @State private var showingWebuntis = false
     @State private var selectedTheme: AppTheme = ThemeStore.current
     @State private var selectedAccent: AppAccent = ThemeStore.accent
@@ -69,22 +68,6 @@ struct SettingsView: View {
                     Text("Hilfe & Rückblick")
                 } footer: {
                     Text("Tutorial oder deinen persönlichen Lern-Rückblick im Story-Format noch einmal ansehen.")
-                }
-
-                // Lern-Feed
-                Section {
-                    Picker("Feed schließen mit", selection: $feedCloseGesture) {
-                        ForEach(FeedCloseGesture.allCases) { gesture in
-                            Text(gesture.rawValue).tag(gesture)
-                        }
-                    }
-                    .onChange(of: feedCloseGesture) { _, newValue in
-                        FeedCloseGesture.current = newValue
-                    }
-                } header: {
-                    Text("Lern-Feed")
-                } footer: {
-                    Text("Wähle, wie du den Topic-Feed schließen möchtest. Bei \"Doppel-Tap oben\" tippst du oben auf den Bildschirm zweimal kurz hintereinander.")
                 }
 
                 // Tägliche Lernzeit-Erinnerung

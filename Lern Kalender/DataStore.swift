@@ -63,9 +63,6 @@ final class DataStore {
     var sharedCalendarEntries: [SharedCalendarEntry] = [] {
         didSet { saveSharedEntries() }
     }
-    var aiAllowed: Bool = true {
-        didSet { store.set(aiAllowed, forKey: "aiAllowed") }
-    }
     var streakState: StreakState = StreakState() {
         didSet { saveStreakState() }
     }
@@ -214,9 +211,6 @@ final class DataStore {
         if let data = store.data(forKey: sharedEntriesKey),
            let decoded = try? JSONDecoder().decode([SharedCalendarEntry].self, from: data) {
             sharedCalendarEntries = decoded
-        }
-        if store.object(forKey: "aiAllowed") != nil {
-            aiAllowed = store.bool(forKey: "aiAllowed")
         }
         if let data = store.data(forKey: streakStateKey),
            let decoded = try? JSONDecoder().decode(StreakState.self, from: data) {

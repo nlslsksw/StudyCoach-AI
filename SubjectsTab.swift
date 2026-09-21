@@ -437,7 +437,7 @@ struct SubjectDetailView: View {
     let subject: Subject
     @State private var showingAddGrade = false
     @State private var showingAddSession = false
-    @State private var showingAIForSubject = false
+    @State private var showingActivityForSubject = false
     @State private var showingAddHomework = false
     @State private var homeworkToEdit: Homework? = nil
 
@@ -689,11 +689,10 @@ struct SubjectDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { showingAIForSubject = true } label: {
-                    Image(systemName: "sparkles")
-                        .foregroundStyle(.purple)
+                Button { showingActivityForSubject = true } label: {
+                    Image(systemName: "list.bullet.rectangle")
                 }
-                .accessibilityLabel("Aktivitäten und KI für \(subject.name)")
+                .accessibilityLabel("Aktivitäten für \(subject.name)")
             }
         }
         .sheet(isPresented: $showingAddGrade) {
@@ -702,7 +701,7 @@ struct SubjectDetailView: View {
         .sheet(isPresented: $showingAddSession) {
             SubjectAddSessionView(store: store, subjectName: subject.name)
         }
-        .sheet(isPresented: $showingAIForSubject) {
+        .sheet(isPresented: $showingActivityForSubject) {
             SubjectActivitySheet(store: store, subject: subject)
         }
         .sheet(isPresented: $showingAddHomework) {
@@ -942,16 +941,14 @@ struct SubjectGradeOverview: View {
     }
 }
 
-// MARK: - Subject Activity Sheet (KI-Sparkles-Button im Fach-Detail)
+// MARK: - Subject Activity Sheet (Aktivitäten-Button im Fach-Detail)
 
 /// Zeigt alles, was im Fach passiert ist: Übersichts-Stats, letzte Noten,
-/// Lernzeiten, Hausaufgaben — und einen Button, um damit zur KI zu wechseln.
+/// Lernzeiten, Hausaufgaben.
 struct SubjectActivitySheet: View {
     @Environment(\.dismiss) private var dismiss
     var store: DataStore
     let subject: Subject
-
-    @State private var showingAIChat = false
 
     private var grades: [(date: Date, grade: Double, type: GradeType)] {
         store.gradesFor(subject: subject)
@@ -1002,7 +999,7 @@ struct SubjectActivitySheet: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    // Header: Fach + KI-Hinweis
+                    // Header: Fach
                     header
 
                     // Übersichts-Stats
@@ -1053,27 +1050,6 @@ struct SubjectActivitySheet: View {
                         .padding(.horizontal)
                     }
 
-                    // KI-Aktion
-                    if store.aiAllowed {
-                        Button {
-                            showingAIChat = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "sparkles")
-                                Text("Mit der KI über \(subject.name) sprechen")
-                                    .fontWeight(.semibold)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(
-                                LinearGradient(colors: [.purple, .pink], startPoint: .leading, endPoint: .trailing),
-                                in: RoundedRectangle(cornerRadius: 14)
-                            )
-                            .foregroundStyle(.white)
-                        }
-                        .padding(.horizontal)
-                    }
-
                     Spacer(minLength: 20)
                 }
                 .padding(.top, 4)
@@ -1084,9 +1060,6 @@ struct SubjectActivitySheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Fertig") { dismiss() }
                 }
-            }
-            .sheet(isPresented: $showingAIChat) {
-                AIAssistantTab(store: store)
             }
         }
     }
@@ -1110,7 +1083,7 @@ struct SubjectActivitySheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Aktivität in \(subject.name)")
                     .font(.headline)
-                Text("Tippe die KI-Schaltfläche unten für eine Zusammenfassung.")
+                Text("Noten, Lernzeiten und Hausaufgaben auf einen Blick.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
