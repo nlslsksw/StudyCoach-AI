@@ -4,10 +4,8 @@ import SwiftUI
 
 // MARK: - Ambient Player
 //
-// Spielt Hintergrund-Sound während des Lerntimers. Für die "richtigen"
-// Sounds nutzen wir kuratierte SomaFM-Streams (royalty-free Internet-
-// Radio); zusätzlich gibt's Brown-Noise und Regen, die wir lokal
-// synthetisieren und auch offline funktionieren.
+// Spielt Hintergrund-Sound während des Lerntimers: Brown-Noise und Regen,
+// lokal synthetisiert — funktioniert offline und ohne Lizenzfragen.
 
 @MainActor
 @Observable
@@ -16,10 +14,6 @@ final class AmbientPlayer {
 
     enum Sound: String, CaseIterable, Identifiable {
         case off = "Aus"
-        case lofi = "Lo-Fi Beats"
-        case ambient = "Ambient"
-        case deepSpace = "Deep Space"
-        case lush = "Lush"
         case brown = "Brown Noise"
         case rain = "Regen"
 
@@ -28,10 +22,6 @@ final class AmbientPlayer {
         var icon: String {
             switch self {
             case .off: return "speaker.slash"
-            case .lofi: return "music.note"
-            case .ambient: return "circle.hexagongrid.fill"
-            case .deepSpace: return "moon.stars.fill"
-            case .lush: return "leaf.fill"
             case .brown: return "waveform"
             case .rain: return "cloud.rain.fill"
             }
@@ -40,22 +30,8 @@ final class AmbientPlayer {
         var subtitle: String {
             switch self {
             case .off: return ""
-            case .lofi: return "SomaFM · Groove Salad"
-            case .ambient: return "SomaFM · Drone Zone"
-            case .deepSpace: return "SomaFM · Deep Space One"
-            case .lush: return "SomaFM · Lush"
             case .brown: return "Lokal, ohne Internet"
             case .rain: return "Lokal, ohne Internet"
-            }
-        }
-
-        var streamURL: URL? {
-            switch self {
-            case .lofi: return URL(string: "https://ice2.somafm.com/groovesalad-128-mp3")
-            case .ambient: return URL(string: "https://ice2.somafm.com/dronezone-128-mp3")
-            case .deepSpace: return URL(string: "https://ice2.somafm.com/deepspaceone-128-mp3")
-            case .lush: return URL(string: "https://ice2.somafm.com/lush-128-mp3")
-            default: return nil
             }
         }
 
@@ -67,17 +43,13 @@ final class AmbientPlayer {
     var sound: Sound = .off
     var volume: Float = 0.5 {
         didSet {
-            player?.volume = volume
             engineMixer?.outputVolume = volume
         }
     }
 
-    /// Wird true, sobald ein Stream tatsächlich Audio liefert.
+    /// Bleibt für die UI erhalten; Synthese startet sofort.
     var isLoading: Bool = false
     var lastError: String?
-
-    // Stream-Pfad
-    private var player: AVPlayer?
 
     // Synthese-Pfad
     private let engine = AVAudioEngine()
@@ -96,17 +68,10 @@ final class AmbientPlayer {
 
         configureSession()
 
-        if sound.isSynthesized {
-            startSynthesis(sound)
-        } else if let url = sound.streamURL {
-            startStream(url: url)
-        }
+        startSynthesis(sound)
     }
 
     func stop(silent: Bool = false) {
-        player?.pause()
-        player = nil
-
         if let s = source {
             engine.detach(s)
             source = nil
@@ -127,22 +92,6 @@ final class AmbientPlayer {
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             lastError = "Audio konnte nicht starten."
-        }
-    }
-
-    // MARK: Streaming
-
-    private func startStream(url: URL) {
-        isLoading = true
-        let p = AVPlayer(url: url)
-        p.volume = volume
-        p.automaticallyWaitsToMinimizeStalling = true
-        p.play()
-        player = p
-        // Loading-Flag zurücksetzen, sobald der Player Items hat
-        Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-            await MainActor.run { self?.isLoading = false }
         }
     }
 
@@ -208,10 +157,6 @@ struct AmbientPlayerBar: View {
     private func gradient(for sound: AmbientPlayer.Sound) -> [Color] {
         switch sound {
         case .off: return [.gray, .gray.opacity(0.6)]
-        case .lofi: return [Color(red: 0.91, green: 0.43, blue: 0.49), Color(red: 0.55, green: 0.20, blue: 0.45)]
-        case .ambient: return [.indigo, .purple]
-        case .deepSpace: return [Color(red: 0.10, green: 0.05, blue: 0.35), .blue]
-        case .lush: return [.green, .teal]
         case .brown: return [.brown, .orange]
         case .rain: return [.blue, .indigo]
         }
