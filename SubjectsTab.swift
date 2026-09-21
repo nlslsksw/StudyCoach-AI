@@ -9,6 +9,8 @@ struct SubjectsTab: View {
     @State private var showingManageSchoolYears = false
     @State private var mode: SubjectsMode = .subjects
     @State private var showingAddGrade = false
+    @State private var showingCopiedAlert = false
+    @State private var copiedCount = 0
 
     enum SubjectsMode: String, CaseIterable, Identifiable {
         case subjects = "Fächer"
@@ -59,6 +61,17 @@ struct SubjectsTab: View {
                             Button { showingManageSchoolYears = true } label: {
                                 Label("Schuljahre verwalten", systemImage: "folder.badge.gearshape")
                             }
+                            if let active = store.activeSchoolYear(),
+                               let previous = store.previousSchoolYear(before: active),
+                               !store.subjectsFor(schoolYear: previous).isEmpty {
+                                Button {
+                                    let n = store.copySubjects(from: previous, to: active)
+                                    copiedCount = n
+                                    showingCopiedAlert = true
+                                } label: {
+                                    Label("Fächer aus \(previous.name) übernehmen", systemImage: "arrow.turn.down.right")
+                                }
+                            }
                         } label: {
                             Image(systemName: "plus")
                         }
@@ -68,6 +81,13 @@ struct SubjectsTab: View {
             .sheet(isPresented: $showingAddSubject) { AddSubjectView(store: store) }
             .sheet(isPresented: $showingManageSchoolYears) { ManageSchoolYearsView(store: store) }
             .sheet(isPresented: $showingAddGrade) { AddGradeView(store: store) }
+            .alert("Fächer übernommen", isPresented: $showingCopiedAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(copiedCount == 0
+                     ? "Alle Fächer waren schon vorhanden."
+                     : "\(copiedCount) Fächer wurden ohne Noten und Lernzeiten ins aktuelle Schuljahr übernommen.")
+            }
         }
     }
 
@@ -197,8 +217,21 @@ struct SchoolYearSection: View {
         DisclosureGroup(isExpanded: $isExpanded) {
             let subjects = store.subjectsFor(schoolYear: schoolYear)
             if subjects.isEmpty {
-                Text("Keine Fächer in diesem Schuljahr")
-                    .font(.caption).foregroundStyle(.tertiary).padding(.vertical, 4)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Keine Fächer in diesem Schuljahr")
+                        .font(.caption).foregroundStyle(.tertiary)
+                    if let previous = store.previousSchoolYear(before: schoolYear),
+                       !store.subjectsFor(schoolYear: previous).isEmpty {
+                        Button {
+                            withAnimation { store.copySubjects(from: previous, to: schoolYear) }
+                        } label: {
+                            Label("Fächer aus \(previous.name) übernehmen", systemImage: "arrow.turn.down.right")
+                                .font(.subheadline)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+                .padding(.vertical, 4)
             } else {
                 ForEach(subjects) { subject in
                     NavigationLink(destination: SubjectDetailView(store: store, subject: subject)) {

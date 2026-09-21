@@ -533,6 +533,28 @@ final class DataStore {
 
     func addSubject(_ subject: Subject) { subjects.append(subject) }
 
+    /// Das Schuljahr, das direkt vor dem angegebenen begann (archiviert oder nicht).
+    func previousSchoolYear(before schoolYear: SchoolYear) -> SchoolYear? {
+        schoolYears
+            .filter { $0.id != schoolYear.id && $0.startDate < schoolYear.startDate }
+            .sorted { $0.startDate > $1.startDate }
+            .first
+    }
+
+    /// Kopiert Name, Icon und Farbe der Fächer aus `source` nach `target`.
+    /// Noten/Lernzeiten hängen am Zeitraum und bleiben beim alten Jahr.
+    /// Fächer, die es im Ziel schon gibt (Name), werden übersprungen.
+    @discardableResult
+    func copySubjects(from source: SchoolYear, to target: SchoolYear) -> Int {
+        let existing = Set(subjectsFor(schoolYear: target).map { $0.name.lowercased() })
+        var copied = 0
+        for subject in subjectsFor(schoolYear: source) where !existing.contains(subject.name.lowercased()) {
+            subjects.append(Subject(name: subject.name, icon: subject.icon, colorName: subject.colorName, schoolYearId: target.id))
+            copied += 1
+        }
+        return copied
+    }
+
     func deleteSubject(_ subject: Subject) { subjects.removeAll { $0.id == subject.id } }
 
     func updateSubject(_ subject: Subject) {
