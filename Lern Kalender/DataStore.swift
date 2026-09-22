@@ -668,7 +668,11 @@ final class DataStore {
 
     // MARK: StudySession helpers
 
-    func addSession(_ session: StudySession) {
+    /// Wird true, wenn nach dieser Lernzeit nach einer Bewertung gefragt werden soll.
+    /// Die View setzt es zurück, sobald sie den Dialog angefordert hat.
+    var pendingReviewRequest = false
+
+    func addSession(_ session: StudySession, countsForReview: Bool = true) {
         // Duplicate guard: skip if an identical session (same subject, same
         // minutes, same calendar day) was already added in the last 60 seconds.
         let cal = Calendar.current
@@ -695,6 +699,7 @@ final class DataStore {
         // XP vergeben und Challenges prüfen
         LearningEngine.shared.earnXP(LearningEngine.shared.xpForStudyTime(minutes: session.minutes), subject: session.subject)
         LearningEngine.shared.checkChallenges(store: self)
+        if countsForReview, ReviewPrompt.shouldAskAfterSession() { pendingReviewRequest = true }
     }
 
     /// Schickt am Wochenende einmal pro Woche einen Wochenbericht als Push

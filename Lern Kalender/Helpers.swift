@@ -789,3 +789,48 @@ func gradeGoalStatus(target: Double, grades: [Double]) -> GradeGoalStatus {
     let k = Int(((sum - target * n) / (target - 1.0)).rounded(.up))
     return k <= 10 ? .needsMultipleOnes(max(k, 2)) : .unreachable
 }
+
+
+// MARK: - Bewertungs-Abfrage
+
+/// Fragt nach ein paar sinnvoll genutzten Tagen einmal pro Version nach einer Bewertung.
+/// Apple zeigt den Dialog höchstens dreimal im Jahr – deshalb nur fragen, wenn die App
+/// wirklich benutzt wird, und nie direkt nach der Installation.
+enum ReviewPrompt {
+    private static let sessionsKey = "reviewPromptSessionCount"
+    private static let versionKey = "reviewPromptLastVersion"
+    private static let firstRunKey = "reviewPromptFirstRun"
+
+    /// Mindestens so viele eingetragene Lernzeiten, bevor gefragt wird.
+    private static let neededSessions = 5
+    /// Mindestens so viele Tage seit dem ersten Start.
+    private static let neededDays = 3
+
+    private static var currentVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
+    }
+
+    static func registerFirstRunIfNeeded() {
+        let d = UserDefaults.standard
+        if d.object(forKey: firstRunKey) == nil {
+            d.set(Date(), forKey: firstRunKey)
+        }
+    }
+
+    /// Nach jedem Eintragen einer Lernzeit aufrufen. Gibt true zurück, wenn gefragt werden soll.
+    static func shouldAskAfterSession() -> Bool {
+        let d = UserDefaults.standard
+        registerFirstRunIfNeeded()
+
+        let count = d.integer(forKey: sessionsKey) + 1
+        d.set(count, forKey: sessionsKey)
+
+        guard count >= neededSessions else { return false }
+        guard d.string(forKey: versionKey) != currentVersion else { return false }   // je Version einmal
+        let firstRun = d.object(forKey: firstRunKey) as? Date ?? Date()
+        guard Date().timeIntervalSince(firstRun) >= Double(neededDays) * 86_400 else { return false }
+
+        d.set(currentVersion, forKey: versionKey)
+        return true
+    }
+}

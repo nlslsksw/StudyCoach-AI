@@ -232,7 +232,7 @@ struct ExportService {
         store.deleteAllData()
         for entry in backup.entries { store.addEntry(entry) }
         for task in backup.recurringTasks { store.addRecurringTask(task) }
-        for session in backup.studySessions { store.addSession(session) }
+        for session in backup.studySessions { store.addSession(session, countsForReview: false) }
         for grade in backup.grades { store.addGrade(grade) }
         for subject in backup.subjects { store.addSubject(subject) }
         for sy in backup.schoolYears { store.addSchoolYear(sy) }

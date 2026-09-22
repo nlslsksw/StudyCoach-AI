@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 import PhotosUI
 import QuickLook
 import UniformTypeIdentifiers
@@ -23,6 +24,7 @@ struct ContentView: View {
     }()
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
+    @Environment(\.requestReview) private var requestReview
     @State private var currentTheme: AppTheme = ThemeStore.current
     @State private var currentAccent: AppAccent = ThemeStore.accent
 
@@ -37,7 +39,14 @@ struct ContentView: View {
         .fullScreenCover(isPresented: $showingOnboarding) {
             OnboardingView()
         }
+        .onChange(of: store.pendingReviewRequest) { _, pending in
+            guard pending else { return }
+            store.pendingReviewRequest = false
+            // kurz warten, damit der Dialog nicht in die Speichern-Animation platzt
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { requestReview() }
+        }
         .onAppear {
+            ReviewPrompt.registerFirstRunIfNeeded()
             #if DEBUG
             DemoData.applyIfRequested(store: store)
             showingOnboarding = !OnboardingTracker.hasCompleted
