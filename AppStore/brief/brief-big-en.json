@@ -1,0 +1,59 @@
+{
+  "name": "Lern Kalender EN groß",
+  "locale": "en",
+  "sizes": [
+    "iphone-6.5",
+    "ipad-13"
+  ],
+  "screenshots": [
+    "en/eltern-countdown.png",
+    "en/eltern-dashboard.png",
+    "en/kind-notenziel.png",
+    "en/lockscreen.png",
+    "en/kind-heute.png",
+    "en/kind-kalender.png",
+    "en/kind-faecher.png",
+    "en/kind-statistik.png"
+  ],
+  "headlines": [
+    "Never ask\n*again*.",
+    "See how your child\n*studies*.",
+    "Which grade\nfor a *2*?",
+    "Stay in the loop –\n*without* asking.",
+    "Timetable & homework\n*automatically* in.",
+    "Everything at\na *glance*.",
+    "All subjects,\nall *grades*.",
+    "*Motivation*\ninstead of nagging."
+  ],
+  "subtitles": [
+    "Exam in 3 days – and you can see whether your child studied for it",
+    "Study time, grades, streak and weekly overview for every child",
+    "Set a target average – the app works out the grade you need next",
+    "Push to the parent's phone: studied, new grade, weekly report",
+    "WebUntis sync for timetable, homework and substitutions",
+    "Exams, study days and events – with school holidays for every German state",
+    "Average per subject, separated by school year",
+    "Study streak and statistics – your child keeps going on their own"
+  ],
+  "badges": [
+    "FOR PARENTS",
+    "",
+    "NEW",
+    "PUSH",
+    "WEBUNTIS",
+    "",
+    "",
+    ""
+  ],
+  "template": "Ocean",
+  "screenshotsIpad": [
+    "ipad-en/eltern-countdown.png",
+    "ipad-en/eltern-dashboard.png",
+    "ipad-en/kind-notenziel.png",
+    "ipad-en/lockscreen.png",
+    "ipad-en/kind-heute.png",
+    "ipad-en/kind-kalender.png",
+    "ipad-en/kind-faecher.png",
+    "ipad-en/kind-statistik.png"
+  ]
+}

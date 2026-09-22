@@ -99,33 +99,22 @@ struct ContentView: View {
     private var studentView: some View {
         Group {
             if horizontalSizeClass == .regular {
-                // iPad: Sidebar
+                // iPad: Seitenleiste – dieselbe Auswahl wie die Tab-Leiste auf dem iPhone
                 NavigationSplitView {
-                    List {
-                        NavigationLink {
-                            TodayTab(store: store)
-                        } label: {
-                            Label("Heute", systemImage: "sun.max.fill")
-                        }
-                        NavigationLink {
-                            CalendarTab(store: store)
-                        } label: {
-                            Label("Kalender", systemImage: "calendar")
-                        }
-                        NavigationLink {
-                            SubjectsTab(store: store)
-                        } label: {
-                            Label("Fächer", systemImage: "book.fill")
-                        }
-                        NavigationLink {
-                            StatisticsTab(store: store)
-                        } label: {
-                            Label("Statistik", systemImage: "chart.bar.fill")
-                        }
+                    List(selection: Binding<Int?>(get: { selectedStudentTab }, set: { selectedStudentTab = $0 ?? 0 })) {
+                        Label("Heute", systemImage: "sun.max.fill").tag(0)
+                        Label("Kalender", systemImage: "calendar").tag(1)
+                        Label("Fächer", systemImage: "book.fill").tag(2)
+                        Label("Statistik", systemImage: "chart.bar.fill").tag(3)
                     }
                     .navigationTitle("Lern Kalender")
                 } detail: {
-                    TodayTab(store: store)
+                    switch selectedStudentTab {
+                    case 1: CalendarTab(store: store)
+                    case 2: SubjectsTab(store: store)
+                    case 3: StatisticsTab(store: store)
+                    default: TodayTab(store: store)
+                    }
                 }
             } else {
                 // iPhone: TabView

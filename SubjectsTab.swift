@@ -17,6 +17,7 @@ struct SubjectsTab: View {
         case subjects = "Fächer"
         case grades = "Noten"
         var id: String { rawValue }
+        var label: LocalizedStringKey { LocalizedStringKey(rawValue) }
     }
 
     private var activeSchoolYears: [SchoolYear] {
@@ -32,7 +33,7 @@ struct SubjectsTab: View {
             VStack(spacing: 0) {
                 Picker("Ansicht", selection: $mode) {
                     ForEach(SubjectsMode.allCases) { m in
-                        Text(m.rawValue).tag(m)
+                        Text(m.label).tag(m)
                     }
                 }
                 .pickerStyle(.segmented)

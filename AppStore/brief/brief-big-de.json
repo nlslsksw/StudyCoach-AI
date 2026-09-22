@@ -1,0 +1,59 @@
+{
+  "name": "Lern Kalender DE groß",
+  "locale": "de",
+  "sizes": [
+    "iphone-6.5",
+    "ipad-13"
+  ],
+  "screenshots": [
+    "eltern-countdown.png",
+    "eltern-dashboard.png",
+    "kind-notenziel.png",
+    "lockscreen.png",
+    "kind-heute.png",
+    "kind-kalender.png",
+    "kind-faecher.png",
+    "kind-statistik.png"
+  ],
+  "headlines": [
+    "Nie wieder\n*nachfragen*.",
+    "Sieh, wie dein Kind\n*lernt*.",
+    "Welche Note\nfür die *2*?",
+    "Bescheid wissen –\n*ohne* zu fragen.",
+    "Stundenplan & HA\n*automatisch* drin.",
+    "Alles im\n*Blick*.",
+    "Alle Fächer,\nalle *Noten*.",
+    "*Motivation*\nstatt Streit."
+  ],
+  "subtitles": [
+    "Klassenarbeit in 3 Tagen – und du siehst, ob dafür gelernt wurde",
+    "Lernzeit, Noten, Streak und Wochenübersicht für jedes Kind",
+    "Notenziel setzen – die App rechnet aus, was als Nächstes nötig ist",
+    "Push aufs Eltern-Handy: gelernt, neue Note, Wochenbericht",
+    "WebUntis-Sync für Stundenplan, Hausaufgaben und Vertretungen",
+    "Klassenarbeiten, Lerntage und Termine – mit Ferien aller Bundesländer",
+    "Schnitt pro Fach, getrennt nach Schuljahr",
+    "Lern-Serie und Statistik – dein Kind bleibt von selbst dran"
+  ],
+  "badges": [
+    "FÜR ELTERN",
+    "",
+    "NEU",
+    "PUSH",
+    "WEBUNTIS",
+    "",
+    "",
+    ""
+  ],
+  "template": "Ocean",
+  "screenshotsIpad": [
+    "ipad-de/eltern-countdown.png",
+    "ipad-de/eltern-dashboard.png",
+    "ipad-de/kind-notenziel.png",
+    "ipad-de/lockscreen.png",
+    "ipad-de/kind-heute.png",
+    "ipad-de/kind-kalender.png",
+    "ipad-de/kind-faecher.png",
+    "ipad-de/kind-statistik.png"
+  ]
+}
