@@ -82,6 +82,12 @@ struct SubjectsTab: View {
             .navigationDestination(item: $demoSubject) { subject in
                 SubjectDetailView(store: store, subject: subject)
             }
+            #if DEBUG
+            .onReceive(NotificationCenter.default.publisher(for: .demoOpenSubject)) { n in
+                if let name = n.object as? String { demoSubject = store.subjects.first { $0.name == name } }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .demoCloseSubject)) { _ in demoSubject = nil }
+            #endif
             .onAppear {
                 #if DEBUG
                 // Demo/Screenshots: `-open Mathe` öffnet direkt das Fach-Detail

@@ -41,8 +41,14 @@ struct ContentView: View {
             #if DEBUG
             DemoData.applyIfRequested(store: store)
             showingOnboarding = !OnboardingTracker.hasCompleted
+            DemoData.playIfRequested()
             #endif
         }
+        #if DEBUG
+        .onReceive(NotificationCenter.default.publisher(for: .demoSelectTab)) { n in
+            if let tab = n.object as? Int { withAnimation { selectedStudentTab = tab } }
+        }
+        #endif
         .preferredColorScheme(currentTheme.colorScheme)
         .tint(currentAccent.color)
         .background(currentTheme == .amoled ? Color.black : Color.clear)
@@ -540,6 +546,10 @@ struct TodayTab: View {
         }
         .buttonStyle(.plain)
         .onAppear { heroAppearTrigger += 1; openDemoSheetIfRequested() }
+        #if DEBUG
+        .onReceive(NotificationCenter.default.publisher(for: .demoOpenTimer)) { _ in showingTimer = true }
+        .onReceive(NotificationCenter.default.publisher(for: .demoCloseTimer)) { _ in showingTimer = false }
+        #endif
     }
 
     private var quickActionsRow: some View {

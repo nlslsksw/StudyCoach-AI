@@ -2,6 +2,15 @@ import Foundation
 import SwiftUI
 
 #if DEBUG
+extension Notification.Name {
+    static let demoSelectTab = Notification.Name("demoSelectTab")
+    static let demoOpenTimer = Notification.Name("demoOpenTimer")
+    static let demoCloseTimer = Notification.Name("demoCloseTimer")
+    static let demoOpenSubject = Notification.Name("demoOpenSubject")
+    static let demoCloseSubject = Notification.Name("demoCloseSubject")
+    static let demoScrollExams = Notification.Name("demoScrollExams")
+}
+
 /// Demo-Daten für Simulatoren/Screenshots. Aktiv nur mit Launch-Argument
 /// `-demo student` oder `-demo parent` (Debug-Builds), z. B.
 /// `xcrun simctl launch <udid> <bundle> -demo parent`.
@@ -91,6 +100,38 @@ enum DemoData {
         lena.weeklyMinutes = 60
         lena.lastUpdated = Date().addingTimeInterval(-3 * 3600)
         CloudKitService.shared.remoteData[secondCode] = lena
+    }
+
+    // MARK: Abspieler (echte Bedienung für Bildschirmaufnahmen)
+
+    /// Spielt eine Bedienfolge ab, damit `simctl recordVideo` echte Übergänge aufnimmt.
+    /// Start über `-play kind` bzw. `-play eltern`.
+    @MainActor
+    static func playIfRequested() {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-play"), i + 1 < args.count else { return }
+        let script = args[i + 1]
+        Task { @MainActor in
+            func wait(_ s: Double) async { try? await Task.sleep(nanoseconds: UInt64(s * 1_000_000_000)) }
+            func send(_ name: Notification.Name, _ object: Any? = nil) {
+                NotificationCenter.default.post(name: name, object: object)
+            }
+            switch script {
+            case "kind":
+                await wait(2.6);  send(.demoOpenTimer)          // Heute → Lerntimer
+                await wait(3.4);  send(.demoCloseTimer)
+                await wait(1.0);  send(.demoSelectTab, 1)       // → Kalender
+                await wait(3.0);  send(.demoSelectTab, 2)       // → Fächer
+                await wait(2.4);  send(.demoOpenSubject, "Mathe")
+                await wait(3.6);  send(.demoCloseSubject)
+                await wait(1.2);  send(.demoSelectTab, 3)       // → Statistik
+                await wait(4.0)
+            case "eltern":
+                await wait(2.6);  send(.demoScrollExams)        // Dashboard → Klassenarbeiten
+                await wait(4.0)
+            default: break
+            }
+        }
     }
 
     // MARK: Bausteine

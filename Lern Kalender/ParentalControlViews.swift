@@ -493,6 +493,11 @@ struct ParentDashboardView: View {
                         .padding(.top, 8)
                     }
                     .refreshable { refreshData() }
+                    #if DEBUG
+                    .onReceive(NotificationCenter.default.publisher(for: .demoScrollExams)) { _ in
+                        withAnimation(.easeInOut(duration: 1.1)) { proxy.scrollTo("exams", anchor: .top) }
+                    }
+                    #endif
                     .onAppear {
                         #if DEBUG
                         // Demo/Screenshots: `-scroll exams` springt zu den Klassenarbeiten
