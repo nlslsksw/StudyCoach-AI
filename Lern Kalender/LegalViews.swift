@@ -3,16 +3,43 @@ import SwiftUI
 // MARK: - Generic legal document layout
 
 struct LegalDocumentView: View {
-    let title: String
+    let title: LocalizedStringKey
     let lastUpdated: String
     let intro: String?
     let sections: [LegalSection]
+    /// English version of this document on the website – shown when the app runs in another language.
+    var englishURL: URL? = nil
 
     @Environment(\.dismiss) private var dismiss
+
+    /// The legal texts below are the binding German originals.
+    private var showsEnglishHint: Bool {
+        !(Locale.current.language.languageCode?.identifier == "de")
+    }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                if showsEnglishHint, let englishURL {
+                    Link(destination: englishURL) {
+                        HStack(spacing: 10) {
+                            Image(systemName: "globe")
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Read this document in English")
+                                    .font(.subheadline.bold())
+                                Text("The German text below is the binding version.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                    .buttonStyle(.plain)
+                }
+
                 Text(lastUpdated)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -63,7 +90,7 @@ struct LegalDocumentView: View {
 
 struct LegalSection: Identifiable {
     let id = UUID()
-    let title: String
+    let title: LocalizedStringKey
     var paragraphs: [String] = []
     var bullets: [String] = []
 }
@@ -74,7 +101,7 @@ struct PrivacyPolicyView: View {
     var body: some View {
         LegalDocumentView(
             title: "Datenschutz",
-            lastUpdated: "Stand: 9. April 2026",
+            lastUpdated: "Stand: 21. September 2026",
             intro: "Diese Datenschutzerklärung informiert dich darüber, welche Daten die App Lern Kalender verarbeitet, wo sie gespeichert werden und wer Zugriff hat.",
             sections: [
                 LegalSection(
@@ -158,7 +185,8 @@ struct PrivacyPolicyView: View {
                     title: "8. Kontakt",
                     paragraphs: ["Bei Fragen zum Datenschutz: geldtracker.contact@gmail.com"]
                 )
-            ]
+            ],
+            englishURL: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/privacy-en.html")
         )
     }
 }
@@ -169,7 +197,7 @@ struct TermsView: View {
     var body: some View {
         LegalDocumentView(
             title: "Nutzungsbedingungen",
-            lastUpdated: "Stand: 9. April 2026",
+            lastUpdated: "Stand: 21. September 2026",
             intro: nil,
             sections: [
                 LegalSection(
@@ -237,7 +265,8 @@ struct TermsView: View {
                     title: "11. Kontakt",
                     paragraphs: ["Bei Fragen: geldtracker.contact@gmail.com"]
                 )
-            ]
+            ],
+            englishURL: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/terms-en.html")
         )
     }
 }
@@ -248,7 +277,7 @@ struct ImprintView: View {
     var body: some View {
         LegalDocumentView(
             title: "Impressum",
-            lastUpdated: "Stand: 9. April 2026",
+            lastUpdated: "Stand: 21. September 2026",
             intro: nil,
             sections: [
                 LegalSection(
@@ -284,7 +313,8 @@ struct ImprintView: View {
                         "Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen."
                     ]
                 )
-            ]
+            ],
+            englishURL: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/imprint.html")
         )
     }
 }

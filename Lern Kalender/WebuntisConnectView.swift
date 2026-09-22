@@ -194,7 +194,6 @@ struct WebuntisConnectView: View {
     private var formattedLastSync: String {
         guard let date = service.lastSync else { return "—" }
         let f = DateFormatter()
-        f.locale = Locale(identifier: "de_DE")
         f.dateStyle = .short
         f.timeStyle = .short
         return f.string(from: date)

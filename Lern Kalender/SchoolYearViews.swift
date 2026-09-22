@@ -80,7 +80,6 @@ struct SchoolYearRow: View {
     private let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "MMM yyyy"
-        f.locale = Locale(identifier: "de_DE")
         return f
     }()
 
@@ -169,9 +168,7 @@ struct AddSchoolYearView: View {
 
                 Section("Zeitraum") {
                     DatePicker("Start", selection: $startDate, displayedComponents: .date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                     DatePicker("Ende", selection: $endDate, displayedComponents: .date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                 }
             }
             .navigationTitle("Schuljahr hinzufügen")

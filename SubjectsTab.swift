@@ -838,7 +838,6 @@ struct SubjectAddGradeView: View {
 
                 Section("Wann?") {
                     DatePicker("Datum", selection: $date, displayedComponents: .date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                 }
 
                 Section("Anmerkung") {
@@ -911,7 +910,6 @@ struct SubjectAddSessionView: View {
 
                 Section("Wann?") {
                     DatePicker("Datum", selection: $date, displayedComponents: .date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                 }
             }
             .navigationTitle("Lernzeit für \(subjectName)")

@@ -118,7 +118,6 @@ struct ExportService {
             y += 4
 
             let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "de_DE")
             dateFormatter.dateFormat = "d. MMMM yyyy"
             y = drawText("Bericht vom \(dateFormatter.string(from: Date()))", at: CGPoint(x: margin, y: y), width: contentWidth,
                          font: .systemFont(ofSize: 14), color: .secondaryLabel, in: context)

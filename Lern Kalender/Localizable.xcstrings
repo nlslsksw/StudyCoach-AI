@@ -2,6 +2,16 @@
   "sourceLanguage": "de",
   "strings": {
     "": {},
+    "\"%@\" wirklich löschen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Really delete “%@”?"
+          }
+        }
+      }
+    },
     "%@ - %@ speichern?": {
       "localizations": {
         "de": {
@@ -30,6 +40,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ / %@"
+          }
+        }
+      }
+    },
+    "%@ löschen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete %@?"
           }
         }
       }
@@ -154,6 +174,16 @@
         }
       }
     },
+    "%lld Fächer wurden ohne Noten und Lernzeiten ins aktuelle Schuljahr übernommen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld subjects were copied to the current school year without grades or study time."
+          }
+        }
+      }
+    },
     "%lld Minuten": {
       "localizations": {
         "en": {
@@ -195,6 +225,7 @@
       }
     },
     "%lld XP": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -205,6 +236,7 @@
       }
     },
     "%lld XP bis Level %lld": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -221,6 +253,7 @@
       }
     },
     "%lld angeschaut · %lld richtig": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -276,7 +309,18 @@
         }
       }
     },
+    "%lld schwach": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld weak"
+          }
+        }
+      }
+    },
     "%lld von %lld gewusst": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -293,6 +337,7 @@
       }
     },
     "%lld von %lld richtig": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -329,6 +374,7 @@
       }
     },
     "%lld%% gemeistert": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -349,6 +395,7 @@
       }
     },
     "%lld/%lld": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -385,6 +432,7 @@
       }
     },
     "+10": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -395,6 +443,7 @@
       }
     },
     "+100": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -414,7 +463,20 @@
         }
       }
     },
+    "1 Eintrag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 entry"
+          }
+        }
+      }
+    },
+    "1. Geltungsbereich": {},
+    "1. Verantwortlich": {},
     "1.0": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -435,6 +497,12 @@
         }
       }
     },
+    "10. Anwendbares Recht": {},
+    "11. Kontakt": {},
+    "2. Beschreibung des Dienstes": {},
+    "2.1 Lokale Daten": {},
+    "2.2 iCloud-Synchronisation": {},
+    "2.3 Familien-Funktion": {},
     "20 Nachrichten (Standard)": {
       "extractionState": "manual",
       "localizations": {
@@ -446,6 +514,10 @@
         }
       }
     },
+    "3. Nutzungsrechte": {},
+    "3. Was wir NICHT tun": {},
+    "4. Berechtigungen": {},
+    "4. Pflichten der Nutzer": {},
     "5 Nachrichten": {
       "extractionState": "manual",
       "localizations": {
@@ -457,6 +529,8 @@
         }
       }
     },
+    "5. Familien-Funktion": {},
+    "5. Speicherdauer": {},
     "50 Nachrichten": {
       "extractionState": "manual",
       "localizations": {
@@ -468,6 +542,13 @@
         }
       }
     },
+    "6. Deine Rechte (DSGVO)": {},
+    "6. Verfügbarkeit": {},
+    "7. Haftungsausschluss": {},
+    "7. Kinder": {},
+    "8. Datenschutz": {},
+    "8. Kontakt": {},
+    "9. Änderungen": {},
     "AMOLED ist ein tiefes Schwarz für OLED-iPhones — spart Akku.": {
       "localizations": {
         "en": {
@@ -542,6 +623,16 @@
         }
       }
     },
+    "Aktivitäten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activity"
+          }
+        }
+      }
+    },
     "Aktualisieren": {
       "extractionState": "manual",
       "localizations": {
@@ -575,6 +666,16 @@
       }
     },
     "Aktuelle Lernserie": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current streak"
+          }
+        }
+      }
+    },
+    "Aktuelle Serie": {
       "localizations": {
         "en": {
           "stringUnit": {
@@ -635,6 +736,16 @@
         }
       }
     },
+    "Alle Fächer waren schon vorhanden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All subjects were already there."
+          }
+        }
+      }
+    },
     "Alle Lernzeiten": {
       "extractionState": "manual",
       "localizations": {
@@ -690,6 +801,7 @@
       }
     },
     "Anbieter": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -699,6 +811,7 @@
         }
       }
     },
+    "Anbieter (gemäß § 5 TMG)": {},
     "Andere Schule wählen": {
       "localizations": {
         "en": {
@@ -710,6 +823,7 @@
       }
     },
     "Anderes Foto": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -752,6 +866,7 @@
       }
     },
     "Antwort": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -784,6 +899,7 @@
       }
     },
     "Anzahl Eis": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -847,6 +963,7 @@
       }
     },
     "Aufnahme stoppen": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -940,6 +1057,26 @@
         }
       }
     },
+    "Beste Serie": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best streak"
+          }
+        }
+      }
+    },
+    "Bester Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best day"
+          }
+        }
+      }
+    },
     "Bild auswählen": {
       "extractionState": "manual",
       "localizations": {
@@ -952,6 +1089,7 @@
       }
     },
     "Bild wählen": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -962,6 +1100,7 @@
       }
     },
     "Bild ändern": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1076,6 +1215,16 @@
         }
       }
     },
+    "Code eingeben und Lernfortschritte einsehen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a code and follow the study progress"
+          }
+        }
+      }
+    },
     "Code erstellen": {
       "extractionState": "manual",
       "localizations": {
@@ -1094,6 +1243,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Generate code"
+          }
+        }
+      }
+    },
+    "Code generieren und mit Eltern teilen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate a code and share it with your parents"
           }
         }
       }
@@ -1125,6 +1284,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Copyright"
+          }
+        }
+      }
+    },
+    "Dafür gelernt (14 Tage): %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Studied for it (14 days): %@"
+          }
+        }
+      }
+    },
+    "Dafür noch nicht gelernt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not studied for yet"
+          }
+        }
+      }
+    },
+    "Das Fach wird aus diesem Schuljahr entfernt. Eingetragene Noten und Lernzeiten bleiben erhalten.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The subject is removed from this school year. Grades and study time you entered are kept."
           }
         }
       }
@@ -1278,6 +1467,7 @@
       }
     },
     "Dein Lern-Check": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1305,6 +1495,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your personal study helper"
+          }
+        }
+      }
+    },
+    "Deine Schwachstellen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your weak spots"
           }
         }
       }
@@ -1342,6 +1542,16 @@
         }
       }
     },
+    "Diese Woche": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        }
+      }
+    },
     "Diese Woche geübt: %@": {
       "localizations": {
         "en": {
@@ -1358,6 +1568,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "You get a notification every day at the time you pick. If you have already logged study time that day, the reminder is skipped."
+          }
+        }
+      }
+    },
+    "Du bräuchtest %lld× die 1, um das Ziel zu erreichen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You'd need %lld× a top grade to reach the goal."
           }
         }
       }
@@ -1385,6 +1605,7 @@
       }
     },
     "Du hast eine %lld-Tage-Serie": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1427,6 +1648,7 @@
         }
       }
     },
+    "EU-Streitschlichtung": {},
     "Ein Elternteil hat den KI-Assistenten deaktiviert. Bitte frage deine Eltern, ob sie ihn in den Einstellungen aktivieren können.": {
       "extractionState": "manual",
       "localizations": {
@@ -1488,6 +1710,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Entries"
+          }
+        }
+      }
+    },
+    "Eis": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Freezes"
+          }
+        }
+      }
+    },
+    "Eltern können Lernfortschritte einsehen, Lernziele setzen und motivieren. Sicher über iCloud verbunden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parents can follow study progress, set goals and send motivation. Securely connected via iCloud."
           }
         }
       }
@@ -1612,6 +1854,7 @@
       }
     },
     "Entwickler": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1622,6 +1865,7 @@
       }
     },
     "Entwickler-Code": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1632,6 +1876,7 @@
       }
     },
     "Entwickler-Modus": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1642,6 +1887,7 @@
       }
     },
     "Entwicklermodus sperren": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1718,6 +1964,7 @@
       }
     },
     "Erkenne Text…": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1899,6 +2146,16 @@
         }
       }
     },
+    "Fach löschen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete subject"
+          }
+        }
+      }
+    },
     "Familie": {
       "extractionState": "manual",
       "localizations": {
@@ -1906,6 +2163,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Family"
+          }
+        }
+      }
+    },
+    "Familie & Eltern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Family & parents"
           }
         }
       }
@@ -2017,6 +2284,7 @@
       }
     },
     "Foto auswählen": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -2082,6 +2350,7 @@
       }
     },
     "Frage": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -2098,6 +2367,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Subjects"
+          }
+        }
+      }
+    },
+    "Fächer & Noten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subjects & grades"
+          }
+        }
+      }
+    },
+    "Fächer aus %@ übernehmen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy subjects from %@"
+          }
+        }
+      }
+    },
+    "Fächer übernommen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subjects copied"
           }
         }
       }
@@ -2151,6 +2450,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemma 2 9B"
+          }
+        }
+      }
+    },
+    "Gesamt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total"
           }
         }
       }
@@ -2210,6 +2519,16 @@
         }
       }
     },
+    "Gestern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yesterday"
+          }
+        }
+      }
+    },
     "Gewusst": {
       "extractionState": "manual",
       "localizations": {
@@ -2228,6 +2547,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Enter the 6-digit code your child gave you."
+          }
+        }
+      }
+    },
+    "Gib den Eltern-PIN ein, um fortzufahren.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the parent PIN to continue."
+          }
+        }
+      }
+    },
+    "Gib den PIN erneut ein.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the PIN again."
           }
         }
       }
@@ -2253,6 +2592,46 @@
         }
       }
     },
+    "Guten Abend": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good evening"
+          }
+        }
+      }
+    },
+    "Guten Morgen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good morning"
+          }
+        }
+      }
+    },
+    "Guten Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hello"
+          }
+        }
+      }
+    },
+    "HA": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HW"
+          }
+        }
+      }
+    },
     "HALBJAHRES-RÜCKBLICK": {
       "localizations": {
         "en": {
@@ -2263,6 +2642,7 @@
         }
       }
     },
+    "Haftungsausschluss — Inhalt": {},
     "Halbjahres-Rückblick": {
       "extractionState": "manual",
       "localizations": {
@@ -2270,6 +2650,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Semester recap"
+          }
+        }
+      }
+    },
+    "Hallo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hi"
           }
         }
       }
@@ -2346,6 +2736,26 @@
         }
       }
     },
+    "Heute pausieren (1 Eis)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause today (1 freeze)"
+          }
+        }
+      }
+    },
+    "Heute wurde mit Eis überbrückt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today was covered with a freeze."
+          }
+        }
+      }
+    },
     "Hilfe & Rückblick": {
       "localizations": {
         "en": {
@@ -2388,6 +2798,16 @@
         }
       }
     },
+    "Ich bin Schüler/in": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'm a student"
+          }
+        }
+      }
+    },
     "Ich bin dein persönlicher Lern-Assistent. Stelle mir Fragen, lass dir Themen erklären oder erstelle einen Lernplan.": {
       "extractionState": "manual",
       "localizations": {
@@ -2395,6 +2815,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "I'm your personal study assistant. Ask me questions, get topics explained, or create a study plan."
+          }
+        }
+      }
+    },
+    "Ich bin ein Elternteil": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'm a parent"
           }
         }
       }
@@ -2512,6 +2942,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Share JSON backup"
+          }
+        }
+      }
+    },
+    "Jahr": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year"
           }
         }
       }
@@ -2986,6 +3426,16 @@
         }
       }
     },
+    "Klausur: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exam: %@"
+          }
+        }
+      }
+    },
     "Komm morgen wieder für neuen Stoff.": {
       "extractionState": "manual",
       "localizations": {
@@ -3004,6 +3454,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Completely free!"
+          }
+        }
+      }
+    },
+    "Kontakt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contact"
           }
         }
       }
@@ -3036,6 +3496,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lern Kalender"
+          }
+        }
+      }
+    },
+    "Lern Kalender ist ein unabhängiges Produkt und steht in keiner Verbindung zur Untis GmbH. WebUntis ist eine Marke der Untis GmbH.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lern Kalender is an independent product and is not affiliated with Untis GmbH. WebUntis is a trademark of Untis GmbH."
+          }
+        }
+      }
+    },
+    "Lern Kalender ist ein unabhängiges Produkt und steht in keiner Verbindung zur Untis GmbH. WebUntis ist eine Marke der Untis GmbH. Deine Zugangsdaten bleiben auf diesem Gerät.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lern Kalender is an independent product and is not affiliated with Untis GmbH. WebUntis is a trademark of Untis GmbH. Your credentials stay on this device."
           }
         }
       }
@@ -3270,6 +3750,7 @@
       }
     },
     "Lese PDF…": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3285,6 +3766,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Recent activity"
+          }
+        }
+      }
+    },
+    "Letzte Woche": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last week"
           }
         }
       }
@@ -3353,6 +3844,7 @@
       }
     },
     "Lv.%lld": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3486,6 +3978,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mode"
+          }
+        }
+      }
+    },
+    "Monat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Month"
+          }
+        }
+      }
+    },
+    "Morgen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tomorrow"
           }
         }
       }
@@ -3643,6 +4155,7 @@
       }
     },
     "Nicht ganz.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3733,6 +4246,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No study sessions logged yet"
+          }
+        }
+      }
+    },
+    "Noch keine Note – das Ziel wartet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No grade yet – the goal is waiting."
           }
         }
       }
@@ -3911,6 +4434,16 @@
         }
       }
     },
+    "Noten, Lernzeiten und Hausaufgaben auf einen Blick.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grades, study time and homework at a glance."
+          }
+        }
+      }
+    },
     "Noten-CSV teilen": {
       "extractionState": "manual",
       "localizations": {
@@ -3940,6 +4473,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Grade type"
+          }
+        }
+      }
+    },
+    "Notenziel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grade goal"
           }
         }
       }
@@ -3977,6 +4520,7 @@
       }
     },
     "Nur für Entwicklungstests. Wenn du den Code nicht kennst, ignorier diesen Abschnitt.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3992,6 +4536,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Terms of use"
+          }
+        }
+      }
+    },
+    "Nächste Note höchstens %@, dann bleibt's im Ziel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next grade %@ or better keeps you on target."
           }
         }
       }
@@ -4040,6 +4594,16 @@
         }
       }
     },
+    "Optionen für %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Options for %@"
+          }
+        }
+      }
+    },
     "PDF-Bericht erstellen": {
       "extractionState": "manual",
       "localizations": {
@@ -4073,6 +4637,36 @@
         }
       }
     },
+    "PIN bestätigen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm PIN"
+          }
+        }
+      }
+    },
+    "PIN eingeben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter PIN"
+          }
+        }
+      }
+    },
+    "PIN festlegen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set PIN"
+          }
+        }
+      }
+    },
     "PIN ändern": {
       "extractionState": "manual",
       "localizations": {
@@ -4085,6 +4679,7 @@
       }
     },
     "PUSH_ACTIVITY_BODY": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -4101,6 +4696,7 @@
       }
     },
     "PUSH_ACTIVITY_TITLE": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -4143,6 +4739,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Edit"
+          }
+        }
+      }
+    },
+    "Plane deine Schule. Trag deine Lernzeiten ein. Behalte den Überblick über alle Klassenarbeiten.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan your school life. Log your study time. Keep track of every exam."
           }
         }
       }
@@ -4267,6 +4873,26 @@
         }
       }
     },
+    "Read this document in English": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Dokument auf Englisch lesen"
+          }
+        }
+      }
+    },
+    "Rechnerisch dieses Jahr nicht mehr erreichbar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not reachable this year any more."
+          }
+        }
+      }
+    },
     "Rechtliches": {
       "localizations": {
         "en": {
@@ -4278,6 +4904,7 @@
       }
     },
     "Reset": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4288,6 +4915,7 @@
       }
     },
     "Richtig!": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4486,6 +5114,7 @@
       }
     },
     "Score: %lld/100": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4536,6 +5165,16 @@
         }
       }
     },
+    "Setz dir einen Wunsch-Schnitt – die App sagt dir, welche Note du als Nächstes brauchst.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set a target average – the app tells you which grade you need next."
+          }
+        }
+      }
+    },
     "Sicherheit": {
       "extractionState": "manual",
       "localizations": {
@@ -4543,6 +5182,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Security"
+          }
+        }
+      }
+    },
+    "Sieh deine Fortschritte. Halte deine Lern-Serie. Schau, wo du diese Woche stehst.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See your progress. Keep your study streak. Check where you stand this week."
           }
         }
       }
@@ -4619,6 +5268,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Statistics"
+          }
+        }
+      }
+    },
+    "Statistiken & Streak": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Statistics & streak"
           }
         }
       }
@@ -4724,6 +5383,16 @@
         }
       }
     },
+    "Support & Feedback": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support & feedback"
+          }
+        }
+      }
+    },
     "Symbol": {
       "localizations": {
         "en": {
@@ -4760,6 +5429,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "days"
+          }
+        }
+      }
+    },
+    "Tage gelernt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "days studied"
           }
         }
       }
@@ -4808,6 +5487,7 @@
       }
     },
     "Text wird erkannt...": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4824,6 +5504,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Text is sent to Groq (groq.com)"
+          }
+        }
+      }
+    },
+    "The German text below is the binding version.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der deutsche Text unten ist die verbindliche Fassung."
           }
         }
       }
@@ -5072,6 +5762,8 @@
         }
       }
     },
+    "Urheber- und Kennzeichenrecht": {},
+    "Verantwortlich für den Inhalt (§ 18 Abs. 2 MStV)": {},
     "Verbinde das Gerät eines Elternteils mit dieser App, um Lernfortschritte zu teilen.": {
       "extractionState": "manual",
       "localizations": {
@@ -5233,6 +5925,17 @@
         }
       }
     },
+    "Verwalte alle Fächer eines Schuljahres. Jedes Fach mit Noten, Lernzeit und Schnitt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage every subject of a school year — with grades, study time and averages."
+          }
+        }
+      }
+    },
+    "Verweise und Links": {},
     "Verwerfen": {
       "extractionState": "manual",
       "localizations": {
@@ -5394,6 +6097,16 @@
         }
       }
     },
+    "Website": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Website"
+          }
+        }
+      }
+    },
     "Webuntis": {
       "localizations": {
         "en": {
@@ -5518,6 +6231,16 @@
         }
       }
     },
+    "Willkommen beim Lern Kalender": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Lern Kalender"
+          }
+        }
+      }
+    },
     "Willkommen im\nEltern-Dashboard": {
       "localizations": {
         "en": {
@@ -5572,6 +6295,7 @@
       }
     },
     "Woche %@": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -5678,6 +6402,16 @@
         }
       }
     },
+    "Wähle einen 4-stelligen PIN für die Elternkontrolle.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a 4-digit PIN for parental controls."
+          }
+        }
+      }
+    },
     "Wöchentlich: %lld min": {
       "localizations": {
         "en": {
@@ -5726,6 +6460,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Period"
+          }
+        }
+      }
+    },
+    "Ziel %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goal %@"
+          }
+        }
+      }
+    },
+    "Ziel entfernen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove goal"
+          }
+        }
+      }
+    },
+    "Ziel erreicht (Ø %@). Weiter so!": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goal reached (Ø %@). Keep it up!"
+          }
+        }
+      }
+    },
+    "Ziel setzen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set goal"
           }
         }
       }
@@ -5783,6 +6557,16 @@
         }
       }
     },
+    "heute": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "today"
+          }
+        }
+      }
+    },
     "https://…": {
       "extractionState": "manual",
       "localizations": {
@@ -5794,12 +6578,32 @@
         }
       }
     },
+    "in %lld Tagen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "in %lld days"
+          }
+        }
+      }
+    },
     "min": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "min"
+          }
+        }
+      }
+    },
+    "morgen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tomorrow"
           }
         }
       }
@@ -5835,6 +6639,26 @@
         }
       }
     },
+    "vor %lld Tg.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days ago"
+          }
+        }
+      }
+    },
+    "vorbei": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "done"
+          }
+        }
+      }
+    },
     "z.B. 2, 1.5, 3+": {
       "extractionState": "manual",
       "localizations": {
@@ -5853,6 +6677,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "e.g. 2025/2026"
+          }
+        }
+      }
+    },
+    "z.B. 2026/27": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "e.g. 2026/27"
           }
         }
       }
@@ -5920,6 +6754,7 @@
       }
     },
     "Änderungen wirken sofort — auch über iCloud auf anderen Geräten.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -5946,6 +6781,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ø %@"
+          }
+        }
+      }
+    },
+    "Ø pro Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ø per day"
           }
         }
       }

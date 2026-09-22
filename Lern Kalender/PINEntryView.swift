@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct PINEntryView: View {
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
     var onComplete: (String) -> Void
 
     @State private var pin = ""

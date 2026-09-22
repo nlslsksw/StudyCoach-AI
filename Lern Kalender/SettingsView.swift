@@ -81,7 +81,6 @@ struct SettingsView: View {
                         DatePicker("Uhrzeit",
                                    selection: $dailyReminderTime,
                                    displayedComponents: .hourAndMinute)
-                            .environment(\.locale, Locale(identifier: "de_DE"))
                             .onChange(of: dailyReminderTime) { _, newValue in
                                 let comps = Calendar.current.dateComponents([.hour, .minute], from: newValue)
                                 NotificationHelper.dailyReminderHour = comps.hour ?? 18

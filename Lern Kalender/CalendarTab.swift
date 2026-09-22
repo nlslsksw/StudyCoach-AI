@@ -86,7 +86,6 @@ struct MonthHeader: View {
 
     private var monthYearString: String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
         formatter.dateFormat = "LLLL yyyy"
         return formatter.string(from: displayedMonth).capitalized
     }
@@ -300,7 +299,6 @@ struct DayDetailSection: View {
 
     private var dateString: String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
         formatter.dateFormat = "EEEE, d. MMMM"
         return formatter.string(from: date)
     }

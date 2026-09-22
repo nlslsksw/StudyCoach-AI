@@ -375,17 +375,16 @@ struct TodayTab: View {
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 5..<11: return "Guten Morgen"
-        case 11..<14: return "Hallo"
-        case 14..<18: return "Guten Tag"
-        default: return "Guten Abend"
+        case 5..<11: return String(localized: "Guten Morgen")
+        case 11..<14: return String(localized: "Hallo")
+        case 14..<18: return String(localized: "Guten Tag")
+        default: return String(localized: "Guten Abend")
         }
     }
 
     private var todayString: String {
         let f = DateFormatter()
-        f.locale = Locale(identifier: "de_DE")
-        f.dateFormat = "EEEE, d. MMMM"
+        f.setLocalizedDateFormatFromTemplate("EEEEdMMMM")
         return f.string(from: today)
     }
 
@@ -527,7 +526,7 @@ struct TodayTab: View {
                         .foregroundStyle(.white.opacity(0.9))
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text(todaySessions.isEmpty ? "Heute noch nichts" : "\(todaySessions.count) \(todaySessions.count == 1 ? "Eintrag" : "Einträge")")
+                        Text(todaySessions.isEmpty ? String(localized: "Heute noch nichts") : (todaySessions.count == 1 ? String(localized: "1 Eintrag") : String(localized: "\(todaySessions.count) Einträge")))
                             .font(.caption)
                             .foregroundStyle(.white.opacity(0.85))
                         if todayMinutes > 0 {
@@ -569,9 +568,9 @@ struct TodayTab: View {
     @State private var quickActionTapCounters: [String: Int] = [:]
     @State private var heroAppearTrigger: Int = 0
 
-    private func quickActionTile(icon: String, title: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func quickActionTile(icon: String, title: LocalizedStringKey, color: Color, action: @escaping () -> Void) -> some View {
         Button {
-            quickActionTapCounters[title, default: 0] += 1
+            quickActionTapCounters[icon, default: 0] += 1
             action()
         } label: {
             VStack(spacing: 8) {
@@ -590,15 +589,15 @@ struct TodayTab: View {
                         .spray(origin: UnitPoint(x: 0.5, y: 0.5)) {
                             Image(systemName: icon).foregroundStyle(color)
                         },
-                        value: quickActionTapCounters[title, default: 0]
+                        value: quickActionTapCounters[icon, default: 0]
                     )
                     .changeEffect(
                         .pulse(shape: RoundedRectangle(cornerRadius: 11, style: .continuous),
                                drawingMode: .stroke, count: 1),
-                        value: quickActionTapCounters[title, default: 0]
+                        value: quickActionTapCounters[icon, default: 0]
                     )
                     .changeEffect(.feedback(hapticImpact: .light),
-                                  value: quickActionTapCounters[title, default: 0])
+                                  value: quickActionTapCounters[icon, default: 0])
                 Text(title)
                     .font(.caption.bold())
                     .foregroundStyle(.primary)
@@ -784,20 +783,18 @@ struct HomeworkRow: View {
         let cal = Calendar.current
         let now = Date()
         let due = homework.dueDate
-        if cal.isDateInToday(due) { return "Heute" }
-        if cal.isDateInYesterday(due) { return "Gestern" }
-        if cal.isDateInTomorrow(due) { return "Morgen" }
+        if cal.isDateInToday(due) { return String(localized: "Heute") }
+        if cal.isDateInYesterday(due) { return String(localized: "Gestern") }
+        if cal.isDateInTomorrow(due) { return String(localized: "Morgen") }
         let days = cal.dateComponents([.day], from: cal.startOfDay(for: now), to: cal.startOfDay(for: due)).day ?? 0
-        if days < 0 { return "vor \(-days) Tg." }
+        if days < 0 { return String(localized: "vor \(-days) Tg.") }
         if days <= 7 {
             let f = DateFormatter()
-            f.locale = Locale(identifier: "de_DE")
             f.dateFormat = "EEEE"
             return f.string(from: due)
         }
         let f = DateFormatter()
-        f.locale = Locale(identifier: "de_DE")
-        f.dateFormat = "d. MMM"
+        f.setLocalizedDateFormatFromTemplate("dMMM")
         return f.string(from: due)
     }
 
@@ -934,7 +931,6 @@ struct AddHomeworkView: View {
                 }
                 Section("Fällig") {
                     DatePicker("Datum", selection: $dueDate, displayedComponents: .date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                     HStack(spacing: 8) {
                         quickDateButton("Heute", offset: 0)
                         quickDateButton("Morgen", offset: 1)
@@ -1312,7 +1308,12 @@ struct TimetableView: View {
     @State private var slotToShow: TimetableSlot? = nil
     @State private var addInitialWeekday: Int = 1
 
-    private let weekdayShort = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+    private let weekdayShort = {
+        var cal = Calendar.current
+        cal.locale = .current
+        let symbols = cal.shortWeekdaySymbols          // starts on Sunday
+        return Array(symbols[1...]) + [symbols[0]]      // reorder to Monday … Sunday
+    }()
     /// Welche Wochentage gezeigt werden — wir blenden Sa/So aus, wenn dort nichts ist.
     private var visibleWeekdays: [Int] {
         let hasWeekend = (6...7).contains { !store.slotsFor(weekday: $0).isEmpty }
@@ -1351,14 +1352,12 @@ struct TimetableView: View {
     }
     private var monthShort: String {
         let f = DateFormatter()
-        f.locale = Locale(identifier: "de_DE")
         f.dateFormat = "LLL"
         return f.string(from: weekStart)
     }
 
     private func relativeSyncString(_ date: Date) -> String {
         let f = RelativeDateTimeFormatter()
-        f.locale = Locale(identifier: "de_DE")
         f.unitsStyle = .short
         return f.localizedString(for: date, relativeTo: Date())
     }
@@ -1858,12 +1857,11 @@ struct TimetableSlotDetailView: View {
 
     private var dateLabel: String {
         guard let d = slot.date else {
-            let names = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+            let names = WeekdayHelper.abbreviations
             return names[max(0, min(6, slot.weekday - 1))]
         }
         let f = DateFormatter()
-        f.locale = Locale(identifier: "de_DE")
-        f.dateFormat = "EEEE, d. MMMM yyyy"
+        f.setLocalizedDateFormatFromTemplate("EEEEdMMMMyyyy")
         return f.string(from: d)
     }
 

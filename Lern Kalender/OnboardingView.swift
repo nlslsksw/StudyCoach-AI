@@ -177,8 +177,8 @@ private struct OnboardingPage {
     }
     let kind: Kind
     let accent: Color
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
 }
 
 // MARK: - Tracker

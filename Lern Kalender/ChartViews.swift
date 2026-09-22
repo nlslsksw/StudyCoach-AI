@@ -47,12 +47,12 @@ struct WeekComparisonView: View {
             // Vergleichskarten
             HStack(spacing: 12) {
                 ComparisonCard(
-                    title: "Diese Woche",
+                    title: String(localized: "Diese Woche"),
                     value: formatHoursMinutes(currentWeekMinutes),
                     color: .blue
                 )
                 ComparisonCard(
-                    title: "Letzte Woche",
+                    title: String(localized: "Letzte Woche"),
                     value: formatHoursMinutes(lastWeekMinutes),
                     color: .secondary
                 )
@@ -76,20 +76,20 @@ struct WeekComparisonView: View {
                             x: .value("Tag", item.day),
                             y: .value("Minuten", item.thisWeek)
                         )
-                        .foregroundStyle(by: .value("Woche", "Diese Woche"))
-                        .position(by: .value("Woche", "Diese Woche"))
+                        .foregroundStyle(by: .value("Woche", String(localized: "Diese Woche")))
+                        .position(by: .value("Woche", String(localized: "Diese Woche")))
 
                         BarMark(
                             x: .value("Tag", item.day),
                             y: .value("Minuten", item.lastWeek)
                         )
-                        .foregroundStyle(by: .value("Woche", "Letzte Woche"))
-                        .position(by: .value("Woche", "Letzte Woche"))
+                        .foregroundStyle(by: .value("Woche", String(localized: "Letzte Woche")))
+                        .position(by: .value("Woche", String(localized: "Letzte Woche")))
                     }
                 }
                 .chartForegroundStyleScale([
-                    "Diese Woche": Color.blue,
-                    "Letzte Woche": Color.blue.opacity(0.3)
+                    String(localized: "Diese Woche"): Color.blue,
+                    String(localized: "Letzte Woche"): Color.blue.opacity(0.3)
                 ])
                 .chartLegend(position: .bottom)
                 .frame(height: 160)

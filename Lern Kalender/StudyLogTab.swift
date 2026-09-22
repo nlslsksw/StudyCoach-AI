@@ -37,7 +37,6 @@ struct StudyLogTab: View {
 
     private var dateString: String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
         formatter.dateFormat = "EEEE, d. MMMM"
         return formatter.string(from: selectedDate)
     }
@@ -102,7 +101,6 @@ struct StudyLogTab: View {
             .datePickerStyle(.compact)
             .padding(.horizontal)
             .padding(.vertical, 8)
-            .environment(\.locale, Locale(identifier: "de_DE"))
 
         HStack {
             VStack(alignment: .leading, spacing: 2) {
@@ -286,7 +284,6 @@ struct StudyLogTab: View {
 
     private func groupDateString(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
         let cal = Calendar.current
         if cal.isDateInToday(date) {
             return "Heute"
@@ -300,7 +297,6 @@ struct StudyLogTab: View {
 
     private func firstSessionDateString(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
         formatter.dateFormat = "d. MMMM yyyy"
         return formatter.string(from: date)
     }
@@ -616,7 +612,6 @@ struct AddStudySessionView: View {
 
                 Section("Wann?") {
                     DatePicker("Datum & Uhrzeit", selection: $date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                 }
 
                 Section("Wie lange?") {
@@ -709,7 +704,6 @@ struct EditStudySessionView: View {
 
                 Section("Wann?") {
                     DatePicker("Datum & Uhrzeit", selection: $date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                 }
 
                 Section("Wie lange?") {

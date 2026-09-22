@@ -85,8 +85,8 @@ struct ParentalSetupView: View {
 
 private struct RoleCard: View {
     let icon: String
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
     let color: Color
 
     var body: some View {
@@ -1054,7 +1054,6 @@ struct AddExamFromParentView: View {
                     TextField("Titel (z.B. Mathe-Test Kapitel 5)", text: $title)
                     TextField("Fach", text: $subject)
                     DatePicker("Datum", selection: $date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                 }
             }
             .navigationTitle("Klassenarbeit eintragen")
@@ -1206,7 +1205,7 @@ struct GoalProgressView: View {
 }
 
 private struct GoalBar: View {
-    let label: String
+    let label: LocalizedStringKey
     let current: Int
     let goal: Int
     let progress: Double
@@ -1266,10 +1265,10 @@ enum ExamCountdown {
 
     static func label(days: Int) -> String {
         switch days {
-        case ..<0: return "vorbei"
-        case 0: return "heute"
-        case 1: return "morgen"
-        default: return "in \(days) Tagen"
+        case ..<0: return String(localized: "vorbei")
+        case 0: return String(localized: "heute")
+        case 1: return String(localized: "morgen")
+        default: return String(localized: "in \(days) Tagen")
         }
     }
 
@@ -1336,8 +1335,8 @@ struct ExamCountdownRow: View {
                 Text(entry.date, format: .dateTime.day().month().hour().minute())
                     .font(.caption).foregroundStyle(.secondary)
                 Text(minutes > 0
-                     ? "Dafür gelernt (14 Tage): \(formatHoursMinutes(minutes))"
-                     : "Dafür noch nicht gelernt")
+                     ? String(localized: "Dafür gelernt (14 Tage): \(formatHoursMinutes(minutes))")
+                     : String(localized: "Dafür noch nicht gelernt"))
                     .font(.caption2)
                     .foregroundStyle(minutes > 0 ? Color.secondary : Color.orange)
             }

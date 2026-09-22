@@ -147,7 +147,12 @@ struct NotificationHelper {
 // MARK: - Weekday Helpers
 
 enum WeekdayHelper {
-    static let abbreviations = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+    static let abbreviations = {
+        var cal = Calendar.current
+        cal.locale = .current
+        let symbols = cal.shortWeekdaySymbols          // starts on Sunday
+        return Array(symbols[1...]) + [symbols[0]]      // reorder to Monday … Sunday
+    }()
     static let calendarWeekdays = [2, 3, 4, 5, 6, 7, 1]
 
     static func abbreviation(for calendarWeekday: Int) -> String {
@@ -751,11 +756,11 @@ enum GradeGoalStatus: Equatable {
 
     var text: String {
         switch self {
-        case .noGrades: return "Noch keine Note – das Ziel wartet."
-        case .reached(let avg): return "Ziel erreicht (Ø \(String(format: "%.1f", avg))). Weiter so!"
-        case .nextAtMost(let g): return "Nächste Note höchstens \(gradeString(g)), dann bleibt's im Ziel."
-        case .needsMultipleOnes(let k): return "Du bräuchtest \(k)× die 1, um das Ziel zu erreichen."
-        case .unreachable: return "Rechnerisch dieses Jahr nicht mehr erreichbar."
+        case .noGrades: return String(localized: "Noch keine Note – das Ziel wartet.")
+        case .reached(let avg): return String(localized: "Ziel erreicht (Ø \(String(format: "%.1f", avg))). Weiter so!")
+        case .nextAtMost(let g): return String(localized: "Nächste Note höchstens \(gradeString(g)), dann bleibt's im Ziel.")
+        case .needsMultipleOnes(let k): return String(localized: "Du bräuchtest \(k)× die 1, um das Ziel zu erreichen.")
+        case .unreachable: return String(localized: "Rechnerisch dieses Jahr nicht mehr erreichbar.")
         }
     }
 

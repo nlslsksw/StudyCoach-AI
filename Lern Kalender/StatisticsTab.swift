@@ -11,6 +11,8 @@ struct StatisticsTab: View {
         case woche = "Woche"
         case monat = "Monat"
         case jahr = "Jahr"
+
+        var label: LocalizedStringKey { LocalizedStringKey(rawValue) }
     }
 
     private var periodSessions: [StudySession] {
@@ -52,7 +54,6 @@ struct StatisticsTab: View {
         let cal = Calendar.current
         let now = Date()
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "de_DE")
 
         switch selectedPeriod {
         case .woche:
@@ -116,7 +117,7 @@ struct StatisticsTab: View {
 
                     Picker("Zeitraum", selection: $selectedPeriod) {
                         ForEach(StatPeriod.allCases, id: \.self) { period in
-                            Text(period.rawValue).tag(period)
+                            Text(period.label).tag(period)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -282,7 +283,6 @@ struct AddGradeView: View {
 
                 Section("Wann?") {
                     DatePicker("Datum", selection: $date, displayedComponents: .date)
-                        .environment(\.locale, Locale(identifier: "de_DE"))
                 }
 
                 Section("Anmerkung") {
@@ -328,7 +328,7 @@ struct AddGradeView: View {
 // MARK: - Streak Card
 
 struct StreakCard: View {
-    let title: String
+    let title: LocalizedStringKey
     let value: Int
     let icon: String
     let color: Color
@@ -540,7 +540,7 @@ struct FreezeInfoSheet: View {
 // MARK: - Stat Card
 
 struct StatCard: View {
-    let title: String
+    let title: LocalizedStringKey
     let value: String
     let icon: String
     let color: Color
@@ -626,7 +626,7 @@ struct BarChartView: View {
 // MARK: - Stat Section (aufklappbar)
 
 struct StatSection<Content: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     let icon: String
     let color: Color
     @Binding var isExpanded: Bool
@@ -802,7 +802,7 @@ struct StreakHeroSection: View {
         }
     }
 
-    private func streakPill(icon: String, color: Color, value: String, label: String,
+    private func streakPill(icon: String, color: Color, value: String, label: LocalizedStringKey,
                             trailingIcon: String? = nil) -> some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
