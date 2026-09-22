@@ -337,6 +337,22 @@ struct TodayTab: View {
 
     @State private var showingAddSession = false
     @State private var showingTimer = false
+    /// Demo/Screenshots: `-sheet timer|session|homework` öffnet das Sheet beim Start.
+    private func openDemoSheetIfRequested() {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-sheet"), i + 1 < args.count else { return }
+        let what = args[i + 1]
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            switch what {
+            case "timer": showingTimer = true
+            case "session": showingAddSession = true
+            case "homework": showingAddHomework = true
+            default: break
+            }
+        }
+        #endif
+    }
     @State private var showingAllSessions = false
     @State private var showingSettings = false
     @State private var showingProfile = false
@@ -523,7 +539,7 @@ struct TodayTab: View {
             .changeEffect(.shine.delay(0.1), value: todayMinutes)
         }
         .buttonStyle(.plain)
-        .onAppear { heroAppearTrigger += 1 }
+        .onAppear { heroAppearTrigger += 1; openDemoSheetIfRequested() }
     }
 
     private var quickActionsRow: some View {

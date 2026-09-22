@@ -3,6 +3,7 @@
   store.py status                 aktuellen Stand zeigen
   store.py texts                  Name, Untertitel, Beschreibung, Keywords, URLs, Was ist neu (DE + EN)
   store.py screenshots [ordner]   6,9"-Screenshots (Standard: out-ocean/de/iphone-6.9) für de-DE hochladen
+  store.py preview [datei]        App-Preview-Video (Standard: preview-de.mp4) für de-DE hochladen
   store.py price [4.99]           Preis (Basisland Deutschland)
   store.py build [nummer]         neuesten (oder angegebenen) Build an Version 1.0 hängen
   store.py review                 Review-Kontakt + Notizen
@@ -84,6 +85,31 @@ def screenshots(folder=None, locale="de-DE", display_type="APP_IPHONE_67"):
         print(f"✓ Screenshot {f.name} ({len(data)//1024} KB)")
     print(f"✓ {len(files)} Screenshots in {locale} / {display_type}")
 
+# ---------- App-Preview-Video ----------
+def preview(path=None, locale="de-DE", preview_type="IPHONE_67"):
+    f = pathlib.Path(path or HERE / "preview-de.mp4")
+    assert f.exists(), f"kein Video: {f}"
+    ver = version()
+    vloc = next(l for l in get(f"/appStoreVersions/{ver['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == locale)
+    sets = get(f"/appStoreVersionLocalizations/{vloc['id']}/appPreviewSets")["data"]
+    pset = next((x for x in sets if x["attributes"]["previewType"] == preview_type), None)
+    if not pset:
+        pset = post("/appPreviewSets", {"data": {"type": "appPreviewSets", "attributes": {"previewType": preview_type},
+                    "relationships": {"appStoreVersionLocalization": {"data": {"type": "appStoreVersionLocalizations", "id": vloc["id"]}}}}})["data"]
+    for old_p in get(f"/appPreviewSets/{pset['id']}/appPreviews")["data"]:
+        delete(f"/appPreviews/{old_p['id']}")
+    data = f.read_bytes()
+    pv = post("/appPreviews", {"data": {"type": "appPreviews", "attributes": {"fileName": f.name, "fileSize": len(data)},
+              "relationships": {"appPreviewSet": {"data": {"type": "appPreviewSets", "id": pset["id"]}}}}})["data"]
+    for op in pv["attributes"]["uploadOperations"]:
+        chunk = data[op["offset"]: op["offset"] + op["length"]]
+        r = requests.request(op["method"], op["url"], data=chunk, headers={h["name"]: h["value"] for h in op["requestHeaders"]})
+        r.raise_for_status()
+        print(f"  … {op['offset'] // 1024 // 1024} MB")
+    patch(f"/appPreviews/{pv['id']}", {"data": {"type": "appPreviews", "id": pv["id"],
+          "attributes": {"uploaded": True, "sourceFileChecksum": hashlib.md5(data).hexdigest()}}})
+    print(f"✓ App-Preview {f.name} ({len(data) // 1024 // 1024} MB) für {locale} – Apple verarbeitet es jetzt")
+
 # ---------- Preis ----------
 def price(amount="4.99", territory="DEU"):
     pts = get(f"/apps/{app_id()}/appPricePoints?filter[territory]={territory}&limit=200")["data"]
@@ -149,6 +175,6 @@ def submit():
 if __name__ == "__main__":
     cmd, args = (sys.argv[1] if len(sys.argv) > 1 else "status"), sys.argv[2:]
     if cmd == "all":
-        texts(); screenshots(*args); price(); build(); review(); status()
+        texts(); screenshots(); preview(); price(); build(); review(); status()
     else:
         globals()[cmd](*args)
