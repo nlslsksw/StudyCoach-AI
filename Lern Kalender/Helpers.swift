@@ -834,3 +834,13 @@ enum ReviewPrompt {
         return true
     }
 }
+
+// MARK: - Widget aktualisieren
+
+import WidgetKit
+
+enum WidgetRefresher {
+    static func reload() {
+        WidgetCenter.shared.reloadTimelines(ofKind: "LernKalenderWidget")
+    }
+}

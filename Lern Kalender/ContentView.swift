@@ -193,6 +193,7 @@ struct ContentView: View {
         triggerWrappedIfDue()
         triggerWebuntisAutoSyncIfDue()
         store.sendWeeklyParentReportIfDue()
+        store.updateWidgetSnapshot()
     }
 
     /// Synchronisiert mit Webuntis im Hintergrund, wenn die App gestartet

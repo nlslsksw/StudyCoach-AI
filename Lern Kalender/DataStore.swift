@@ -286,7 +286,7 @@ final class DataStore {
 
     // MARK: Homework helpers
 
-    func addHomework(_ hw: Homework) { homework.append(hw) }
+    func addHomework(_ hw: Homework) { homework.append(hw); updateWidgetSnapshot() }
     func updateHomework(_ hw: Homework) {
         if let idx = homework.firstIndex(where: { $0.id == hw.id }) { homework[idx] = hw }
     }
@@ -700,6 +700,25 @@ final class DataStore {
         LearningEngine.shared.earnXP(LearningEngine.shared.xpForStudyTime(minutes: session.minutes), subject: session.subject)
         LearningEngine.shared.checkChallenges(store: self)
         if countsForReview, ReviewPrompt.shouldAskAfterSession() { pendingReviewRequest = true }
+        updateWidgetSnapshot()
+    }
+
+    /// Schreibt die Werte fürs Home-Screen-Widget in die App Group und stößt ein Neuzeichnen an.
+    func updateWidgetSnapshot() {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        var snap = WidgetSnapshot()
+        snap.minutesToday = studySessions.filter { cal.isDate($0.date, inSameDayAs: today) }.reduce(0) { $0 + $1.minutes }
+        snap.streakDays = currentStreak()
+        snap.goalMinutes = studyGoal?.dailyMinutesGoal ?? 0
+        if let exam = entries.filter({ $0.type == .klassenarbeit && $0.date >= today }).min(by: { $0.date < $1.date }) {
+            snap.nextExamTitle = exam.title
+            snap.nextExamDate = exam.date
+        }
+        let tomorrowEnd = cal.date(byAdding: .day, value: 2, to: today) ?? today
+        snap.openHomework = homework.filter { !$0.isDone && $0.dueDate < tomorrowEnd }.count
+        snap.save()
+        WidgetRefresher.reload()
     }
 
     /// Schickt am Wochenende einmal pro Woche einen Wochenbericht als Push
