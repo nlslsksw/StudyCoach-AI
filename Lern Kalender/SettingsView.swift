@@ -345,7 +345,7 @@ struct SettingsView: View {
                     } label: {
                         Label("Impressum", systemImage: "info.circle.fill")
                     }
-                    Link(destination: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/")!) {
+                    Link(destination: URL(string: "https://niraki.eu/apps/lern-kalender/")!) {
                         HStack {
                             Label("Alle rechtlichen Hinweise online", systemImage: "globe")
                             Spacer()
@@ -426,10 +426,10 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                             .font(.subheadline.monospacedDigit())
                     }
-                    Link(destination: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/")!) {
+                    Link(destination: URL(string: "https://niraki.eu/apps/lern-kalender/")!) {
                         Label("Website", systemImage: "globe")
                     }
-                    Link(destination: URL(string: "mailto:geldtracker.contact@gmail.com?subject=Lern%20Kalender")!) {
+                    Link(destination: URL(string: "mailto:contact@niraki.eu?subject=Lern%20Kalender")!) {
                         Label("Support & Feedback", systemImage: "envelope")
                     }
                     HStack {

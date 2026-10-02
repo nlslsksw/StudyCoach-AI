@@ -101,14 +101,14 @@ struct PrivacyPolicyView: View {
     var body: some View {
         LegalDocumentView(
             title: "Datenschutz",
-            lastUpdated: "Stand: 21. September 2026",
+            lastUpdated: "Stand: 2. Oktober 2026",
             intro: "Diese Datenschutzerklärung informiert dich darüber, welche Daten die App Lern Kalender verarbeitet, wo sie gespeichert werden und wer Zugriff hat.",
             sections: [
                 LegalSection(
                     title: "1. Verantwortlich",
                     paragraphs: [
-                        "Ralf Lohrmann\nHeilbronner Straße 9\n73728 Esslingen\nDeutschland",
-                        "E-Mail: geldtracker.contact@gmail.com"
+                        "Ralf Lohrmann\nniraki\nc/o Block Services\nStuttgarter Str. 106\n70736 Fellbach\nDeutschland",
+                        "E-Mail: contact@niraki.eu"
                     ]
                 ),
                 LegalSection(
@@ -183,10 +183,10 @@ struct PrivacyPolicyView: View {
                 ),
                 LegalSection(
                     title: "8. Kontakt",
-                    paragraphs: ["Bei Fragen zum Datenschutz: geldtracker.contact@gmail.com"]
+                    paragraphs: ["Bei Fragen zum Datenschutz: contact@niraki.eu"]
                 )
             ],
-            englishURL: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/privacy-en.html")
+            englishURL: URL(string: "https://niraki.eu/en/apps/lern-kalender/privacy")
         )
     }
 }
@@ -197,13 +197,13 @@ struct TermsView: View {
     var body: some View {
         LegalDocumentView(
             title: "Nutzungsbedingungen",
-            lastUpdated: "Stand: 21. September 2026",
+            lastUpdated: "Stand: 2. Oktober 2026",
             intro: nil,
             sections: [
                 LegalSection(
                     title: "1. Geltungsbereich",
                     paragraphs: [
-                        "Diese Nutzungsbedingungen regeln die Nutzung der mobilen App Lern Kalender (im Folgenden 'die App') des Anbieters Ralf Lohrmann, Heilbronner Straße 9, 73728 Esslingen, Deutschland.",
+                        "Diese Nutzungsbedingungen regeln die Nutzung der mobilen App Lern Kalender (im Folgenden 'die App') des Anbieters Ralf Lohrmann, niraki, c/o Block Services, Stuttgarter Str. 106, 70736 Fellbach, Deutschland.",
                         "Mit der Installation oder Nutzung der App erklärst du dich mit diesen Nutzungsbedingungen einverstanden."
                     ]
                 ),
@@ -263,7 +263,7 @@ struct TermsView: View {
                 ),
                 LegalSection(
                     title: "11. Kontakt",
-                    paragraphs: ["Bei Fragen: geldtracker.contact@gmail.com"]
+                    paragraphs: ["Bei Fragen: contact@niraki.eu"]
                 )
             ],
             englishURL: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/terms-en.html")
@@ -277,22 +277,22 @@ struct ImprintView: View {
     var body: some View {
         LegalDocumentView(
             title: "Impressum",
-            lastUpdated: "Stand: 21. September 2026",
+            lastUpdated: "Stand: 2. Oktober 2026",
             intro: nil,
             sections: [
                 LegalSection(
-                    title: "Anbieter (gemäß § 5 TMG)",
+                    title: "Angaben gemäß § 5 DDG",
                     paragraphs: [
-                        "Ralf Lohrmann\nHeilbronner Straße 9\n73728 Esslingen\nDeutschland"
+                        "Ralf Lohrmann\nniraki\nc/o Block Services\nStuttgarter Str. 106\n70736 Fellbach\nDeutschland"
                     ]
                 ),
                 LegalSection(
                     title: "Kontakt",
-                    paragraphs: ["E-Mail: geldtracker.contact@gmail.com"]
+                    paragraphs: ["E-Mail: contact@niraki.eu"]
                 ),
                 LegalSection(
                     title: "Verantwortlich für den Inhalt (§ 18 Abs. 2 MStV)",
-                    paragraphs: ["Ralf Lohrmann\nHeilbronner Straße 9\n73728 Esslingen\nDeutschland"]
+                    paragraphs: ["Ralf Lohrmann, Anschrift wie oben"]
                 ),
                 LegalSection(
                     title: "Haftungsausschluss — Inhalt",
@@ -309,12 +309,11 @@ struct ImprintView: View {
                 LegalSection(
                     title: "EU-Streitschlichtung",
                     paragraphs: [
-                        "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr/",
                         "Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen."
                     ]
                 )
             ],
-            englishURL: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/imprint.html")
+            englishURL: URL(string: "https://niraki.eu/en/imprint/")
         )
     }
 }
