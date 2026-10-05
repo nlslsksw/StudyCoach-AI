@@ -547,6 +547,11 @@ struct TodayTab: View {
         #if DEBUG
         .onReceive(NotificationCenter.default.publisher(for: .demoOpenTimer)) { _ in showingTimer = true }
         .onReceive(NotificationCenter.default.publisher(for: .demoCloseTimer)) { _ in showingTimer = false }
+        .onReceive(NotificationCenter.default.publisher(for: .demoToggleHomework)) { _ in
+            if let hw = store.homework.filter({ !$0.isDone }).sorted(by: { $0.dueDate < $1.dueDate }).first {
+                withAnimation { store.toggleHomeworkDone(hw) }
+            }
+        }
         #endif
     }
 

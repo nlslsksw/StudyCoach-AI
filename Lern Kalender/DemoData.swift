@@ -9,6 +9,9 @@ extension Notification.Name {
     static let demoOpenSubject = Notification.Name("demoOpenSubject")
     static let demoCloseSubject = Notification.Name("demoCloseSubject")
     static let demoScrollExams = Notification.Name("demoScrollExams")
+    static let demoStartTimer = Notification.Name("demoStartTimer")
+    static let demoStopTimer = Notification.Name("demoStopTimer")
+    static let demoToggleHomework = Notification.Name("demoToggleHomework")
 }
 
 /// Demo-Daten für Simulatoren/Screenshots. Aktiv nur mit Launch-Argument
@@ -137,9 +140,23 @@ enum DemoData {
                 await wait(3.6);  send(.demoCloseSubject)
                 await wait(1.2);  send(.demoSelectTab, 3)       // → Statistik
                 await wait(4.0)
+            case "tour":
+                // Lange Fassung für das Vorstellungsvideo – jede Szene hat Luft zum Erzählen.
+                await wait(6.0);  send(.demoOpenTimer)              // 06  Lerntimer öffnen
+                await wait(2.0);  send(.demoStartTimer)             // 08  Timer läuft
+                await wait(10.0); send(.demoStopTimer)              // 18
+                await wait(2.0);  send(.demoCloseTimer)             // 20
+                await wait(3.0);  send(.demoToggleHomework)         // 23  Hausaufgabe abhaken
+                await wait(5.0);  send(.demoSelectTab, 2)           // 28  → Fächer
+                await wait(6.0);  send(.demoOpenSubject, "Mathe")   // 34  Fach-Detail mit Notenziel
+                await wait(10.0); send(.demoCloseSubject)           // 44
+                await wait(2.0);  send(.demoSelectTab, 1)           // 46  → Kalender
+                await wait(9.0);  send(.demoSelectTab, 3)           // 55  → Statistik
+                await wait(12.0); send(.demoSelectTab, 0)           // 67  → zurück auf Heute
+                await wait(6.0)                                     // 73
             case "eltern":
-                await wait(2.6);  send(.demoScrollExams)        // Dashboard → Klassenarbeiten
-                await wait(4.0)
+                await wait(5.0);  send(.demoScrollExams)        // Dashboard → Klassenarbeiten
+                await wait(12.0)
             default: break
             }
         }

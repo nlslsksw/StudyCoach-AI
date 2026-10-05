@@ -27,18 +27,33 @@ struct ParentalSetupView: View {
                     // Status anzeigen wenn bereits verbunden
                     if let link = store.familyLink, link.isActive {
                         VStack(spacing: 8) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 32))
-                                .foregroundStyle(.green)
-                            Text("Verbunden")
-                                .font(.headline)
-                            Text("Code: \(link.pairingCode)")
-                                .font(.caption.monospaced())
-                                .foregroundStyle(.secondary)
-                            Text("Nur ein Elternteil kann die Verbindung trennen.")
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
-                                .padding(.top, 4)
+                            // Verbindungen aus der Zeit vor der Verschlüsselung
+                            // funktionieren nicht weiter — ihre Daten lagen
+                            // offen in der Cloud. Einmal neu verbinden.
+                            if FamilyCrypto.isLegacy(link.pairingCode) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .font(.system(size: 32))
+                                    .foregroundStyle(.orange)
+                                Text("Bitte neu verbinden")
+                                    .font(.headline)
+                                Text("Die Verbindung wurde auf eine verschlüsselte Übertragung umgestellt. Trenne sie einmal und verbinde neu — dann sind die Daten deines Kindes unterwegs nicht mehr lesbar.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.center)
+                            } else {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 32))
+                                    .foregroundStyle(.green)
+                                Text("Verbunden")
+                                    .font(.headline)
+                                Text("Code: \(FamilyCrypto.formatted(link.pairingCode))")
+                                    .font(.caption.monospaced())
+                                    .foregroundStyle(.secondary)
+                                Text("Nur ein Elternteil kann die Verbindung trennen.")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                                    .padding(.top, 4)
+                            }
                         }
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
@@ -165,9 +180,9 @@ struct StudentPairingView: View {
                     Text("Dein Pairing-Code:")
                         .font(.headline)
 
-                    Text(pairingCode)
-                        .font(.system(size: 36, weight: .bold, design: .monospaced))
-                        .tracking(8)
+                    Text(FamilyCrypto.formatted(pairingCode))
+                        .font(.system(size: 30, weight: .bold, design: .monospaced))
+                        .tracking(4)
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
 
@@ -177,7 +192,7 @@ struct StudentPairingView: View {
                         .multilineTextAlignment(.center)
 
                     // Teilen-Button
-                    ShareLink(item: "Mein Lern Kalender Pairing-Code: \(pairingCode)") {
+                    ShareLink(item: "Mein Lern Kalender Verbindungscode: \(FamilyCrypto.formatted(pairingCode))") {
                         Label("Code teilen", systemImage: "square.and.arrow.up")
                     }
                     .buttonStyle(.borderedProminent)
@@ -251,12 +266,15 @@ struct ParentPairingView: View {
                     .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
                     .padding(.horizontal, 40)
 
-                TextField("000000", text: $codeInput)
-                    .font(.system(size: 28, weight: .bold, design: .monospaced))
-                    .tracking(6)
+                // Der Code hat Buchstaben und Ziffern, deshalb die normale
+                // Tastatur ohne Autokorrektur. Eingaben werden beim Prüfen
+                // ohnehin begradigt (Leerzeichen, Kleinbuchstaben).
+                TextField("ABCD EFGH JK", text: $codeInput)
+                    .font(.system(size: 24, weight: .bold, design: .monospaced))
+                    .tracking(3)
                     .multilineTextAlignment(.center)
-                    .keyboardType(.numberPad)
-                    .textContentType(.oneTimeCode)
+                    .textInputAutocapitalization(.characters)
+                    .autocorrectionDisabled()
                     .padding()
                     .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
                     .padding(.horizontal, 40)
@@ -267,7 +285,7 @@ struct ParentPairingView: View {
                     Label("Verbinden", systemImage: "link")
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(codeInput.count != 6 || childName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChecking)
+                .disabled(!FamilyCrypto.isValid(codeInput) || childName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChecking)
 
                 if isChecking {
                     ProgressView()
@@ -302,12 +320,16 @@ struct ParentPairingView: View {
         isChecking = true
         error = nil
 
+        // Der Code ist der Schlüssel zu den Daten — einmal begradigen und
+        // nur noch in dieser Form weiterreichen.
+        let code = FamilyCrypto.normalize(codeInput)
+
         Task {
             do {
-                let found = try await CloudKitService.shared.lookupPairingCode(codeInput)
+                let found = try await CloudKitService.shared.lookupPairingCode(code)
                 await MainActor.run {
                     if found {
-                        let link = FamilyLink(pairingCode: codeInput, childName: childName.trimmingCharacters(in: .whitespacesAndNewlines))
+                        let link = FamilyLink(pairingCode: code, childName: childName.trimmingCharacters(in: .whitespacesAndNewlines))
                         store.familyLinks.append(link)
                         store.familyLink = link
                         store.appMode = .parent
@@ -315,7 +337,7 @@ struct ParentPairingView: View {
 
                         // Notifications abonnieren
                         Task {
-                            await CloudKitService.shared.subscribeToStudentDataChanges(pairingCode: codeInput)
+                            await CloudKitService.shared.subscribeToStudentDataChanges(pairingCode: code)
                         }
                     } else {
                         error = "Code nicht gefunden. Bitte überprüfe die Eingabe."
