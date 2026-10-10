@@ -5,6 +5,7 @@ import SwiftUI
 struct ParentalSetupView: View {
     @Environment(\.dismiss) private var dismiss
     var store: DataStore
+    @State private var zeigePaywall = false
 
     var body: some View {
         NavigationStack {
@@ -71,17 +72,36 @@ struct ParentalSetupView: View {
                         }
                         .buttonStyle(.plain)
 
-                        NavigationLink {
-                            ParentPairingView(store: store)
-                        } label: {
-                            RoleCard(
-                                icon: "person.2.fill",
-                                title: "Ich bin ein Elternteil",
-                                subtitle: "Code eingeben und Lernfortschritte einsehen",
-                                color: .green
-                            )
+                        // Kostenpflichtig ist nur die Eltern-Seite. Das Kind
+                        // kann seinen Code immer erzeugen und teilen — sonst
+                        // müssten beide Seiten getrennt kaufen, weil sie
+                        // verschiedene Apple-IDs haben.
+                        if PurchaseService.shared.erlaubt(.elternAnsicht) {
+                            NavigationLink {
+                                ParentPairingView(store: store)
+                            } label: {
+                                RoleCard(
+                                    icon: "person.2.fill",
+                                    title: "Ich bin ein Elternteil",
+                                    subtitle: "Code eingeben und Lernfortschritte einsehen",
+                                    color: .green
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            Button {
+                                zeigePaywall = true
+                            } label: {
+                                RoleCard(
+                                    icon: "person.2.fill",
+                                    title: "Ich bin ein Elternteil",
+                                    subtitle: "Code eingeben und Lernfortschritte einsehen",
+                                    color: .green,
+                                    gesperrt: true
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal)
@@ -94,6 +114,9 @@ struct ParentalSetupView: View {
                     Button("Schließen") { dismiss() }
                 }
             }
+            .sheet(isPresented: $zeigePaywall) {
+                PaywallView(ausloeser: .elternAnsicht)
+            }
         }
     }
 }
@@ -103,6 +126,7 @@ private struct RoleCard: View {
     let title: LocalizedStringKey
     let subtitle: LocalizedStringKey
     let color: Color
+    var gesperrt: Bool = false
 
     var body: some View {
         HStack(spacing: 14) {
@@ -121,6 +145,8 @@ private struct RoleCard: View {
             }
 
             Spacer()
+
+            if gesperrt { ProAbzeichen() }
 
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.semibold))

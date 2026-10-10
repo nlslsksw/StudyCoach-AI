@@ -19,6 +19,7 @@ struct SettingsView: View {
     @State private var showingWrappedHalbjahr = false
     @State private var showingWrappedJahr = false
     @State private var showingWebuntis = false
+    @State private var paywallFuer: PurchaseService.ProFunktion?
     @State private var selectedTheme: AppTheme = ThemeStore.current
     @State private var selectedAccent: AppAccent = ThemeStore.accent
     @State private var devCode: String = ""
@@ -151,7 +152,12 @@ struct SettingsView: View {
                 // Webuntis
                 Section {
                     Button {
-                        showingWebuntis = true
+                        // Kostenpflichtig: ohne Freischaltung erst die Kaufseite.
+                        if PurchaseService.shared.erlaubt(.webuntis) {
+                            showingWebuntis = true
+                        } else {
+                            paywallFuer = .webuntis
+                        }
                     } label: {
                         HStack {
                             Image(systemName: "network")
@@ -444,6 +450,32 @@ struct SettingsView: View {
                 } footer: {
                     Text("Lern Kalender ist ein unabhängiges Produkt und steht in keiner Verbindung zur Untis GmbH. WebUntis ist eine Marke der Untis GmbH.")
                 }
+
+                // Kauf — Apple verlangt einen Weg, Käufe zurückzuholen
+                Section {
+                    if PurchaseService.shared.freigeschaltet {
+                        HStack {
+                            Label("Freigeschaltet", systemImage: "checkmark.seal.fill")
+                                .foregroundStyle(.green)
+                            Spacer()
+                            if PurchaseService.shared.altkauf {
+                                Text("gekauft").font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    } else {
+                        Button {
+                            paywallFuer = .elternAnsicht
+                        } label: {
+                            Label("WebUntis und Eltern-Ansicht freischalten", systemImage: "lock.open")
+                        }
+                    }
+                    Button("Käufe wiederherstellen") {
+                        Task { _ = await PurchaseService.shared.wiederherstellen() }
+                    }
+                    .font(.subheadline)
+                } footer: {
+                    Text("Einmal kaufen, dauerhaft freigeschaltet. Kein Abo.")
+                }
             }
             .sheet(isPresented: $showingPINSetup) {
                 PINSetupView { pin in
@@ -452,6 +484,9 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingWebuntis) {
                 WebuntisConnectView(store: store)
+            }
+            .sheet(item: $paywallFuer) { funktion in
+                PaywallView(ausloeser: funktion)
             }
             .navigationTitle("Einstellungen")
             .navigationBarTitleDisplayMode(.inline)

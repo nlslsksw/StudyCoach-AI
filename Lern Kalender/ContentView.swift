@@ -342,6 +342,7 @@ struct TodayTab: View {
 
     @State private var showingAddSession = false
     @State private var showingTimer = false
+    @State private var zeigePaywallDemo = false
     /// Demo/Screenshots: `-sheet timer|session|homework` öffnet das Sheet beim Start.
     private func openDemoSheetIfRequested() {
         #if DEBUG
@@ -353,6 +354,7 @@ struct TodayTab: View {
             case "timer": showingTimer = true
             case "session": showingAddSession = true
             case "homework": showingAddHomework = true
+            case "paywall": zeigePaywallDemo = true     // nur zum Prüfen der Kaufseite
             default: break
             }
         }
@@ -454,6 +456,9 @@ struct TodayTab: View {
             }
             .sheet(isPresented: $showingAddSession) {
                 AddStudySessionView(initialDate: Date(), store: store)
+            }
+            .sheet(isPresented: $zeigePaywallDemo) {
+                PaywallView(ausloeser: .elternAnsicht)
             }
             .fullScreenCover(isPresented: $showingTimer) {
                 StudyTimerView(store: store)
