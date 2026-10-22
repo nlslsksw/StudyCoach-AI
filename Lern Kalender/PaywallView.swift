@@ -110,7 +110,7 @@ struct PaywallView: View {
             Button("Käufe wiederherstellen") {
                 Task {
                     let ok = await kauf.wiederherstellen()
-                    meldung = ok ? nil : "Es wurde kein früherer Kauf gefunden."
+                    meldung = ok ? nil : String(localized: "Es wurde kein früherer Kauf gefunden.")
                 }
             }
             .font(.footnote)
@@ -141,7 +141,7 @@ struct PaywallView: View {
         case .gekauft:     break               // der Alert übernimmt
         case .abgebrochen: break               // kein Fehler, nichts sagen
         case .ausstehend:
-            meldung = "Der Kauf wartet noch auf eine Freigabe."
+            meldung = String(localized: "Der Kauf wartet noch auf eine Freigabe.")
         case .fehler(let text):
             meldung = text
         }

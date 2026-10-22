@@ -6835,6 +6835,266 @@
           }
         }
       }
+    },
+    "Stundenplan aus WebUntis": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timetable from WebUntis"
+          }
+        }
+      }
+    },
+    "Eltern-Ansicht": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parent view"
+          }
+        }
+      }
+    },
+    "Stunden, Hausaufgaben und Vertretungen kommen automatisch — einmal verbinden, dann läuft es.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lessons, homework and substitutions arrive automatically — connect once and you're set."
+          }
+        }
+      }
+    },
+    "Eltern sehen Lernzeit, Noten und den Countdown zur nächsten Arbeit, ohne nachzufragen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parents see study time, grades and the countdown to the next exam without having to ask."
+          }
+        }
+      }
+    },
+    "Das Produkt wurde nicht gefunden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The product was not found."
+          }
+        }
+      }
+    },
+    "Das Produkt ist gerade nicht verfügbar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The product is currently unavailable."
+          }
+        }
+      }
+    },
+    "Der Kauf konnte nicht bestätigt werden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase could not be verified."
+          }
+        }
+      }
+    },
+    "Unbekannte Antwort des App Store.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown response from the App Store."
+          }
+        }
+      }
+    },
+    "Einmal kaufen, dauerhaft freigeschaltet. Kein Abo, keine Werbung, kein Konto.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy once, unlocked for good. No subscription, no ads, no account."
+          }
+        }
+      }
+    },
+    "Einen Moment…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One moment…"
+          }
+        }
+      }
+    },
+    "Für %@ freischalten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock for %@"
+          }
+        }
+      }
+    },
+    "Käufe wiederherstellen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore purchases"
+          }
+        }
+      }
+    },
+    "Käufe wiederhergestellt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchases restored."
+          }
+        }
+      }
+    },
+    "Es wurde kein früherer Kauf gefunden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No previous purchase was found."
+          }
+        }
+      }
+    },
+    "Der App Store antwortet gerade nicht. Versuch es später noch einmal.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The App Store isn't responding. Please try again later."
+          }
+        }
+      }
+    },
+    "Der Kauf wartet noch auf eine Freigabe.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase is waiting for approval."
+          }
+        }
+      }
+    },
+    "Freischalten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock"
+          }
+        }
+      }
+    },
+    "Freigeschaltet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlocked"
+          }
+        }
+      }
+    },
+    "WebUntis und die Eltern-Ansicht stehen jetzt bereit.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WebUntis and the parent view are now available."
+          }
+        }
+      }
+    },
+    "Kostenpflichtig": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paid"
+          }
+        }
+      }
+    },
+    "gekauft": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "purchased"
+          }
+        }
+      }
+    },
+    "WebUntis und Eltern-Ansicht freischalten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock WebUntis and parent view"
+          }
+        }
+      }
+    },
+    "Einmal kaufen, dauerhaft freigeschaltet. Kein Abo.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy once, unlocked for good. No subscription."
+          }
+        }
+      }
+    },
+    "Bitte neu verbinden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please reconnect"
+          }
+        }
+      }
+    },
+    "Die Verbindung wurde auf eine verschlüsselte Übertragung umgestellt. Trenne sie einmal und verbinde neu — dann sind die Daten deines Kindes unterwegs nicht mehr lesbar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The connection now uses encrypted transfer. Disconnect once and reconnect — then your child's data can no longer be read in transit."
+          }
+        }
+      }
+    },
+    "Mein Lern Kalender Verbindungscode: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My Lern Kalender connection code: %@"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

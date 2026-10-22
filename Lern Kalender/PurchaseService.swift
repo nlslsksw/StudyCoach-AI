@@ -62,7 +62,7 @@ final class PurchaseService {
             let gefunden = try await Product.products(for: [Self.produktID])
             produkt = gefunden.first
             if produkt == nil {
-                ladefehler = "Das Produkt wurde nicht gefunden."
+                ladefehler = String(localized: "Das Produkt wurde nicht gefunden.")
             } else {
                 ladefehler = nil
             }
@@ -116,14 +116,14 @@ final class PurchaseService {
     enum KaufErgebnis { case gekauft, abgebrochen, ausstehend, fehler(String) }
 
     func kaufen() async -> KaufErgebnis {
-        guard let produkt else { return .fehler("Das Produkt ist gerade nicht verfügbar.") }
+        guard let produkt else { return .fehler(String(localized: "Das Produkt ist gerade nicht verfügbar.")) }
         laeuft = true
         defer { laeuft = false }
         do {
             switch try await produkt.purchase() {
             case .success(let pruefung):
                 guard case .verified(let transaktion) = pruefung else {
-                    return .fehler("Der Kauf konnte nicht bestätigt werden.")
+                    return .fehler(String(localized: "Der Kauf konnte nicht bestätigt werden."))
                 }
                 await transaktion.finish()
                 await statusPruefen()
@@ -133,7 +133,7 @@ final class PurchaseService {
             case .pending:
                 return .ausstehend       // z. B. Kauf muss von Eltern freigegeben werden
             @unknown default:
-                return .fehler("Unbekannte Antwort des App Store.")
+                return .fehler(String(localized: "Unbekannte Antwort des App Store."))
             }
         } catch {
             return .fehler(error.localizedDescription)
@@ -162,17 +162,17 @@ final class PurchaseService {
 
         var titel: String {
             switch self {
-            case .webuntis:      return "Stundenplan aus WebUntis"
-            case .elternAnsicht: return "Eltern-Ansicht"
+            case .webuntis:      return String(localized: "Stundenplan aus WebUntis")
+            case .elternAnsicht: return String(localized: "Eltern-Ansicht")
             }
         }
 
         var beschreibung: String {
             switch self {
             case .webuntis:
-                return "Stunden, Hausaufgaben und Vertretungen kommen automatisch — einmal verbinden, dann läuft es."
+                return String(localized: "Stunden, Hausaufgaben und Vertretungen kommen automatisch — einmal verbinden, dann läuft es.")
             case .elternAnsicht:
-                return "Eltern sehen Lernzeit, Noten und den Countdown zur nächsten Arbeit, ohne nachzufragen."
+                return String(localized: "Eltern sehen Lernzeit, Noten und den Countdown zur nächsten Arbeit, ohne nachzufragen.")
             }
         }
 

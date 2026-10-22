@@ -20,6 +20,7 @@ struct SettingsView: View {
     @State private var showingWrappedJahr = false
     @State private var showingWebuntis = false
     @State private var paywallFuer: PurchaseService.ProFunktion?
+    @State private var kaufMeldung: String?
     @State private var selectedTheme: AppTheme = ThemeStore.current
     @State private var selectedAccent: AppAccent = ThemeStore.accent
     @State private var devCode: String = ""
@@ -470,7 +471,12 @@ struct SettingsView: View {
                         }
                     }
                     Button("Käufe wiederherstellen") {
-                        Task { _ = await PurchaseService.shared.wiederherstellen() }
+                        Task {
+                            let ok = await PurchaseService.shared.wiederherstellen()
+                            kaufMeldung = ok
+                                ? String(localized: "Käufe wiederhergestellt.")
+                                : String(localized: "Es wurde kein früherer Kauf gefunden.")
+                        }
                     }
                     .font(.subheadline)
                 } footer: {
@@ -487,6 +493,12 @@ struct SettingsView: View {
             }
             .sheet(item: $paywallFuer) { funktion in
                 PaywallView(ausloeser: funktion)
+            }
+            .alert(kaufMeldung ?? "", isPresented: Binding(
+                get: { kaufMeldung != nil },
+                set: { if !$0 { kaufMeldung = nil } })
+            ) {
+                Button("OK", role: .cancel) {}
             }
             .navigationTitle("Einstellungen")
             .navigationBarTitleDisplayMode(.inline)

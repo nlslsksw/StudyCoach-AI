@@ -218,7 +218,7 @@ struct StudentPairingView: View {
                         .multilineTextAlignment(.center)
 
                     // Teilen-Button
-                    ShareLink(item: "Mein Lern Kalender Verbindungscode: \(FamilyCrypto.formatted(pairingCode))") {
+                    ShareLink(item: String(localized: "Mein Lern Kalender Verbindungscode: \(FamilyCrypto.formatted(pairingCode))")) {
                         Label("Code teilen", systemImage: "square.and.arrow.up")
                     }
                     .buttonStyle(.borderedProminent)
