@@ -48,3 +48,7 @@ AppStore/keys/
 AppStore/brief/rec-*.mov
 AppStore/brief/ipad-de/
 AppStore/brief/ipad-en/
+
+# Python
+__pycache__/
+*.pyc
