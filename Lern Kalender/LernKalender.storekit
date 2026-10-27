@@ -1,0 +1,28 @@
+{
+  "identifier" : "LernKalenderStoreKit",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : true,
+      "internalID" : "LK-PRO-001",
+      "localizations" : [
+        {
+          "description" : "Stundenplan aus WebUntis und die Eltern-Ansicht. Einmal kaufen, kein Abo.",
+          "displayName" : "WebUntis & Eltern-Ansicht",
+          "locale" : "de_DE"
+        }
+      ],
+      "productID" : "lernkalender.pro",
+      "referenceName" : "Pro freischalten",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6761893058",
+    "_developerTeamID" : "",
+    "_lastSynchronizedDate" : 0
+  },
+  "subscriptionGroups" : [],
+  "version" : { "major" : 4, "minor" : 0 }
+}

@@ -101,7 +101,7 @@ struct PrivacyPolicyView: View {
     var body: some View {
         LegalDocumentView(
             title: "Datenschutz",
-            lastUpdated: "Stand: 2. Oktober 2026",
+            lastUpdated: "Stand: 22. Oktober 2026",
             intro: "Diese Datenschutzerklärung informiert dich darüber, welche Daten die App Lern Kalender verarbeitet, wo sie gespeichert werden und wer Zugriff hat.",
             sections: [
                 LegalSection(
@@ -131,11 +131,15 @@ struct PrivacyPolicyView: View {
                     title: "2.3 Familien-Funktion",
                     paragraphs: ["Wenn du die Familien-Funktion aktivierst und ein Eltern- mit einem Kind-Gerät verbindest:"],
                     bullets: [
-                        "Beim Verbinden wird ein 6-stelliger Pairing-Code generiert.",
-                        "Bestimmte Lerndaten des Kindes (Lernzeit, Noten, Streak, Klassenarbeiten) werden in die öffentliche CloudKit-Datenbank des App-Anbieters geschrieben, damit das Eltern-Gerät sie abrufen kann.",
-                        "Diese Daten sind nur über den geheimen Pairing-Code abrufbar.",
+                        "Beim Verbinden wird ein 10-stelliger Verbindungscode erzeugt. Er steht nur auf den beiden Geräten, nicht in der Cloud.",
+                        "Bestimmte Lerndaten des Kindes (Lernzeit, Noten, Streak, Klassenarbeiten, Fächer, Stundenplan-Termine) werden verschlüsselt (AES-GCM, Schlüssel aus dem Verbindungscode) in die öffentliche CloudKit-Datenbank des App-Anbieters geschrieben, damit das Eltern-Gerät sie abrufen kann. Ohne den Code sind sie nicht lesbar; gesucht wird nur über einen Hashwert des Codes.",
+                        "Einzige Ausnahme ist der kurze Text einer Aktivitäts-Benachrichtigung (z. B. „Mathe – 45 min gelernt“), den Apple beim Zustellen der Mitteilung lesen muss. Er enthält weder Namen noch Noten.",
                         "Eltern können Lernziele und Motivationsnachrichten an das Kind senden."
                     ]
+                ),
+                LegalSection(
+                    title: "2.4 Einmaliger Kauf",
+                    paragraphs: ["WebUntis-Anbindung und Eltern-Ansicht lassen sich einmalig freischalten. Der Kauf wird vollständig über Apple (App Store) abgewickelt. Wir erhalten keine Zahlungsdaten; die App prüft den Kaufstatus lokal über StoreKit."]
                 ),
                 LegalSection(
                     title: "3. Was wir NICHT tun",
@@ -266,7 +270,7 @@ struct TermsView: View {
                     paragraphs: ["Bei Fragen: contact@niraki.eu"]
                 )
             ],
-            englishURL: URL(string: "https://nlslsksw.github.io/StudyCoach-AI/legal/terms-en.html")
+            englishURL: nil
         )
     }
 }

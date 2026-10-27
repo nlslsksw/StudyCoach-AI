@@ -34,7 +34,9 @@ def meta(locale):
 
 # ---------- Texte ----------
 def texts():
-    info = get(f"/apps/{app_id()}/appInfos")["data"][0]
+    infos = get(f"/apps/{app_id()}/appInfos")["data"]
+    # Nach einer Veröffentlichung gibt es zwei appInfos – bearbeiten lässt sich nur die in Vorbereitung.
+    info = next((i for i in infos if i["attributes"].get("appStoreState") in ("PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "WAITING_FOR_REVIEW")), infos[0])
     locs = {l["attributes"]["locale"]: l for l in get(f"/appInfos/{info['id']}/appInfoLocalizations")["data"]}
     ver = version()
     vlocs = {l["attributes"]["locale"]: l for l in get(f"/appStoreVersions/{ver['id']}/appStoreVersionLocalizations")["data"]}

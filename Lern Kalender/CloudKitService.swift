@@ -2,6 +2,21 @@ import CloudKit
 import Foundation
 
 // MARK: - CloudKit Service
+//
+// Die Familien-Daten liegen in der ÖFFENTLICHEN CloudKit-Datenbank, damit
+// Eltern sie über einen Code abrufen können, ohne Einladungslink und ohne
+// eigenes iCloud-Konto. Öffentlich heißt: Jeder mit der App kann die
+// Datenbank abfragen. Deshalb gilt hier durchgehend:
+//
+//   • Gesucht wird nur über `codeHash` (SHA-256 des Codes), nie über den Code.
+//   • Alle Nutzdaten werden mit `FamilyCrypto` verschlüsselt, bevor sie das
+//     Gerät verlassen. Der Schlüssel ist der Code und steht nur auf den
+//     beiden gekoppelten Geräten.
+//
+// Einzige Ausnahme: der kurze Text einer `ActivityNotification`
+// ("Mathe – 45 min gelernt"). Den liest Apple beim Zustellen des Pushes aus
+// dem Datensatz, er kann deshalb nicht verschlüsselt sein. Er enthält weder
+// Namen noch Noten, und der Datensatz ist nur über den Hash auffindbar.
 
 @Observable
 final class CloudKitService {
@@ -34,13 +49,12 @@ final class CloudKitService {
     // MARK: - Pairing
 
     func generatePairingCode() -> String {
-        let digits = (0..<6).map { _ in String(Int.random(in: 0...9)) }
-        return digits.joined()
+        FamilyCrypto.newCode()
     }
 
     func createFamilyLink(code: String) async throws {
         let record = CKRecord(recordType: "FamilyLink")
-        record["pairingCode"] = code as CKRecordValue
+        record["codeHash"] = FamilyCrypto.codeHash(code) as CKRecordValue
         record["isActive"] = true as CKRecordValue
         record["createdAt"] = Date() as CKRecordValue
 
@@ -48,7 +62,7 @@ final class CloudKitService {
     }
 
     func lookupPairingCode(_ code: String) async throws -> Bool {
-        let predicate = NSPredicate(format: "pairingCode == %@ AND isActive == 1", code)
+        let predicate = NSPredicate(format: "codeHash == %@ AND isActive == 1", FamilyCrypto.codeHash(code))
         let query = CKQuery(recordType: "FamilyLink", predicate: predicate)
         let results = try await publicDB.records(matching: query)
 
@@ -79,17 +93,24 @@ final class CloudKitService {
             func inYear(_ date: Date) -> Bool { range?.contains(date) ?? true }
             let subjects = store.activeSchoolYear().map(store.subjectsFor(schoolYear:)) ?? store.subjects
 
-            if let gradesData = try? encoder.encode(store.grades.filter { inYear($0.date) }) {
-                record["gradesJSON"] = gradesData as CKRecordValue
+            // Jedes Feld wird mit dem Kopplungscode verschlüsselt. In der
+            // öffentlichen Datenbank steht damit nur unlesbares Material.
+            let code = link.pairingCode
+            if let roh = try? encoder.encode(store.grades.filter { inYear($0.date) }),
+               let zu = FamilyCrypto.seal(roh, code: code) {
+                record["gradesJSON"] = zu as CKRecordValue
             }
-            if let sessionsData = try? encoder.encode(store.studySessions.filter { inYear($0.date) }) {
-                record["sessionsJSON"] = sessionsData as CKRecordValue
+            if let roh = try? encoder.encode(store.studySessions.filter { inYear($0.date) }),
+               let zu = FamilyCrypto.seal(roh, code: code) {
+                record["sessionsJSON"] = zu as CKRecordValue
             }
-            if let subjectsData = try? encoder.encode(subjects) {
-                record["subjectsJSON"] = subjectsData as CKRecordValue
+            if let roh = try? encoder.encode(subjects),
+               let zu = FamilyCrypto.seal(roh, code: code) {
+                record["subjectsJSON"] = zu as CKRecordValue
             }
-            if let entriesData = try? encoder.encode(store.entries.filter { inYear($0.date) }) {
-                record["entriesJSON"] = entriesData as CKRecordValue
+            if let roh = try? encoder.encode(store.entries.filter { inYear($0.date) }),
+               let zu = FamilyCrypto.seal(roh, code: code) {
+                record["entriesJSON"] = zu as CKRecordValue
             }
 
             record["lastUpdated"] = Date() as CKRecordValue
@@ -114,7 +135,7 @@ final class CloudKitService {
         defer { isSyncing = false }
 
         do {
-            let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+            let predicate = NSPredicate(format: "codeHash == %@", FamilyCrypto.codeHash(pairingCode))
             let query = CKQuery(recordType: "StudentData", predicate: predicate)
             let results = try await publicDB.records(matching: query)
 
@@ -129,20 +150,26 @@ final class CloudKitService {
 
             var data = ChildRemoteData()
 
-            if let gradesData = record["gradesJSON"] as? Data,
-               let grades = try? decoder.decode([Grade].self, from: gradesData) {
+            // Entschlüsseln mit dem Code, den die Eltern eingegeben haben.
+            // Schlägt das fehl, passt der Code nicht — dann bleibt das Feld leer.
+            func entschluesselt(_ feld: String) -> Data? {
+                guard let roh = record[feld] as? Data else { return nil }
+                return FamilyCrypto.open(roh, code: pairingCode)
+            }
+            if let d = entschluesselt("gradesJSON"),
+               let grades = try? decoder.decode([Grade].self, from: d) {
                 data.grades = grades
             }
-            if let sessionsData = record["sessionsJSON"] as? Data,
-               let sessions = try? decoder.decode([StudySession].self, from: sessionsData) {
+            if let d = entschluesselt("sessionsJSON"),
+               let sessions = try? decoder.decode([StudySession].self, from: d) {
                 data.sessions = sessions
             }
-            if let subjectsData = record["subjectsJSON"] as? Data,
-               let subjects = try? decoder.decode([Subject].self, from: subjectsData) {
+            if let d = entschluesselt("subjectsJSON"),
+               let subjects = try? decoder.decode([Subject].self, from: d) {
                 data.subjects = subjects
             }
-            if let entriesData = record["entriesJSON"] as? Data,
-               let entries = try? decoder.decode([CalendarEntry].self, from: entriesData) {
+            if let d = entschluesselt("entriesJSON"),
+               let entries = try? decoder.decode([CalendarEntry].self, from: d) {
                 data.entries = entries
             }
             data.currentStreak = record["currentStreak"] as? Int ?? 0
@@ -167,7 +194,7 @@ final class CloudKitService {
     }
 
     func fetchStudyGoal(pairingCode: String) async -> StudyGoal? {
-        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let predicate = NSPredicate(format: "codeHash == %@", FamilyCrypto.codeHash(pairingCode))
         let query = CKQuery(recordType: "StudyGoal", predicate: predicate)
 
         guard let results = try? await publicDB.records(matching: query),
@@ -185,11 +212,11 @@ final class CloudKitService {
 
     func subscribeToStudentDataChanges(pairingCode: String) async {
         // 1. Generic subscription on StudentData updates (backup / data sync).
-        let dataPredicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let dataPredicate = NSPredicate(format: "codeHash == %@", FamilyCrypto.codeHash(pairingCode))
         let dataSubscription = CKQuerySubscription(
             recordType: "StudentData",
             predicate: dataPredicate,
-            subscriptionID: "studentData-\(pairingCode)",
+            subscriptionID: "studentData-\(FamilyCrypto.codeHash(pairingCode).prefix(16))",
             options: [.firesOnRecordUpdate]
         )
         let dataInfo = CKSubscription.NotificationInfo()
@@ -198,11 +225,11 @@ final class CloudKitService {
         try? await publicDB.save(dataSubscription)
 
         // 2. Activity notification — visible push when the child logs a session.
-        let actPredicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let actPredicate = NSPredicate(format: "codeHash == %@", FamilyCrypto.codeHash(pairingCode))
         let actSubscription = CKQuerySubscription(
             recordType: "ActivityNotification",
             predicate: actPredicate,
-            subscriptionID: "activity-\(pairingCode)",
+            subscriptionID: "activity-\(FamilyCrypto.codeHash(pairingCode).prefix(16))",
             options: [.firesOnRecordCreation]
         )
         let actInfo = CKSubscription.NotificationInfo()
@@ -233,7 +260,7 @@ final class CloudKitService {
 
     func sendActivityNotification(type: String, message: String, pairingCode: String) async {
         let record = CKRecord(recordType: "ActivityNotification")
-        record["pairingCode"] = pairingCode as CKRecordValue
+        record["codeHash"] = FamilyCrypto.codeHash(pairingCode) as CKRecordValue
         record["type"] = type as CKRecordValue
         record["message"] = message as CKRecordValue
         record["timestamp"] = Date() as CKRecordValue
@@ -247,16 +274,17 @@ final class CloudKitService {
         let record = CKRecord(recordType: "SharedCalendarEntry")
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
-        if let data = try? encoder.encode(entry) {
-            record["entryJSON"] = data as CKRecordValue
+        if let roh = try? encoder.encode(entry),
+           let zu = FamilyCrypto.seal(roh, code: entry.pairingCode) {
+            record["entryJSON"] = zu as CKRecordValue
         }
-        record["pairingCode"] = entry.pairingCode as CKRecordValue
+        record["codeHash"] = FamilyCrypto.codeHash(entry.pairingCode) as CKRecordValue
         record["entryDate"] = entry.date as CKRecordValue
         try await publicDB.save(record)
     }
 
     func fetchSharedCalendarEntries(pairingCode: String) async -> [SharedCalendarEntry] {
-        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let predicate = NSPredicate(format: "codeHash == %@", FamilyCrypto.codeHash(pairingCode))
         let query = CKQuery(recordType: "SharedCalendarEntry", predicate: predicate)
 
         guard let results = try? await publicDB.records(matching: query) else { return [] }
@@ -267,7 +295,8 @@ final class CloudKitService {
         var entries: [SharedCalendarEntry] = []
         for matchResult in results.matchResults {
             if let record = try? matchResult.1.get(),
-               let data = record["entryJSON"] as? Data,
+               let roh = record["entryJSON"] as? Data,
+               let data = FamilyCrypto.open(roh, code: pairingCode),
                let entry = try? decoder.decode(SharedCalendarEntry.self, from: data) {
                 entries.append(entry)
             }
@@ -279,14 +308,16 @@ final class CloudKitService {
 
     func saveMotivationMessage(_ message: MotivationMessage) async throws {
         let record = CKRecord(recordType: "MotivationMessage")
-        record["pairingCode"] = message.pairingCode as CKRecordValue
-        record["text"] = message.text as CKRecordValue
+        record["codeHash"] = FamilyCrypto.codeHash(message.pairingCode) as CKRecordValue
+        if let zu = FamilyCrypto.sealText(message.text, code: message.pairingCode) {
+            record["textEnc"] = zu as CKRecordValue
+        }
         record["date"] = message.date as CKRecordValue
         try await publicDB.save(record)
     }
 
     func fetchMotivationMessage(pairingCode: String) async -> MotivationMessage? {
-        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let predicate = NSPredicate(format: "codeHash == %@", FamilyCrypto.codeHash(pairingCode))
         let query = CKQuery(recordType: "MotivationMessage", predicate: predicate)
         let sort = NSSortDescriptor(key: "date", ascending: false)
         query.sortDescriptors = [sort]
@@ -297,8 +328,9 @@ final class CloudKitService {
             return nil
         }
 
-        let text = record["text"] as? String ?? ""
         let date = record["date"] as? Date ?? Date()
+        guard let roh = record["textEnc"] as? Data,
+              let text = FamilyCrypto.openText(roh, code: pairingCode) else { return nil }
         return MotivationMessage(text: text, date: date, pairingCode: pairingCode)
     }
 
@@ -313,14 +345,14 @@ final class CloudKitService {
         do {
             // 1. FamilyLink
             let familyLink = CKRecord(recordType: "FamilyLink")
-            familyLink["pairingCode"] = "__setup__" as CKRecordValue
+            familyLink["codeHash"] = "__setup__" as CKRecordValue
             familyLink["isActive"] = 1 as CKRecordValue
             familyLink["createdAt"] = Date() as CKRecordValue
             let savedFL = try await publicDB.save(familyLink)
 
             // 2. StudentData
             let studentData = CKRecord(recordType: "StudentData")
-            studentData["pairingCode"] = "__setup__" as CKRecordValue
+            studentData["codeHash"] = "__setup__" as CKRecordValue
             studentData["gradesJSON"] = Data() as CKRecordValue
             studentData["sessionsJSON"] = Data() as CKRecordValue
             studentData["subjectsJSON"] = Data() as CKRecordValue
@@ -331,14 +363,14 @@ final class CloudKitService {
 
             // 3. StudyGoal
             let studyGoal = CKRecord(recordType: "StudyGoal")
-            studyGoal["pairingCode"] = "__setup__" as CKRecordValue
+            studyGoal["codeHash"] = "__setup__" as CKRecordValue
             studyGoal["dailyMinutesGoal"] = 0 as CKRecordValue
             studyGoal["weeklyMinutesGoal"] = 0 as CKRecordValue
             let savedSG = try await publicDB.save(studyGoal)
 
             // 4. ActivityNotification
             let notification = CKRecord(recordType: "ActivityNotification")
-            notification["pairingCode"] = "__setup__" as CKRecordValue
+            notification["codeHash"] = "__setup__" as CKRecordValue
             notification["type"] = "setup" as CKRecordValue
             notification["message"] = "Schema erstellt" as CKRecordValue
             notification["timestamp"] = Date() as CKRecordValue
@@ -346,15 +378,15 @@ final class CloudKitService {
 
             // 5. SharedCalendarEntry
             let sharedEntry = CKRecord(recordType: "SharedCalendarEntry")
-            sharedEntry["pairingCode"] = "__setup__" as CKRecordValue
+            sharedEntry["codeHash"] = "__setup__" as CKRecordValue
             sharedEntry["entryJSON"] = Data() as CKRecordValue
             sharedEntry["entryDate"] = Date() as CKRecordValue
             let savedSE = try await publicDB.save(sharedEntry)
 
             // 6. MotivationMessage
             let motivation = CKRecord(recordType: "MotivationMessage")
-            motivation["pairingCode"] = "__setup__" as CKRecordValue
-            motivation["text"] = "setup" as CKRecordValue
+            motivation["codeHash"] = "__setup__" as CKRecordValue
+            motivation["textEnc"] = Data() as CKRecordValue
             motivation["date"] = Date() as CKRecordValue
             let savedMM = try await publicDB.save(motivation)
 
@@ -381,7 +413,7 @@ final class CloudKitService {
     // MARK: - Private Helpers
 
     private func findOrCreateStudentData(pairingCode: String) async throws -> CKRecord {
-        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let predicate = NSPredicate(format: "codeHash == %@", FamilyCrypto.codeHash(pairingCode))
         let query = CKQuery(recordType: "StudentData", predicate: predicate)
         let results = try await publicDB.records(matching: query)
 
@@ -391,12 +423,12 @@ final class CloudKitService {
         }
 
         let newRecord = CKRecord(recordType: "StudentData")
-        newRecord["pairingCode"] = pairingCode as CKRecordValue
+        newRecord["codeHash"] = FamilyCrypto.codeHash(pairingCode) as CKRecordValue
         return newRecord
     }
 
     private func findOrCreateGoalRecord(pairingCode: String) async throws -> CKRecord {
-        let predicate = NSPredicate(format: "pairingCode == %@", pairingCode)
+        let predicate = NSPredicate(format: "codeHash == %@", FamilyCrypto.codeHash(pairingCode))
         let query = CKQuery(recordType: "StudyGoal", predicate: predicate)
         let results = try await publicDB.records(matching: query)
 
@@ -406,7 +438,7 @@ final class CloudKitService {
         }
 
         let newRecord = CKRecord(recordType: "StudyGoal")
-        newRecord["pairingCode"] = pairingCode as CKRecordValue
+        newRecord["codeHash"] = FamilyCrypto.codeHash(pairingCode) as CKRecordValue
         return newRecord
     }
 }

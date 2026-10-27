@@ -449,6 +449,9 @@ struct StudyTimerView: View {
             }
             .navigationTitle("Lerntimer")
             .navigationBarTitleDisplayMode(.inline)
+            #if DEBUG
+            .background(hookDemoTimer())
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Schließen") {
@@ -481,6 +484,20 @@ struct StudyTimerView: View {
             }
         }
     }
+
+    #if DEBUG
+    /// Demo-Abspieler: Timer ohne Tippen starten/stoppen.
+    private func hookDemoTimer() -> some View {
+        Color.clear
+            .onReceive(NotificationCenter.default.publisher(for: .demoStartTimer)) { _ in
+                if subject.isEmpty { subject = store.activeSubjects().first?.name ?? "Mathe" }
+                startTimer()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .demoStopTimer)) { _ in
+                if isRunning { pauseTimer() }
+            }
+    }
+    #endif
 
     private func startTimer() {
         if startTime == nil {
